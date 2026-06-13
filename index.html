@@ -8,7 +8,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Nunito:ital,wght@1,700&display=swap" rel="stylesheet">
     
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -24,7 +24,7 @@
             --carbon: #1C1C1C;
             --footer-bg: #0F2419;
             
-            --font-display: 'Playfair Display', serif;
+            --font-display: 'Nunito', sans-serif;
             --font-body: 'Inter', sans-serif;
         }
 
@@ -45,6 +45,9 @@
 
         h1, h2, h3, h4, h5, h6, .playfair {
             font-family: var(--font-display);
+            font-weight: 700;
+            font-style: italic;
+            letter-spacing: -0.02em;
         }
 
         a {
@@ -131,9 +134,11 @@
 
         .logo {
             font-family: var(--font-display);
-            font-size: 22px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
+            font-style: italic;
             color: var(--blanco);
+            letter-spacing: -0.01em;
         }
 
         .logo span {
@@ -214,9 +219,10 @@
         }
 
         .hero h1 {
-            font-size: 48px;
-            line-height: 1.2;
+            font-size: 52px;
+            line-height: 1.15;
             margin-bottom: 1.5rem;
+            letter-spacing: -0.03em;
         }
 
         .hero p {
@@ -300,10 +306,12 @@
 
         .stat-number {
             font-family: var(--font-display);
-            font-size: 28px;
+            font-size: 30px;
             color: var(--verde);
             font-weight: 700;
+            font-style: italic;
             margin-bottom: 0.3rem;
+            letter-spacing: -0.02em;
         }
         
         .stat-label {
@@ -326,9 +334,11 @@
         }
 
         .section-header h2 {
-            font-size: 2.5rem;
+            font-size: 2.6rem;
             color: var(--carbon);
             margin-top: 0.5rem;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
         }
 
         .link-right {
@@ -426,10 +436,13 @@
         }
 
         .recipe-title {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-family: var(--font-display);
+            font-weight: 700;
+            font-style: italic;
             margin-bottom: 1rem;
-            line-height: 1.3;
+            line-height: 1.25;
+            letter-spacing: -0.01em;
         }
 
         .recipe-meta {
@@ -471,9 +484,11 @@
         }
 
         .banner-cta h2 {
-            font-size: 2.5rem;
+            font-size: 2.6rem;
             margin-bottom: 2rem;
-            font-weight: 400;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
         }
 
         /* Blog */
@@ -536,14 +551,18 @@
         }
 
         .blog-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-family: var(--font-display);
+            font-weight: 700;
+            font-style: italic;
             margin-bottom: 1rem;
-            line-height: 1.3;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
         }
 
         .blog-card.featured .blog-title {
-            font-size: 2rem;
+            font-size: 1.9rem;
+            letter-spacing: -0.03em;
         }
 
         .blog-excerpt {
@@ -588,9 +607,11 @@
         }
 
         .testimonials h2 {
-            font-size: 2.5rem;
+            font-size: 2.6rem;
             margin-bottom: 3rem;
-            font-weight: 400;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
         }
 
         .testimonials-grid {
@@ -713,9 +734,48 @@
             }
         }
 
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                right: 0;
+                background-color: var(--verde);
+                flex-direction: column;
+                padding: 1.5rem 2rem;
+                gap: 1.2rem;
+                border-top: 1px solid rgba(255,255,255,0.1);
+            }
+            .nav-links.open {
+                display: flex;
+            }
+            .hamburger {
+                display: flex;
             }
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -749,13 +809,18 @@
     <nav class="navbar">
         <div class="container">
             <a href="#" class="logo">Isocore<span>food</span></a>
-            <div class="nav-links">
+            <div class="nav-links" id="navLinks">
                 <a href="#" data-i18n="nav_inicio">Inicio</a>
                 <a href="#recetas" data-i18n="nav_recetas">Recetas</a>
                 <a href="#nutricion" data-i18n="nav_nutricion">Nutrición</a>
                 <a href="#blog" data-i18n="nav_blog">Blog</a>
-                <button id="langToggle" class="lang-switch">CA</button>
                 <a href="#" class="btn btn-lima" data-i18n="nav_empezar" style="padding: 0.4rem 1.2rem;">Empezar</a>
+            </div>
+            <div class="nav-controls">
+                <button id="langToggle" class="lang-switch">CA</button>
+                <button class="hamburger" id="hamburger" aria-label="Menú">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
         </div>
     </nav>
@@ -1228,10 +1293,14 @@
         function setLanguage(lang) {
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (translations[lang][key]) {
+                if (translations[lang] && translations[lang][key]) {
                     el.innerHTML = translations[lang][key];
                 }
             });
+            // Update page title
+            if (translations[lang]['title']) {
+                document.title = translations[lang]['title'];
+            }
             document.documentElement.lang = lang;
             langToggleBtn.textContent = lang === 'es' ? 'CA' : 'ES';
         }
@@ -1239,6 +1308,17 @@
         langToggleBtn.addEventListener('click', () => {
             currentLang = currentLang === 'es' ? 'ca' : 'es';
             setLanguage(currentLang);
+        });
+
+        // Menú hamburguesa móvil
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+        });
+        // Cerrar menú al hacer clic en un enlace
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => navLinks.classList.remove('open'));
         });
 
     </script>
