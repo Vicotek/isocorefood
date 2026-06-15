@@ -921,8 +921,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 localStorage.setItem('icf_token', data.token);
                 localStorage.setItem('icf_user', JSON.stringify({ email: data.email, nombre: data.nombre, plan: data.plan }));
-                showMessage('¡Bienvenido/a de nuevo! 🎉', 'success');
-                setTimeout(() => location.reload(), 1200);
+                showMessage('¡Bienvenida/o de nuevo! 🎉', 'success');
+                setTimeout(() => location.reload(), 3000);
             } else {
                 showMessage(data.mensaje || 'Email o contraseña incorrectos', 'error');
             }
@@ -951,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             const data = await res.json();
             if (data.success) {
-                showMessage('¡Cuenta creada! Revisa tu email para confirmar. 📧', 'success');
+                showMessage('¡Cuenta creada! Bienvenida/o a IsocoreNutricion. 📧', 'success');
                 e.target.reset();
             } else {
                 showMessage(data.mensaje || 'Error al crear la cuenta', 'error');
