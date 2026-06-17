@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restablecer contraseña - Isocorefood Nutrición</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Nunito:ital,wght@1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --verde: #1A3C2E;
+            --lima: #8DC63F;
+            --lima-claro: #EAF3DE;
+            --crema: #F7F3E8;
+            --blanco: #FFFFFF;
+            --carbon: #1C1C1C;
+            --footer-bg: #0F2419;
+            --font-display: 'Nunito', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--carbon);
+            background-color: var(--crema);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-style: italic;
+            letter-spacing: -0.02em;
+        }
+
+        a { text-decoration: none; color: inherit; transition: color 0.2s ease; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+        .em-lima { color: var(--lima); font-style: italic; }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            background-color: var(--verde);
+            height: 64px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+        .navbar .container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo { font-family: var(--font-display); font-size: 24px; font-weight: 700; font-style: italic; color: var(--blanco); }
+        .logo span { color: var(--lima); }
+
+        /* ── RESET SECTION ── */
+        .reset-section {
+            min-height: calc(100vh - 64px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+        }
+        .reset-card {
+            background: var(--blanco);
+            border-radius: 20px;
+            padding: 2.8rem;
+            box-shadow: 0 8px 32px rgba(26,60,46,0.08);
+            border: 1px solid rgba(26,60,46,0.06);
+            max-width: 440px;
+            width: 100%;
+        }
+        .reset-logo-wrap { text-align: center; margin-bottom: 1.5rem; }
+        .reset-logo-wrap img { height: 44px; }
+        .reset-card h2 { text-align: center; font-size: 1.6rem; margin-bottom: 0.6rem; color: var(--carbon); }
+        .reset-desc { text-align: center; color: #666; font-size: 0.92rem; margin-bottom: 2rem; line-height: 1.6; }
+
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--carbon); margin-bottom: 0.4rem; }
+        .form-group input {
+            width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #e0e0e0; border-radius: 10px;
+            font-family: var(--font-body); font-size: 0.95rem; color: var(--carbon); background: var(--blanco);
+            transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+        }
+        .form-group input:focus { border-color: var(--lima); box-shadow: 0 0 0 3px rgba(141,198,63,0.15); }
+        .input-pass { position: relative; }
+        .input-pass input { padding-right: 3rem; }
+        .toggle-pass {
+            position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer; font-size: 1rem; opacity: 0.5; transition: opacity 0.2s;
+        }
+        .toggle-pass:hover { opacity: 1; }
+        .pass-hint { font-size: 0.78rem; color: #888; margin-top: 0.4rem; }
+
+        .btn-full {
+            width: 100%; padding: 0.9rem; font-size: 1rem; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            background-color: var(--lima); color: var(--verde); border: none; border-radius: 50px;
+            cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; font-family: var(--font-body);
+            margin-top: 0.5rem;
+        }
+        .btn-full:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(141,198,63,0.3); }
+        .btn-full:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .auth-message {
+            padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.9rem; font-weight: 500;
+            margin-bottom: 1.2rem; text-align: center; display: none;
+        }
+        .auth-message.success { background: var(--lima-claro); color: #2d6011; border: 1px solid rgba(141,198,63,0.3); }
+        .auth-message.error { background: #fdecea; color: #c62828; border: 1px solid rgba(229,57,53,0.2); }
+
+        .back-login { text-align: center; margin-top: 1.5rem; }
+        .back-login a { font-size: 0.85rem; color: var(--verde); font-weight: 500; text-decoration: underline; text-underline-offset: 2px; }
+        .back-login a:hover { color: var(--lima); }
+
+        .invalid-state { text-align: center; }
+        .invalid-state .icon { font-size: 2.8rem; margin-bottom: 1rem; }
+        .invalid-state h2 { margin-bottom: 0.8rem; }
+        .invalid-state p { color: #666; font-size: 0.95rem; margin-bottom: 1.8rem; line-height: 1.6; }
+
+        @media (max-width: 480px) {
+            .reset-card { padding: 2rem 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container">
+        <a href="https://isocorenutricion.es/" class="logo">Isocore<span>food</span></a>
+    </div>
+</nav>
+
+<!-- RESET SECTION -->
+<section class="reset-section">
+    <div class="reset-card" id="resetCard">
+
+        <div class="reset-logo-wrap">
+            <img src="https://isocorenutricion.es/isocore_logo.png" alt="Isocore Nutrición">
+        </div>
+
+        <!-- ESTADO: formulario válido -->
+        <div id="formState">
+            <h2>Restablecer <span class="em-lima">contraseña</span></h2>
+            <p class="reset-desc">Crea una nueva contraseña para tu cuenta de Isocorefood.</p>
+
+            <div class="auth-message" id="authMessage"></div>
+
+            <form id="formReset" novalidate>
+                <div class="form-group">
+                    <label>Nueva contraseña</label>
+                    <div class="input-pass">
+                        <input type="password" id="newPassword" placeholder="Mínimo 8 caracteres" required>
+                        <button type="button" class="toggle-pass" data-target="newPassword">👁</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Repite la contraseña</label>
+                    <div class="input-pass">
+                        <input type="password" id="newPassword2" placeholder="••••••••" required>
+                        <button type="button" class="toggle-pass" data-target="newPassword2">👁</button>
+                    </div>
+                    <p class="pass-hint">Usa al menos 8 caracteres.</p>
+                </div>
+                <button type="submit" class="btn-full">
+                    <span class="btn-text">Guardar nueva contraseña</span>
+                    <span class="btn-loader" style="display:none;">⏳</span>
+                </button>
+            </form>
+
+            <div class="back-login">
+                <a href="https://isocorenutricion.es/#acceso">← Volver al login</a>
+            </div>
+        </div>
+
+        <!-- ESTADO: sin token en la URL -->
+        <div id="invalidState" class="invalid-state" style="display:none;">
+            <div class="icon">⚠️</div>
+            <h2>Enlace no válido</h2>
+            <p>Este enlace de recuperación no es correcto o ha caducado. Solicita uno nuevo desde la página de acceso.</p>
+            <a href="https://isocorenutricion.es/#acceso" class="btn-full" style="display:inline-flex; text-decoration:none;">Volver a Isocorefood</a>
+        </div>
+
+        <!-- ESTADO: contraseña cambiada con éxito -->
+        <div id="successState" class="invalid-state" style="display:none;">
+            <div class="icon">✅</div>
+            <h2>¡Contraseña <span class="em-lima">actualizada</span>!</h2>
+            <p>Tu contraseña se ha cambiado correctamente. Ya puedes iniciar sesión con tus nuevos datos.</p>
+            <a href="https://isocorenutricion.es/#acceso" class="btn-full" style="display:inline-flex; text-decoration:none;">Ir a iniciar sesión</a>
+        </div>
+
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ── URL de tu N8N ──
+    const N8N_BASE_URL = 'https://n8n.srv1569124.hstgr.cloud/webhook';
+
+    const formState = document.getElementById('formState');
+    const invalidState = document.getElementById('invalidState');
+    const successState = document.getElementById('successState');
+
+    // ── Leer token de la URL ──
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+
+    if (!token) {
+        formState.style.display = 'none';
+        invalidState.style.display = 'block';
+        return;
+    }
+
+    // ── Ver/ocultar contraseña ──
+    document.querySelectorAll('.toggle-pass').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = document.getElementById(btn.dataset.target);
+            input.type = input.type === 'password' ? 'text' : 'password';
+            btn.textContent = input.type === 'password' ? '👁' : '🙈';
+        });
+    });
+
+    function showMessage(text, type) {
+        const msg = document.getElementById('authMessage');
+        msg.textContent = text;
+        msg.className = 'auth-message ' + type;
+        msg.style.display = 'block';
+    }
+    function hideMessage() {
+        const msg = document.getElementById('authMessage');
+        msg.style.display = 'none';
+        msg.className = 'auth-message';
+    }
+    function setLoading(form, loading) {
+        const btn = form.querySelector('button[type="submit"]');
+        btn.querySelector('.btn-text').style.display = loading ? 'none' : 'inline';
+        btn.querySelector('.btn-loader').style.display = loading ? 'inline' : 'none';
+        btn.disabled = loading;
+    }
+
+    // ── Enviar nueva contraseña ──
+    document.getElementById('formReset').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const password = document.getElementById('newPassword').value;
+        const password2 = document.getElementById('newPassword2').value;
+
+        if (!password || !password2) return showMessage('Rellena ambos campos', 'error');
+        if (password.length < 8) return showMessage('La contraseña debe tener mínimo 8 caracteres', 'error');
+        if (password !== password2) return showMessage('Las contraseñas no coinciden', 'error');
+
+        setLoading(e.target, true);
+        hideMessage();
+
+        try {
+            const res = await fetch(`${N8N_BASE_URL}/reset-password`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ token, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                formState.style.display = 'none';
+                successState.style.display = 'block';
+            } else {
+                showMessage(data.mensaje || 'No se ha podido restablecer la contraseña. El enlace puede haber caducado.', 'error');
+            }
+        } catch (err) {
+            showMessage('Error de conexión. Inténtalo de nuevo.', 'error');
+        } finally {
+            setLoading(e.target, false);
+        }
+    });
+
+});
+</script>
+</body>
+</html>
