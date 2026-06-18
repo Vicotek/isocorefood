@@ -4,57 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="title">Isocorefood Nutrición - Come bien, vive sano</title>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Nunito:ital,wght@1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         :root {
-            --verde: #1A3C2E;
-            --lima: #8DC63F;
-            --lima-claro: #EAF3DE;
-            --crema: #F7F3E8;
-            --blanco: #FFFFFF;
-            --carbon: #1C1C1C;
-            --footer-bg: #0F2419;
-            --font-display: 'Nunito', sans-serif;
-            --font-body: 'Inter', sans-serif;
+            --verde: #1A3C2E; --lima: #8DC63F; --lima-claro: #EAF3DE; --crema: #F7F3E8;
+            --blanco: #FFFFFF; --carbon: #1C1C1C; --footer-bg: #0F2419;
+            --font-display: 'Nunito', sans-serif; --font-body: 'Inter', sans-serif;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: var(--font-body);
-            color: var(--carbon);
-            background-color: var(--crema);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-style: italic;
-            letter-spacing: -0.02em;
-        }
-
+        body { font-family: var(--font-body); color: var(--carbon); background-color: var(--crema); line-height: 1.6; overflow-x: hidden; }
+        h1,h2,h3,h4,h5,h6 { font-family: var(--font-display); font-weight: 700; font-style: italic; letter-spacing: -0.02em; }
         a { text-decoration: none; color: inherit; transition: color 0.2s ease; }
         ul { list-style: none; }
-
         .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-
-        .btn {
-            display: inline-block;
-            padding: 0.8rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            text-align: center;
-            font-family: var(--font-body);
-        }
+        .btn { display: inline-block; padding: 0.8rem 1.5rem; border-radius: 50px; font-weight: 500; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; text-align: center; font-family: var(--font-body); }
         .btn:hover { transform: translateY(-2px); }
         .btn-lima { background-color: var(--lima); color: var(--verde); border: none; }
         .btn-lima:hover { box-shadow: 0 4px 12px rgba(141,198,63,0.3); }
@@ -62,17 +28,8 @@
         .btn-outline:hover { background-color: rgba(255,255,255,0.1); }
         .em-lima { color: var(--lima); font-style: italic; }
         .tag-small { font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; color: var(--lima); }
-
-        /* ── NAVBAR ── */
-        .navbar {
-            background-color: var(--verde);
-            height: 64px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-        }
+        /* NAVBAR */
+        .navbar { background-color: var(--verde); height: 64px; position: sticky; top: 0; z-index: 1000; display: flex; align-items: center; }
         .navbar .container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .logo { font-family: var(--font-display); font-size: 24px; font-weight: 700; font-style: italic; color: var(--blanco); }
         .logo span { color: var(--lima); }
@@ -80,28 +37,11 @@
         .nav-links a { color: rgba(255,255,255,0.75); font-weight: 400; }
         .nav-links a:hover { color: var(--lima); }
         .nav-controls { display: flex; align-items: center; gap: 1rem; }
-
-        .lang-switch {
-            background: rgba(255,255,255,0.12);
-            border: 1.5px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 5px 13px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-family: var(--font-body);
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            transition: all 0.2s;
-            min-width: 48px;
-            text-align: center;
-        }
+        .lang-switch { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.3); color: white; padding: 5px 13px; border-radius: 50px; cursor: pointer; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 1px; transition: all 0.2s; min-width: 48px; text-align: center; }
         .lang-switch:hover { background: rgba(255,255,255,0.22); border-color: var(--lima); color: var(--lima); }
-
         .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 4px; }
         .hamburger span { display: block; width: 24px; height: 2px; background-color: white; transition: all 0.3s ease; }
-
-        /* ── HERO ── */
+        /* HERO */
         .hero { background-color: var(--verde); color: var(--blanco); padding: 6rem 0; position: relative; overflow: hidden; }
         .hero-bg-letter { position: absolute; font-family: var(--font-display); font-size: 420px; color: rgba(141,198,63,0.08); top: 50%; left: 5%; transform: translateY(-50%); z-index: 0; line-height: 1; pointer-events: none; }
         .hero .container { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
@@ -109,21 +49,18 @@
         .hero h1 { font-size: 52px; line-height: 1.15; margin-bottom: 1.5rem; letter-spacing: -0.03em; }
         .hero p { color: rgba(255,255,255,0.68); max-width: 400px; margin-bottom: 2.5rem; font-size: 1.1rem; }
         .hero-buttons { display: flex; gap: 1rem; }
-
         @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
         .hero-illustration { animation: float 4s ease-in-out infinite; position: relative; display: flex; justify-content: center; align-items: center; }
         .bowl-mock { width: 350px; height: 350px; background: linear-gradient(135deg,rgba(141,198,63,0.2),rgba(141,198,63,0.05)); border-radius: 50%; border: 2px dashed rgba(141,198,63,0.3); display: flex; align-items: center; justify-content: center; font-size: 5rem; }
         .floating-badge { position: absolute; bottom: 30px; right: 0; background: var(--lima); color: var(--verde); padding: 0.5rem 1rem; border-radius: 50px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-
-        /* ── STATS ── */
+        /* STATS */
         .stats { background-color: var(--lima); padding: 2.5rem 0; }
         .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2rem; text-align: center; }
         .stat-item { position: relative; }
         .stat-item:not(:last-child)::after { content:''; position: absolute; right: -1rem; top: 20%; height: 60%; width: 1px; background-color: rgba(26,60,46,0.2); }
         .stat-number { font-family: var(--font-display); font-size: 30px; color: var(--verde); font-weight: 700; font-style: italic; margin-bottom: 0.3rem; }
         .stat-label { color: var(--verde); font-size: 0.9rem; font-weight: 500; opacity: 0.8; }
-
-        /* ── CATALOG ── */
+        /* CATALOG */
         .catalog { padding: 5rem 0; }
         .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; }
         .section-header h2 { font-size: 2.6rem; color: var(--carbon); margin-top: 0.5rem; letter-spacing: -0.03em; line-height: 1.15; }
@@ -131,7 +68,7 @@
         .link-right:hover { color: var(--lima); }
         .filters { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 3rem; }
         .filter-pill { padding: 0.5rem 1.2rem; border: 1px solid var(--verde); border-radius: 50px; background: transparent; color: var(--verde); cursor: pointer; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; font-family: var(--font-body); }
-        .filter-pill:hover, .filter-pill.active { background-color: var(--verde); color: var(--blanco); }
+        .filter-pill:hover,.filter-pill.active { background-color: var(--verde); color: var(--blanco); }
         .recipe-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 2rem; }
         .recipe-card { background-color: var(--blanco); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; }
         .recipe-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
@@ -148,12 +85,10 @@
         .macros-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.5rem; }
         .macro-pill { background-color: var(--lima-claro); padding: 0.4rem; border-radius: 8px; text-align: center; font-size: 0.75rem; color: var(--verde); }
         .macro-pill strong { display: block; font-size: 0.85rem; }
-
-        /* ── BANNER CTA ── */
+        /* BANNER */
         .banner-cta { background-color: var(--verde); border-radius: 20px; margin: 2.5rem; padding: 4rem 2rem; text-align: center; color: var(--blanco); }
         .banner-cta h2 { font-size: 2.6rem; margin-bottom: 2rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
-
-        /* ── BLOG ── */
+        /* BLOG */
         .blog { background-color: var(--blanco); padding: 5rem 0; }
         .blog-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; }
         .blog-card { background-color: var(--blanco); border: 1px solid #eee; border-radius: 16px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
@@ -169,8 +104,7 @@
         .blog-meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: #888; }
         .blog-author { display: flex; align-items: center; gap: 0.8rem; }
         .author-avatar { width: 32px; height: 32px; background-color: var(--lima); color: var(--verde); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem; }
-
-        /* ── TESTIMONIALS ── */
+        /* TESTIMONIALS */
         .testimonials { background-color: var(--verde); color: var(--blanco); padding: 5rem 0; text-align: center; }
         .testimonials h2 { font-size: 2.6rem; margin-bottom: 3rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
         .testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; }
@@ -178,8 +112,7 @@
         .stars { color: var(--lima); margin-bottom: 1rem; font-size: 1.2rem; }
         .testimonial-text { font-style: italic; color: rgba(255,255,255,0.8); margin-bottom: 1.5rem; font-size: 1rem; }
         .testimonial-author { color: var(--lima); font-weight: 500; font-size: 0.9rem; }
-
-        /* ── AUTH SECTION ── */
+        /* AUTH */
         .auth-section { background: var(--crema); padding: 5rem 0; border-top: 1px solid rgba(26,60,46,0.08); }
         .auth-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
         .auth-left h2 { font-size: 2.4rem; margin: 0.5rem 0 1rem; line-height: 1.2; letter-spacing: -0.03em; }
@@ -212,8 +145,7 @@
         .auth-message.success { background: var(--lima-claro); color: #2d6011; border: 1px solid rgba(141,198,63,0.3); }
         .auth-message.error { background: #fdecea; color: #c62828; border: 1px solid rgba(229,57,53,0.2); }
         .recover-desc { color: #666; font-size: 0.92rem; margin-bottom: 1.5rem; line-height: 1.6; }
-
-        /* ── FOOTER ── */
+        /* FOOTER */
         .footer { background-color: var(--footer-bg); color: var(--blanco); padding: 5rem 0 2rem; }
         .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; margin-bottom: 4rem; }
         .footer-logo { margin-bottom: 1rem; display: block; }
@@ -223,8 +155,7 @@
         .footer-links a { color: rgba(255,255,255,0.6); font-size: 0.9rem; }
         .footer-links a:hover { color: var(--lima); }
         .footer-bottom { text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; font-size: 0.85rem; color: rgba(255,255,255,0.5); }
-
-        /* ── RESPONSIVE ── */
+        /* RESPONSIVE */
         @media (max-width: 992px) {
             .hero .container { grid-template-columns: 1fr; text-align: center; }
             .hero p { margin: 0 auto 2.5rem; }
@@ -237,7 +168,6 @@
             .footer-grid { grid-template-columns: 1fr 1fr; }
             .auth-wrapper { grid-template-columns: 1fr; gap: 2rem; }
         }
-
         @media (max-width: 768px) {
             .nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; background-color: var(--verde); flex-direction: column; padding: 1.5rem 2rem; gap: 1.2rem; border-top: 1px solid rgba(255,255,255,0.1); z-index: 999; }
             .nav-links.open { display: flex; }
@@ -249,7 +179,7 @@
             .testimonials-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; }
             .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            h1, h2, h3, h4, h5, h6 { hyphens: none; word-break: keep-all; overflow-wrap: break-word; }
+            h1,h2,h3,h4,h5,h6 { hyphens: none; word-break: keep-all; overflow-wrap: break-word; }
             .hero { padding: 4rem 0; }
             .hero .container { padding: 0 1.5rem; }
             .hero h1 { font-size: 2.1rem; line-height: 1.2; }
@@ -274,12 +204,7 @@
             <a href="#nutricion" data-i18n="nav_nutricion">Nutrición</a>
             <a href="#blog" data-i18n="nav_blog">Blog</a>
             <a href="#acceso" class="btn btn-lima" data-i18n="nav_empezar" style="padding:0.4rem 1.2rem;">Empezar</a>
-            <a href="#acceso" class="btn btn-lima" data-i18n="nav_ingresar"
-                <a href="#acceso" class="btn btn-outline" data-i18n="nav_ingresar" style="padding:0.4rem 1.2rem;" onclick="setTimeout(()=>{document.querySelector('[data-tab=login]').click()},100)">Ingresar a cuenta</a>
-   style="padding:0.4rem 1.2rem;" 
-   onclick="setTimeout(()=>{document.querySelector('[data-tab=login]').click()},100)">
-   Ingresar a cuenta
-</a>
+            <a href="#acceso" class="btn btn-outline" data-i18n="nav_ingresar" style="padding:0.4rem 1.2rem;" onclick="setTimeout(()=>{document.querySelector('[data-tab=login]').click()},100)">Ingresar a cuenta</a>
         </div>
         <div class="nav-controls">
             <button id="langToggle" class="lang-switch" title="Cambiar idioma">ES</button>
@@ -313,22 +238,10 @@
 <!-- STATS -->
 <section class="stats">
     <div class="container stats-grid">
-        <div class="stat-item">
-            <div class="stat-number">+1.200</div>
-            <div class="stat-label" data-i18n="stat_1">Recetas disponibles</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">98%</div>
-            <div class="stat-label" data-i18n="stat_2">Macros calculados</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">34k</div>
-            <div class="stat-label" data-i18n="stat_3">Usuarios activos</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">4.9★</div>
-            <div class="stat-label" data-i18n="stat_4">Valoración media</div>
-        </div>
+        <div class="stat-item"><div class="stat-number">+1.200</div><div class="stat-label" data-i18n="stat_1">Recetas disponibles</div></div>
+        <div class="stat-item"><div class="stat-number">98%</div><div class="stat-label" data-i18n="stat_2">Macros calculados</div></div>
+        <div class="stat-item"><div class="stat-number">34k</div><div class="stat-label" data-i18n="stat_3">Usuarios activos</div></div>
+        <div class="stat-item"><div class="stat-number">4.9★</div><div class="stat-label" data-i18n="stat_4">Valoración media</div></div>
     </div>
 </section>
 
@@ -356,10 +269,7 @@
             <div class="recipe-content">
                 <span class="recipe-category" data-i18n="cat_ensaladas">ENSALADAS</span>
                 <h3 class="recipe-title" data-i18n="rec_1_title">Bowl de salmón con quinoa y aguacate</h3>
-                <div class="recipe-meta">
-                    <span><i class="fa-regular fa-clock"></i> 15 min</span>
-                    <span data-i18n="diff_facil"><i class="fa-solid fa-chart-simple"></i> Fácil</span>
-                </div>
+                <div class="recipe-meta"><span><i class="fa-regular fa-clock"></i> 15 min</span><span data-i18n="diff_facil"><i class="fa-solid fa-chart-simple"></i> Fácil</span></div>
                 <div class="macros-grid">
                     <div class="macro-pill"><strong>480</strong> kcal</div>
                     <div class="macro-pill"><strong>38g</strong> <span data-i18n="mac_prot">prot</span></div>
@@ -373,10 +283,7 @@
             <div class="recipe-content">
                 <span class="recipe-category" data-i18n="cat_desayunos">DESAYUNOS</span>
                 <h3 class="recipe-title" data-i18n="rec_2_title">Tortilla de claras con espinacas y feta</h3>
-                <div class="recipe-meta">
-                    <span><i class="fa-regular fa-clock"></i> 10 min</span>
-                    <span data-i18n="diff_facil"><i class="fa-solid fa-chart-simple"></i> Fácil</span>
-                </div>
+                <div class="recipe-meta"><span><i class="fa-regular fa-clock"></i> 10 min</span><span data-i18n="diff_facil"><i class="fa-solid fa-chart-simple"></i> Fácil</span></div>
                 <div class="macros-grid">
                     <div class="macro-pill"><strong>310</strong> kcal</div>
                     <div class="macro-pill"><strong>42g</strong> <span data-i18n="mac_prot">prot</span></div>
@@ -390,10 +297,7 @@
             <div class="recipe-content">
                 <span class="recipe-category" data-i18n="cat_vegano">VEGANO</span>
                 <h3 class="recipe-title" data-i18n="rec_3_title">Curry de garbanzos con leche de coco</h3>
-                <div class="recipe-meta">
-                    <span><i class="fa-regular fa-clock"></i> 25 min</span>
-                    <span data-i18n="diff_media"><i class="fa-solid fa-chart-simple"></i> Media</span>
-                </div>
+                <div class="recipe-meta"><span><i class="fa-regular fa-clock"></i> 25 min</span><span data-i18n="diff_media"><i class="fa-solid fa-chart-simple"></i> Media</span></div>
                 <div class="macros-grid">
                     <div class="macro-pill"><strong>420</strong> kcal</div>
                     <div class="macro-pill"><strong>18g</strong> <span data-i18n="mac_prot">prot</span></div>
@@ -408,10 +312,7 @@
             <div class="recipe-content">
                 <span class="recipe-category" data-i18n="cat_altas_prot">ALTAS PROTEÍNAS</span>
                 <h3 class="recipe-title" data-i18n="rec_4_title">Pollo al limón con batata y brócoli</h3>
-                <div class="recipe-meta">
-                    <span><i class="fa-regular fa-clock"></i> 30 min</span>
-                    <span data-i18n="diff_facil"><i class="fa-solid fa-chart-simple"></i> Fácil</span>
-                </div>
+                <div class="recipe-meta"><span><i class="fa-regular fa-clock"></i> 30 min</span><span data-i18n="diff_facil"><i class="fa-solid fa-chart-simple"></i> Fácil</span></div>
                 <div class="macros-grid">
                     <div class="macro-pill"><strong>550</strong> kcal</div>
                     <div class="macro-pill"><strong>52g</strong> <span data-i18n="mac_prot">prot</span></div>
@@ -449,10 +350,7 @@
                     <h3 class="blog-title" data-i18n="blog_title_1">Por qué el timing de proteínas importa más de lo que crees para la recuperación muscular</h3>
                     <p class="blog-excerpt" data-i18n="blog_desc_1">Descubre cómo distribuir tu ingesta proteica a lo largo del día puede marcar una diferencia real en tus resultados, según la ciencia más reciente.</p>
                     <div class="blog-meta">
-                        <div class="blog-author">
-                            <div class="author-avatar">LC</div>
-                            <span data-i18n="blog_auth_1">Laura Campos, nutricionista</span>
-                        </div>
+                        <div class="blog-author"><div class="author-avatar">LC</div><span data-i18n="blog_auth_1">Laura Campos, nutricionista</span></div>
                         <span>8 min <span data-i18n="lectura">lectura</span></span>
                     </div>
                 </div>
@@ -528,7 +426,6 @@
                     <button class="auth-tab" data-tab="registro" data-i18n="tab_registro">Registrarse</button>
                 </div>
                 <div class="auth-message" id="authMessage"></div>
-
                 <!-- LOGIN -->
                 <form class="auth-form active" id="formLogin" novalidate>
                     <div class="form-group">
@@ -550,7 +447,6 @@
                         <span class="btn-loader" style="display:none;">⏳</span>
                     </button>
                 </form>
-
                 <!-- REGISTRO -->
                 <form class="auth-form" id="formRegistro" novalidate>
                     <div class="form-group">
@@ -584,7 +480,6 @@
                         <span class="btn-loader" style="display:none;">⏳</span>
                     </button>
                 </form>
-
                 <!-- RECUPERAR -->
                 <form class="auth-form" id="formRecuperar" novalidate>
                     <p class="recover-desc" data-i18n="recover_desc">Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.</p>
@@ -649,10 +544,9 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ── URL de tu N8N — cambia por la tuya ──
     const N8N_BASE_URL = 'https://n8n.srv1569124.hstgr.cloud/webhook';
 
-    // ── Filtros recetas ──
+    // Filtros recetas
     const filterBtns = document.querySelectorAll('.filter-pill');
     const recipeCards = document.querySelectorAll('.recipe-card');
     filterBtns.forEach(btn => {
@@ -666,11 +560,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ── Traducciones ──
+    // Traducciones
     const translations = {
         es: {
             title: "Isocorefood Nutrición - Come bien, vive sano",
-            nav_inicio: "Inicio", nav_recetas: "Recetas", nav_nutricion: "Nutrición", nav_blog: "Blog", nav_empezar: "Empezar",
+            nav_inicio: "Inicio", nav_recetas: "Recetas", nav_nutricion: "Nutrición", nav_blog: "Blog",
+            nav_empezar: "Empezar", nav_ingresar: "Ingresar a cuenta",
             hero_badge: "NUTRICIÓN INTELIGENTE",
             hero_title: "Come bien, vive <span class='em-lima'>sano.</span>",
             hero_desc: "Descubre recetas personalizadas, macros exactos y planes alimentarios diseñados para tu cuerpo y tus objetivos.",
@@ -680,15 +575,11 @@ document.addEventListener('DOMContentLoaded', function() {
             filter_all: "Todos", filter_prot: "Alto en proteína", filter_carb: "Bajo en carbos", filter_veg: "Vegano", filter_fast: "Rápidas", filter_vol: "Volumen",
             badge_nuevo: "NUEVO", badge_top: "TOP",
             cat_ensaladas: "ENSALADAS", cat_desayunos: "DESAYUNOS", cat_vegano: "VEGANO", cat_altas_prot: "ALTAS PROTEÍNAS",
-            rec_1_title: "Bowl de salmón con quinoa y aguacate",
-            rec_2_title: "Tortilla de claras con espinacas y feta",
-            rec_3_title: "Curry de garbanzos con leche de coco",
-            rec_4_title: "Pollo al limón con batata y brócoli",
-            diff_facil: "<i class='fa-solid fa-chart-simple'></i> Fácil",
-            diff_media: "<i class='fa-solid fa-chart-simple'></i> Media",
+            rec_1_title: "Bowl de salmón con quinoa y aguacate", rec_2_title: "Tortilla de claras con espinacas y feta",
+            rec_3_title: "Curry de garbanzos con leche de coco", rec_4_title: "Pollo al limón con batata y brócoli",
+            diff_facil: "<i class='fa-solid fa-chart-simple'></i> Fácil", diff_media: "<i class='fa-solid fa-chart-simple'></i> Media",
             mac_prot: "prot", mac_carb: "carb", mac_gras: "gra",
-            banner_title: "Tu plan nutricional <span class='em-lima'>personalizado</span> en menos de 2 minutos",
-            banner_btn: "Crear mi plan gratis",
+            banner_title: "Tu plan nutricional <span class='em-lima'>personalizado</span> en menos de 2 minutos", banner_btn: "Crear mi plan gratis",
             blog_tag: "BLOG & NUTRICIÓN", blog_title: "Aprende a comer <span class='em-lima'>mejor</span>", blog_link: "Ver todos →",
             blog_tag_1: "NUTRICIÓN", blog_tag_2: "MEAL PREP", blog_tag_3: "SUPERALIMENTOS",
             blog_title_1: "Por qué el timing de proteínas importa más de lo que crees para la recuperación muscular",
@@ -702,8 +593,7 @@ document.addEventListener('DOMContentLoaded', function() {
             test_2: '"Las recetas son deliciosas y los macros están perfectamente calculados. Es la app que buscaba desde hace años para mis entrenamientos de crossfit."',
             test_3: '"Como nutricionista la recomiendo a todos mis pacientes. La base científica detrás de cada plan es sólida y actualizada."',
             test_auth_3: "— Dra. Elena Valls, nutricionista",
-            auth_tag: "ACCESO",
-            auth_desc: "Accede a tu plan nutricional, recetas exclusivas y seguimiento personalizado.",
+            auth_tag: "ACCESO", auth_desc: "Accede a tu plan nutricional, recetas exclusivas y seguimiento personalizado.",
             benefit_1: "+200 recetas VIP desbloqueadas", benefit_2: "Plan nutricional generado con IA",
             benefit_3: "Seguimiento de macros diario", benefit_4: "Soporte de nutricionista",
             tab_login: "Iniciar sesión", tab_registro: "Registrarse",
@@ -722,7 +612,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         ca: {
             title: "Isocorefood Nutrició - Menja bé, viu sa",
-            nav_inicio: "Inici", nav_recetas: "Receptes", nav_nutricion: "Nutrició", nav_blog: "Blog", nav_empezar: "Començar",nav_ingresar: "Accedir al compte",
+            nav_inicio: "Inici", nav_recetas: "Receptes", nav_nutricion: "Nutrició", nav_blog: "Blog",
+            nav_empezar: "Començar", nav_ingresar: "Accedir al compte",
             hero_badge: "NUTRICIÓ INTEL·LIGENT",
             hero_title: "Menja bé, viu <span class='em-lima'>sa.</span>",
             hero_desc: "Descobreix receptes personalitzades, macros exactes i plans alimentaris dissenyats per al teu cos i els teus objectius.",
@@ -732,15 +623,11 @@ document.addEventListener('DOMContentLoaded', function() {
             filter_all: "Tots", filter_prot: "Alt en proteïna", filter_carb: "Baix en carbohidrats", filter_veg: "Vegà", filter_fast: "Ràpides", filter_vol: "Volum",
             badge_nuevo: "NOU", badge_top: "TOP",
             cat_ensaladas: "AMANIDES", cat_desayunos: "ESMORZARS", cat_vegano: "VEGÀ", cat_altas_prot: "ALTES PROTEÏNES",
-            rec_1_title: "Bol de salmó amb quinoa i alvocat",
-            rec_2_title: "Truita de clares amb espinacs i feta",
-            rec_3_title: "Curri de cigrons amb llet de coco",
-            rec_4_title: "Pollastre a la llimona amb moniato i bròcoli",
-            diff_facil: "<i class='fa-solid fa-chart-simple'></i> Fàcil",
-            diff_media: "<i class='fa-solid fa-chart-simple'></i> Mitjana",
+            rec_1_title: "Bol de salmó amb quinoa i alvocat", rec_2_title: "Truita de clares amb espinacs i feta",
+            rec_3_title: "Curri de cigrons amb llet de coco", rec_4_title: "Pollastre a la llimona amb moniato i bròcoli",
+            diff_facil: "<i class='fa-solid fa-chart-simple'></i> Fàcil", diff_media: "<i class='fa-solid fa-chart-simple'></i> Mitjana",
             mac_prot: "prot", mac_carb: "carb", mac_gras: "gra",
-            banner_title: "El teu pla nutricional <span class='em-lima'>personalitzat</span> en menys de 2 minuts",
-            banner_btn: "Crear el meu pla gratis",
+            banner_title: "El teu pla nutricional <span class='em-lima'>personalitzat</span> en menys de 2 minuts", banner_btn: "Crear el meu pla gratis",
             blog_tag: "BLOG I NUTRICIÓ", blog_title: "Aprèn a menjar <span class='em-lima'>millor</span>", blog_link: "Veure tots →",
             blog_tag_1: "NUTRICIÓ", blog_tag_2: "MEAL PREP", blog_tag_3: "SUPERALIMENTS",
             blog_title_1: "Per què el timing de proteïnes importa més del que creus per a la recuperació muscular",
@@ -754,8 +641,7 @@ document.addEventListener('DOMContentLoaded', function() {
             test_2: '"Les receptes són delicioses i els macros estan perfectament calculats. És l\'app que buscava des de fa anys per als meus entrenaments de crossfit."',
             test_3: '"Com a nutricionista la recomano a tots els meus pacients. La base científica darrere de cada pla és sòlida i actualitzada."',
             test_auth_3: "— Dra. Elena Valls, nutricionista",
-            auth_tag: "ACCÉS",
-            auth_desc: "Accedeix al teu pla nutricional, receptes exclusives i seguiment personalitzat.",
+            auth_tag: "ACCÉS", auth_desc: "Accedeix al teu pla nutricional, receptes exclusives i seguiment personalitzat.",
             benefit_1: "+200 receptes VIP desbloquejades", benefit_2: "Pla nutricional generat amb IA",
             benefit_3: "Seguiment de macros diari", benefit_4: "Suport de nutricionista",
             tab_login: "Iniciar sessió", tab_registro: "Registrar-se",
@@ -774,7 +660,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         en: {
             title: "Isocorefood Nutrition - Eat well, live healthy",
-            nav_inicio: "Home", nav_recetas: "Recipes", nav_nutricion: "Nutrition", nav_blog: "Blog", nav_empezar: "Get started",nav_ingresar: "My account",
+            nav_inicio: "Home", nav_recetas: "Recipes", nav_nutricion: "Nutrition", nav_blog: "Blog",
+            nav_empezar: "Get started", nav_ingresar: "My account",
             hero_badge: "SMART NUTRITION",
             hero_title: "Eat well, live <span class='em-lima'>healthy.</span>",
             hero_desc: "Discover personalised recipes, accurate macros and meal plans designed for your body and your goals.",
@@ -784,15 +671,11 @@ document.addEventListener('DOMContentLoaded', function() {
             filter_all: "All", filter_prot: "High protein", filter_carb: "Low carb", filter_veg: "Vegan", filter_fast: "Quick", filter_vol: "Bulking",
             badge_nuevo: "NEW", badge_top: "TOP",
             cat_ensaladas: "SALADS", cat_desayunos: "BREAKFAST", cat_vegano: "VEGAN", cat_altas_prot: "HIGH PROTEIN",
-            rec_1_title: "Salmon bowl with quinoa and avocado",
-            rec_2_title: "Egg white omelette with spinach and feta",
-            rec_3_title: "Chickpea curry with coconut milk",
-            rec_4_title: "Lemon chicken with sweet potato and broccoli",
-            diff_facil: "<i class='fa-solid fa-chart-simple'></i> Easy",
-            diff_media: "<i class='fa-solid fa-chart-simple'></i> Medium",
+            rec_1_title: "Salmon bowl with quinoa and avocado", rec_2_title: "Egg white omelette with spinach and feta",
+            rec_3_title: "Chickpea curry with coconut milk", rec_4_title: "Lemon chicken with sweet potato and broccoli",
+            diff_facil: "<i class='fa-solid fa-chart-simple'></i> Easy", diff_media: "<i class='fa-solid fa-chart-simple'></i> Medium",
             mac_prot: "prot", mac_carb: "carb", mac_gras: "fat",
-            banner_title: "Your <span class='em-lima'>personalised</span> nutrition plan in under 2 minutes",
-            banner_btn: "Create my free plan",
+            banner_title: "Your <span class='em-lima'>personalised</span> nutrition plan in under 2 minutes", banner_btn: "Create my free plan",
             blog_tag: "BLOG & NUTRITION", blog_title: "Learn to eat <span class='em-lima'>better</span>", blog_link: "View all →",
             blog_tag_1: "NUTRITION", blog_tag_2: "MEAL PREP", blog_tag_3: "SUPERFOODS",
             blog_title_1: "Why protein timing matters more than you think for muscle recovery",
@@ -806,8 +689,7 @@ document.addEventListener('DOMContentLoaded', function() {
             test_2: '"The recipes are delicious and the macros are perfectly calculated. This is the app I\'ve been looking for for years for my crossfit training."',
             test_3: '"As a nutritionist I recommend it to all my patients. The science behind each plan is solid and up to date."',
             test_auth_3: "— Dr. Elena Valls, nutritionist",
-            auth_tag: "ACCESS",
-            auth_desc: "Access your nutrition plan, exclusive recipes and personalised tracking.",
+            auth_tag: "ACCESS", auth_desc: "Access your nutrition plan, exclusive recipes and personalised tracking.",
             benefit_1: "+200 VIP recipes unlocked", benefit_2: "AI-generated nutrition plan",
             benefit_3: "Daily macro tracking", benefit_4: "Nutritionist support",
             tab_login: "Sign in", tab_registro: "Sign up",
@@ -826,7 +708,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // ── Botón rotatorio ES → CA → EN → ES ──
     const langs = ['es', 'ca', 'en'];
     let currentLangIndex = 0;
     const langToggleBtn = document.getElementById('langToggle');
@@ -848,7 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setLanguage(langs[currentLangIndex]);
     });
 
-    // ── Hamburguesa ──
+    // Hamburguesa
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('navLinks');
     hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
@@ -856,7 +737,7 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', () => navLinks.classList.remove('open'));
     });
 
-    // ── Auth tabs ──
+    // Auth tabs
     document.querySelectorAll('.auth-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -867,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ── Ver/ocultar contraseña ──
+    // Ver/ocultar contraseña
     document.querySelectorAll('.toggle-pass').forEach(btn => {
         btn.addEventListener('click', () => {
             const input = document.getElementById(btn.dataset.target);
@@ -876,7 +757,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ── Recuperar contraseña ──
+    // Recuperar contraseña
     document.getElementById('linkForgot').addEventListener('click', (e) => {
         e.preventDefault();
         document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -892,7 +773,6 @@ document.addEventListener('DOMContentLoaded', function() {
         hideMessage();
     });
 
-    // ── Helpers ──
     function showMessage(text, type) {
         const msg = document.getElementById('authMessage');
         msg.textContent = text;
@@ -911,7 +791,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.disabled = loading;
     }
 
-    // ── LOGIN ──
+    // LOGIN
     document.getElementById('formLogin').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value.trim();
@@ -937,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } finally { setLoading(e.target, false); }
     });
 
-    // ── REGISTRO ──
+    // REGISTRO
     document.getElementById('formRegistro').addEventListener('submit', async (e) => {
         e.preventDefault();
         const nombre = document.getElementById('regNombre').value.trim();
@@ -967,7 +847,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } finally { setLoading(e.target, false); }
     });
 
-    // ── RECUPERAR ──
+    // RECUPERAR
     document.getElementById('formRecuperar').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('recEmail').value.trim();
