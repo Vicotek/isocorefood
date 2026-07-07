@@ -383,10 +383,6 @@ export function renderHomePage() {
     <main class="home-root page-shell">
       <div class="home-header">
         ${createBrandSection(t)}
-        <div class="home-nav">
-          <span class="home-nav-item" data-i18n="productLabel">${t.productLabel}</span>
-          <button id="languageToggle" class="language-toggle" type="button" aria-live="polite">${languageCodes[language]}</button>
-        </div>
       </div>
 
       <section class="home-grid">
@@ -397,6 +393,12 @@ export function renderHomePage() {
             <p class="home-copy" data-i18n="copy">${t.copy}</p>
           </div>
 
+          <div class="home-brief">
+            ${t.features.slice(0,1).map(createFeatureCard).join('')}
+          </div>
+        </div>
+
+        <div class="home-panel home-panel-center">
           <div class="home-details">
             ${t.features.map(createFeatureCard).join('')}
           </div>
@@ -408,9 +410,9 @@ export function renderHomePage() {
               <p data-i18n="summaryText">${t.summaryText}</p>
             </div>
             <div class="summary-keypoints">
-              <span>65/35</span>
-              <span>Identidad única</span>
-              <span>Diseño coherente</span>
+              <span>Igualdad</span>
+              <span>Identidad</span>
+              <span>Consistencia</span>
             </div>
           </div>
         </div>
@@ -454,6 +456,10 @@ export function renderHomePage() {
 
           <div id="homeLockedNotice" class="home-locked-notice">${t.lockNotice}</div>
         </aside>
+
+        <div class="language-gutter">
+          <button id="languageToggle" class="language-toggle" type="button" aria-live="polite">${languageCodes[language]}</button>
+        </div>
       </section>
     </main>
   `;

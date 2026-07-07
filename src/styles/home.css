@@ -7,11 +7,20 @@
   display: flex;
   justify-content: center;
   min-height: 100vh;
+  width: min(1320px, 100%);
   padding: 40px 24px;
   background: var(--background);
 }
 
 .home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 20px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -22,7 +31,7 @@
 .home-nav {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
 }
 
 .home-nav-item {
@@ -36,30 +45,34 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 14px;
-  border-radius: 14px;
+  padding: 8px 10px;
+  border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-primary);
   cursor: pointer;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  min-width: 62px;
+  letter-spacing: 0.06em;
+  min-width: 40px;
+  min-height: 36px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.04);
 }
 
 .home-grid {
   display: grid;
-  grid-template-columns: 65% 35%;
+  grid-template-columns: repeat(3, 1fr);
   gap: 28px;
   width: min(1320px, 100%);
+  align-items: start;
+  position: relative;
 }
 
 .home-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  box-shadow: 0 12px 28px var(--shadow-soft);
-  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px var(--shadow-soft);
+  padding: 22px;
 }
 
 .home-panel-left {
@@ -205,20 +218,32 @@
 
 .home-panel-right {
   display: grid;
-  gap: 24px;
+  gap: 20px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 32px;
-  min-height: 760px;
+  border-radius: 16px;
+  padding: 20px;
+  min-height: 620px;
+}
+
+.language-gutter {
+  grid-column: 3;
+  display: flex;
+  justify-content: flex-start;
+  align-items: start;
+  margin-top: -18px;
+}
+
+.language-gutter .language-toggle {
+  margin-left: -24px;
 }
 
 .home-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 28px;
-  box-shadow: 0 20px 40px var(--shadow-soft);
-  padding: 28px;
+  border-radius: 22px;
+  box-shadow: 0 12px 24px var(--shadow-soft);
+  padding: 24px;
 }
 
 .home-login-card {
