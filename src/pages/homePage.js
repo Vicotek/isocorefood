@@ -1,5 +1,3 @@
-import '../styles/home.css';
-
 const STORAGE_KEY = 'isocore_home_user';
 
 function createBrandSection() {
