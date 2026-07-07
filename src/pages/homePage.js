@@ -1,6 +1,11 @@
 ﻿const STORAGE_KEY = 'isocore_home_user';
 const LANGUAGE_KEY = 'isocore_home_language';
 const supportedLanguages = ['es', 'en', 'ca'];
+const languageCodes = {
+  es: 'ES',
+  en: 'EN',
+  ca: 'CA'
+};
 const languageNames = {
   es: 'Español',
   en: 'English',
@@ -177,6 +182,58 @@ function getTranslation() {
   return translations[getCurrentLanguage()] || translations.es;
 }
 
+function getNextLanguage(current) {
+  const currentIndex = supportedLanguages.indexOf(current);
+  return supportedLanguages[(currentIndex + 1) % supportedLanguages.length];
+}
+
+function updateLanguageToggle(language) {
+  const toggle = document.getElementById('languageToggle');
+  if (!toggle) return;
+  toggle.textContent = languageCodes[language] || language.toUpperCase();
+  toggle.setAttribute(
+    'aria-label',
+    `Change language to ${languageNames[getNextLanguage(language)] || 'next'}`
+  );
+}
+
+function renderFeatureCards(t) {
+  const details = document.querySelector('.home-details');
+  if (!details) return;
+  details.innerHTML = t.features.map(createFeatureCard).join('');
+}
+
+function renderModuleCards(t) {
+  const moduleGrid = document.querySelector('.module-grid');
+  if (!moduleGrid) return;
+  moduleGrid.innerHTML = `
+      ${createModuleCard(t.resourceTitle, t.resourceDesc, true, t)}
+      ${createModuleCard(t.supplementTitle, t.supplementDesc, true, t)}
+    `;
+}
+
+function updateTexts(t) {
+  document.documentElement.lang = getCurrentLanguage();
+
+  document.querySelectorAll('[data-i18n]').forEach((element) => {
+    const key = element.dataset.i18n;
+    if (!key || t[key] === undefined) return;
+    element.textContent = t[key];
+  });
+
+  document.querySelectorAll('[data-placeholder-i18n]').forEach((element) => {
+    const key = element.dataset.placeholderI18n;
+    if (!key || t[key] === undefined) return;
+    element.placeholder = t[key];
+  });
+
+  renderFeatureCards(t);
+  renderModuleCards(t);
+
+  const persistedUser = getStoredUser();
+  renderLoginState(persistedUser, t);
+}
+
 function createBrandSection(t) {
   return `
     <div class="home-brand">
@@ -274,8 +331,6 @@ function initHomeInteractions(t) {
   const logoutButton = document.getElementById('homeLogoutButton');
   const lockedButtons = Array.from(document.querySelectorAll('.module-action'));
   const languageToggle = document.getElementById('languageToggle');
-  const languageMenu = document.getElementById('languageMenu');
-  const languageOptions = Array.from(document.querySelectorAll('.language-option'));
 
   loginForm?.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -310,23 +365,12 @@ function initHomeInteractions(t) {
     });
   });
 
-  languageToggle?.addEventListener('click', (event) => {
-    event.stopPropagation();
-    languageMenu?.classList.toggle('hidden');
-  });
-
-  languageOptions.forEach((button) => {
-    button.addEventListener('click', () => {
-      const selected = button.dataset.lang;
-      setCurrentLanguage(selected);
-      renderHomePage();
-    });
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('.language-selector')) {
-      languageMenu?.classList.add('hidden');
-    }
+  languageToggle?.addEventListener('click', () => {
+    const nextLanguage = getNextLanguage(getCurrentLanguage());
+    setCurrentLanguage(nextLanguage);
+    const nextTranslation = getTranslation();
+    updateLanguageToggle(nextLanguage);
+    updateTexts(nextTranslation);
   });
 }
 
@@ -340,28 +384,17 @@ export function renderHomePage() {
       <div class="home-header">
         ${createBrandSection(t)}
         <div class="home-nav">
-          <span class="home-nav-item">${t.productLabel}</span>
-          <div class="language-selector">
-            <button id="languageToggle" class="language-toggle">🌐 ${languageNames[language]}</button>
-            <div id="languageMenu" class="language-menu hidden" aria-label="${t.languageDropdownLabel}">
-              ${supportedLanguages
-                .map(
-                  (lang) => `
-                  <button type="button" class="language-option${lang === language ? ' active' : ''}" data-lang="${lang}">${languageNames[lang]}</button>
-                `
-                )
-                .join('')}
-            </div>
-          </div>
+          <span class="home-nav-item" data-i18n="productLabel">${t.productLabel}</span>
+          <button id="languageToggle" class="language-toggle" type="button" aria-live="polite">${languageCodes[language]}</button>
         </div>
       </div>
 
       <section class="home-grid">
         <div class="home-panel home-panel-left">
           <div class="home-hero">
-            <p class="eyebrow">${t.headerEyebrow}</p>
-            <h1>${t.title}</h1>
-            <p class="home-copy">${t.copy}</p>
+            <p class="eyebrow" data-i18n="headerEyebrow">${t.headerEyebrow}</p>
+            <h1 data-i18n="title">${t.title}</h1>
+            <p class="home-copy" data-i18n="copy">${t.copy}</p>
           </div>
 
           <div class="home-details">
@@ -370,9 +403,9 @@ export function renderHomePage() {
 
           <div class="home-summary-card">
             <div>
-              <p class="summary-label">${t.summaryLabel}</p>
-              <h2>${t.summaryTitle}</h2>
-              <p>${t.summaryText}</p>
+              <p class="summary-label" data-i18n="summaryLabel">${t.summaryLabel}</p>
+              <h2 data-i18n="summaryTitle">${t.summaryTitle}</h2>
+              <p data-i18n="summaryText">${t.summaryText}</p>
             </div>
             <div class="summary-keypoints">
               <span>65/35</span>
@@ -385,19 +418,19 @@ export function renderHomePage() {
         <aside class="home-panel home-panel-right">
           <div class="home-card home-login-card home-login-state">
             <div class="home-login-heading">
-              <p class="eyebrow">${t.loginHeading}</p>
+              <p class="eyebrow" data-i18n="loginHeading">${t.loginHeading}</p>
             </div>
-            <p id="homeLoginPanelIntro" class="home-login-copy">${t.loginIntro}</p>
+            <p id="homeLoginPanelIntro" class="home-login-copy" data-i18n="loginIntro">${t.loginIntro}</p>
             <form id="homeLoginForm" class="home-login-form">
               <label class="input-group">
-                <span>${t.nameLabel}</span>
-                <input id="homeUserName" type="text" placeholder="${t.nameLabel}" autocomplete="name" />
+                <span data-i18n="nameLabel">${t.nameLabel}</span>
+                <input id="homeUserName" type="text" placeholder="${t.nameLabel}" data-placeholder-i18n="nameLabel" autocomplete="name" />
               </label>
               <label class="input-group">
-                <span>${t.emailLabel}</span>
-                <input id="homeUserEmail" type="email" placeholder="${t.emailPlaceholder}" autocomplete="email" />
+                <span data-i18n="emailLabel">${t.emailLabel}</span>
+                <input id="homeUserEmail" type="email" placeholder="${t.emailPlaceholder}" data-placeholder-i18n="emailPlaceholder" autocomplete="email" />
               </label>
-              <button type="submit" class="primary-button">${t.loginButton}</button>
+              <button type="submit" class="primary-button" data-i18n="loginButton">${t.loginButton}</button>
             </form>
             <div class="home-user-card hidden" aria-live="polite">
               <p class="eyebrow">${t.sessionActive}</p>
@@ -428,4 +461,5 @@ export function renderHomePage() {
   const persistedUser = getStoredUser();
   renderLoginState(persistedUser, t);
   initHomeInteractions(t);
+  updateLanguageToggle(language);
 }
