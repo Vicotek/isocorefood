@@ -490,12 +490,16 @@
 }
 
 .home-footer {
-  margin-top: 28px;
-  grid-column: 1 / -1;
-  background: linear-gradient(180deg, var(--brand) 0%, rgba(12,58,38,0.95) 100%);
-  color: var(--surface);
-  border-radius: 12px;
-  padding: 28px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  border-radius: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
 }
 
 .footer-grid {
