@@ -442,7 +442,6 @@ function clearStoredUser() {
 
 function renderLoginState(user, t) {
   const loginState = document.querySelector('.home-login-state');
-  const userName = document.getElementById('homeUserName');
   const userEmail = document.getElementById('homeUserEmail');
   const userLabel = document.getElementById('homeUserLabel');
   const userWelcome = document.getElementById('homeUserWelcome');
@@ -454,10 +453,9 @@ function renderLoginState(user, t) {
 
   if (user && user.name) {
     loginState.classList.add('home-user-logged');
-    userLabel.textContent = user.name;
-    userWelcome.textContent = `${t.welcomeGreeting} ${user.name.split(' ')[0]}`;
-    userName.value = user.name;
-    userEmail.value = user.email;
+    if (userLabel) userLabel.textContent = user.name;
+    if (userWelcome) userWelcome.textContent = `${t.welcomeGreeting} ${user.name.split(' ')[0]}`;
+    if (userEmail) userEmail.value = user.email;
     loginForm.classList.add('hidden');
     logoutButton.classList.remove('hidden');
     loginPanelIntro.textContent = t.loginIntro;
@@ -655,18 +653,6 @@ function initHomeInteractions(t) {
     updateTexts(nextTranslation);
   });
 
-  const quickLoginBtn = document.getElementById('quickLoginBtn');
-  quickLoginBtn?.addEventListener('click', () => {
-    const rightPanel = document.querySelector('.home-panel-right');
-    const form = document.getElementById('homeLoginForm');
-    rightPanel?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    if (form) {
-      setTimeout(() => {
-        const firstInput = document.getElementById('homeUserEmail') || document.getElementById('homeUserName');
-        firstInput?.focus();
-      }, 320);
-    }
-  });
 }
 
 export function renderHomePage() {
@@ -694,9 +680,6 @@ export function renderHomePage() {
           <div class="home-panel home-panel-left">
             <div class="home-left-top">
               ${createBrandSection(t)}
-              <div class="home-left-actions">
-                <button id="quickLoginBtn" class="ghost-button" data-i18n="quickLoginButton">${t.quickLoginButton}</button>
-              </div>
             </div>
 
             <div class="home-hero">
