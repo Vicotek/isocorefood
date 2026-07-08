@@ -7,16 +7,14 @@ const LEGACY_TOKEN_KEY = 'icf_token';
 
 // ── Endpoints ──────────────────────────────────────────
 const API = {
-  login:       `${BACKEND_BASE_URL}/login`,
-  register:    `${BACKEND_BASE_URL}/register`,
-  recover:     `${BACKEND_BASE_URL}/recover`,
-  home:        `${BACKEND_BASE_URL}/home`,
-  center:      `${BACKEND_BASE_URL}/center`,
-  recipes:     `${BACKEND_BASE_URL}/recipes`,
-  supplements: `${BACKEND_BASE_URL}/supplements`,
-  resources:   `${BACKEND_BASE_URL}/resources`,
-  profile:     `${BACKEND_BASE_URL}/profile`,
-  logout:      `${BACKEND_BASE_URL}/logout`
+  login:            `${BACKEND_BASE_URL}/login`,
+  register:         `${BACKEND_BASE_URL}/registro`,
+  recover:          `${BACKEND_BASE_URL}/recuperar`,
+  resetPassword:    `${BACKEND_BASE_URL}/reset-password`,
+  recipes:          `${BACKEND_BASE_URL}/recetas`,
+  planNutricional:  `${BACKEND_BASE_URL}/plan-nutricional`,
+  viPago:           `${BACKEND_BASE_URL}/pago-vip`,
+  stripeConfirm:    `${BACKEND_BASE_URL}/stripe-confirm`
 };
 // ───────────────────────────────────────────────────────
 const LANGUAGE_KEY = 'isocore_home_language';
@@ -481,6 +479,10 @@ function renderLoginState(user, t) {
 }
 
 function showLockedNotice(message) {
+  // Mostrar popup visible
+  alert(message);
+  
+  // También mostrar en la notificación interna
   const notice = document.getElementById('homeLockedNotice');
   if (!notice) return;
   notice.textContent = message;
@@ -488,7 +490,7 @@ function showLockedNotice(message) {
   window.clearTimeout(showLockedNotice.timeoutId);
   showLockedNotice.timeoutId = window.setTimeout(() => {
     notice.classList.remove('visible');
-  }, 3600);
+  }, 5000);
 }
 
 function initHomeInteractions(t) {
