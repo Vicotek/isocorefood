@@ -28,17 +28,17 @@ const translations = {
     copy: 'Accede a fichas de suplementos, planes personalizados y materiales de referencia para aplicar en cada caso.',
     features: [
       {
-        icon: '📘',
+        icon: './src/assets/icon-center.png',
         title: 'Centro Inteligente',
         description: 'Consulta protocolos clínicos y respuestas directas sin ruido ni entradas largas.'
       },
       {
-        icon: '🧠',
+        icon: './src/assets/icon-plan.png',
         title: 'Mi Plan',
         description: 'Visualiza objetivos nutricionales y ajustes semanales con foco en resultados reales.'
       },
       {
-        icon: '🔒',
+        icon: './src/assets/icon-lock.png',
         title: 'Módulos bloqueados',
         description: 'Desbloquea funciones con progreso claro y muestra qué parte del producto está disponible.'
       }
@@ -99,17 +99,17 @@ const translations = {
     copy: 'Access supplement profiles, personalized plans and reference material for practical use.',
     features: [
       {
-        icon: '📘',
+        icon: './src/assets/icon-center.png',
         title: 'Smart Center',
         description: 'Consult clinical protocols and direct answers without noise or long introductions.'
       },
       {
-        icon: '🧠',
+        icon: './src/assets/icon-plan.png',
         title: 'My Plan',
         description: 'View nutritional objectives and weekly adjustments focused on real results.'
       },
       {
-        icon: '🔒',
+        icon: './src/assets/icon-lock.png',
         title: 'Locked modules',
         description: 'Unlock features with clear progress and understand which product areas are available.'
       }
@@ -170,17 +170,17 @@ const translations = {
     copy: 'Accedeix a fitxes de suplements, plans personalitzats i materials de referència per aplicar en cada cas.',
     features: [
       {
-        icon: '📘',
+        icon: './src/assets/icon-center.png',
         title: 'Centre intel·ligent',
         description: 'Consulta protocols clínics i respostes directes sense soroll ni introduccions llargues.'
       },
       {
-        icon: '🧠',
+        icon: './src/assets/icon-plan.png',
         title: 'El meu Pla',
         description: 'Visualitza objectius nutricionals i ajustos setmanals amb focus en resultats reals.'
       },
       {
-        icon: '🔒',
+        icon: './src/assets/icon-lock.png',
         title: 'Mòduls bloquejats',
         description: 'Desbloca funcions amb progrés clar i mostra quina part del producte està disponible.'
       }
@@ -306,13 +306,20 @@ function createBrandSection(t) {
 function createFeatureCard(feature) {
   return `
     <article class="feature-card">
-      <div class="feature-icon">${getIconSVG(feature.title)}</div>
+      <div class="feature-icon">${getFeatureIcon(feature)}</div>
       <div>
         <h3>${feature.title}</h3>
         <p>${feature.description}</p>
       </div>
     </article>
   `;
+}
+
+function getFeatureIcon(feature) {
+  if (feature && typeof feature.icon === 'string' && feature.icon.endsWith('.png')) {
+    return `<img src="${feature.icon}" alt="${feature.title} icon" class="feature-icon-image" />`;
+  }
+  return getIconSVG(feature.title);
 }
 
 function getIconSVG(title) {

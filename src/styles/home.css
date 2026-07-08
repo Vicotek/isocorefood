@@ -232,9 +232,12 @@
   place-items: center;
   background: var(--brand-mid-faint);
   color: var(--brand);
-  font-size: 1.4rem;
-  line-height: 1;
-  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Segoe UI Symbol', system-ui;
+}
+
+.feature-icon-image {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .feature-card h3 {
@@ -490,12 +493,8 @@
 }
 
 .home-footer {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr auto;
-  gap: 16px;
-  align-items: center;
   padding: 18px 20px;
-  margin-bottom: 24px;
+  margin-top: 32px;
   border-radius: 28px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -504,7 +503,7 @@
 
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 18px;
   align-items: start;
 }
