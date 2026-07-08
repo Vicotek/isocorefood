@@ -1,4 +1,9 @@
-﻿const STORAGE_KEY = 'isocore_home_user';
+﻿import { setAuthToken } from '../services/authService.js';
+
+const STORAGE_KEY = 'isocore_home_user';
+const BACKEND_BASE_URL = 'https://TU-N8N.hostinger.com/webhook';
+const LEGACY_USER_KEY = 'icf_user';
+const LEGACY_TOKEN_KEY = 'icf_token';
 const LANGUAGE_KEY = 'isocore_home_language';
 const supportedLanguages = ['es', 'en', 'ca'];
 const languageCodes = {
@@ -57,6 +62,17 @@ const translations = {
     footerPolicyUrl: '#',
     footerBottomText: '© 2026 ISOCORE. Todos los derechos reservados.',
     quickLoginButton: 'Iniciar sesión',
+    passwordLabel: 'Contraseña',
+    passwordPlaceholder: '••••••••',
+    loginAuthFailed: 'Email o contraseña incorrectos.',
+    loginConnectionError: 'Error de conexión. Inténtalo de nuevo.',
+    registerSuccess: 'Cuenta creada. Inicia sesión para continuar.',
+    passwordMismatch: 'Las contraseñas no coinciden.',
+    passwordTooShort: 'La contraseña debe tener al menos 8 caracteres.',
+    recoverSuccess: 'Revisa tu email para restablecer tu contraseña.',
+    linkForgot: '¿Olvidaste tu contraseña?',
+    linkBackLogin: '← Volver al login',
+    recoverDesc: 'Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.',
     summaryPointA: 'Igualdad',
     summaryPointB: 'Identidad',
     summaryPointC: 'Consistencia',
@@ -128,6 +144,17 @@ const translations = {
     footerPolicyUrl: '#',
     footerBottomText: '© 2026 ISOCORE. All rights reserved.',
     quickLoginButton: 'Enter',
+    passwordLabel: 'Password',
+    passwordPlaceholder: '••••••••',
+    loginAuthFailed: 'Email or password is incorrect.',
+    loginConnectionError: 'Connection error. Please try again.',
+    registerSuccess: 'Account created. Login to continue.',
+    passwordMismatch: 'Passwords do not match.',
+    passwordTooShort: 'Password must be at least 8 characters.',
+    recoverSuccess: 'Check your email to reset your password.',
+    linkForgot: 'Forgot your password?',
+    linkBackLogin: '← Back to login',
+    recoverDesc: 'Enter your email and we will send you a password reset link.',
     summaryPointA: 'Equality',
     summaryPointB: 'Identity',
     summaryPointC: 'Consistency',
@@ -199,6 +226,17 @@ const translations = {
     footerPolicyUrl: '#',
     footerBottomText: '© 2026 ISOCORE. Tots els drets reservats.',
     quickLoginButton: 'Entrar',
+    passwordLabel: 'Contrasenya',
+    passwordPlaceholder: '••••••••',
+    loginAuthFailed: 'Email o contrasenya incorrectes.',
+    loginConnectionError: 'Error de connexió. Intenta-ho de nou.',
+    registerSuccess: 'Compte creada. Inicia sessió per continuar.',
+    passwordMismatch: 'Les contrasenyes no coincideixen.',
+    passwordTooShort: 'La contrasenya ha de tenir almenys 8 caràcters.',
+    recoverSuccess: 'Revisa el teu email per restablir la contrasenya.',
+    linkForgot: 'Has oblidat la contrasenya?',
+    linkBackLogin: '← Tornar al login',
+    recoverDesc: 'Introdueix el teu email i t’enviarem un enllaç per restablir la contrasenya.',
     summaryPointA: 'Igualtat',
     summaryPointB: 'Identitat',
     summaryPointC: 'Consistència',
@@ -377,10 +415,13 @@ function getStoredUser() {
 
 function storeUser(user) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+  window.localStorage.setItem(LEGACY_USER_KEY, JSON.stringify(user));
 }
 
 function clearStoredUser() {
   window.localStorage.removeItem(STORAGE_KEY);
+  window.localStorage.removeItem(LEGACY_USER_KEY);
+  window.localStorage.removeItem(LEGACY_TOKEN_KEY);
 }
 
 function renderLoginState(user, t) {
@@ -428,21 +469,143 @@ function initHomeInteractions(t) {
   const logoutButton = document.getElementById('homeLogoutButton');
   const lockedButtons = Array.from(document.querySelectorAll('.module-action'));
   const languageToggle = document.getElementById('languageToggle');
+  const registerForm = document.getElementById('homeRegisterForm');
+  const recoverForm = document.getElementById('homeRecoveryForm');
+  const authTabs = Array.from(document.querySelectorAll('.auth-tab'));
+  const forgotLink = document.getElementById('homeLinkForgot');
+  const backLoginLink = document.getElementById('homeLinkBackLogin');
 
-  loginForm?.addEventListener('submit', (event) => {
+  function setAuthTab(tab) {
+    authTabs.forEach((button) => button.classList.toggle('active', button.dataset.tab === tab));
+    document.getElementById('homeLoginForm')?.classList.toggle('hidden', tab !== 'login');
+    registerForm?.classList.toggle('hidden', tab !== 'registro');
+    recoverForm?.classList.toggle('hidden', tab !== 'recuperar');
+  }
+
+  authTabs.forEach((button) => {
+    button.addEventListener('click', () => {
+      setAuthTab(button.dataset.tab);
+    });
+  });
+
+  forgotLink?.addEventListener('click', (event) => {
     event.preventDefault();
-    const name = document.getElementById('homeUserName')?.value?.trim();
-    const email = document.getElementById('homeUserEmail')?.value?.trim();
+    setAuthTab('recuperar');
+  });
 
-    if (!name || !email) {
-      showLockedNotice(t.loginValidation);
-      return;
-    }
+  backLoginLink?.addEventListener('click', (event) => {
+    event.preventDefault();
+    setAuthTab('login');
+  });
 
-    const user = { name, email, loggedAt: new Date().toISOString() };
-    storeUser(user);
-    renderHomePage();
-    showLockedNotice(t.loginSuccess);
+  loginForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = document.getElementById('homeUserEmail')?.value?.trim();
+      const password = document.getElementById('homeUserPassword')?.value || '';
+
+      if (!email || !password) {
+        showLockedNotice(t.loginValidation);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BACKEND_BASE_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          showLockedNotice(data.mensaje || t.loginAuthFailed);
+          return;
+        }
+
+        if (data.token) {
+          setAuthToken(data.token);
+          localStorage.setItem(LEGACY_TOKEN_KEY, data.token);
+        }
+
+        const user = {
+          name: data.nombre || email.split('@')[0],
+          email: data.email || email,
+          plan: data.plan || null,
+          loggedAt: new Date().toISOString()
+        };
+
+        storeUser(user);
+        renderHomePage();
+        showLockedNotice(t.loginSuccess);
+      } catch (error) {
+        showLockedNotice(t.loginConnectionError);
+      }
+  });
+
+  registerForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const name = document.getElementById('homeRegisterName')?.value?.trim();
+      const email = document.getElementById('homeRegisterEmail')?.value?.trim();
+      const password = document.getElementById('homeRegisterPassword')?.value || '';
+      const password2 = document.getElementById('homeRegisterPassword2')?.value || '';
+
+      if (!name || !email || !password || !password2) {
+        showLockedNotice(t.loginValidation);
+        return;
+      }
+      if (password !== password2) {
+        showLockedNotice(t.passwordMismatch);
+        return;
+      }
+      if (password.length < 8) {
+        showLockedNotice(t.passwordTooShort);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BACKEND_BASE_URL}/registro`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre: name, email, password })
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          showLockedNotice(data.mensaje || t.loginAuthFailed);
+          return;
+        }
+
+        showLockedNotice(data.mensaje || t.registerSuccess);
+        setAuthTab('login');
+      } catch (error) {
+        showLockedNotice(t.loginConnectionError);
+      }
+  });
+
+  recoverForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = document.getElementById('homeRecoverEmail')?.value?.trim();
+      if (!email) {
+        showLockedNotice(t.loginValidation);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BACKEND_BASE_URL}/recuperar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          showLockedNotice(data.mensaje || t.loginAuthFailed);
+          return;
+        }
+
+        showLockedNotice(data.mensaje || t.recoverSuccess);
+      } catch (error) {
+        showLockedNotice(t.loginConnectionError);
+      }
   });
 
   logoutButton?.addEventListener('click', () => {
@@ -550,16 +713,51 @@ export function renderHomePage() {
                 <p class="eyebrow" data-i18n="loginHeading">${t.loginHeading}</p>
               </div>
               <p id="homeLoginPanelIntro" class="home-login-copy" data-i18n="loginIntro">${t.loginIntro}</p>
+              <div class="auth-tabs">
+                <button type="button" class="auth-tab active" data-tab="login">${t.loginButton}</button>
+                <button type="button" class="auth-tab" data-tab="registro">${t.registerButton || 'Registrarse'}</button>
+              </div>
               <form id="homeLoginForm" class="home-login-form">
-                <label class="input-group">
-                  <span data-i18n="nameLabel">${t.nameLabel}</span>
-                  <input id="homeUserName" type="text" placeholder="${t.nameLabel}" data-placeholder-i18n="nameLabel" autocomplete="name" />
-                </label>
                 <label class="input-group">
                   <span data-i18n="emailLabel">${t.emailLabel}</span>
                   <input id="homeUserEmail" type="email" placeholder="${t.emailPlaceholder}" data-placeholder-i18n="emailPlaceholder" autocomplete="email" />
                 </label>
+                <label class="input-group">
+                  <span data-i18n="passwordLabel">${t.passwordLabel}</span>
+                  <input id="homeUserPassword" type="password" placeholder="${t.passwordPlaceholder}" data-placeholder-i18n="passwordPlaceholder" autocomplete="current-password" />
+                </label>
+                <div class="form-footer">
+                  <button id="homeLinkForgot" type="button" class="link-button">${t.linkForgot}</button>
+                </div>
                 <button type="submit" class="primary-button" data-i18n="loginButton">${t.loginButton}</button>
+              </form>
+              <form id="homeRegisterForm" class="home-login-form hidden">
+                <label class="input-group">
+                  <span data-i18n="nameLabel">${t.nameLabel}</span>
+                  <input id="homeRegisterName" type="text" placeholder="${t.nameLabel}" autocomplete="name" />
+                </label>
+                <label class="input-group">
+                  <span data-i18n="emailLabel">${t.emailLabel}</span>
+                  <input id="homeRegisterEmail" type="email" placeholder="${t.emailPlaceholder}" autocomplete="email" />
+                </label>
+                <label class="input-group">
+                  <span data-i18n="passwordLabel">${t.passwordLabel}</span>
+                  <input id="homeRegisterPassword" type="password" placeholder="${t.passwordPlaceholder}" autocomplete="new-password" />
+                </label>
+                <label class="input-group">
+                  <span data-i18n="label_pass2">${t.passwordLabel} 2</span>
+                  <input id="homeRegisterPassword2" type="password" placeholder="${t.passwordPlaceholder}" autocomplete="new-password" />
+                </label>
+                <button type="submit" class="primary-button">${t.registerButton || 'Registrarse'}</button>
+              </form>
+              <form id="homeRecoveryForm" class="home-login-form hidden">
+                <p class="home-login-copy">${t.recoverDesc}</p>
+                <label class="input-group">
+                  <span data-i18n="emailLabel">${t.emailLabel}</span>
+                  <input id="homeRecoverEmail" type="email" placeholder="${t.emailPlaceholder}" autocomplete="email" />
+                </label>
+                <button type="submit" class="primary-button">${t.btnRecover || 'Enviar enlace'}</button>
+                <button id="homeLinkBackLogin" type="button" class="ghost-button">${t.linkBackLogin}</button>
               </form>
               <div class="home-user-card hidden" aria-live="polite">
                 <p class="eyebrow">${t.sessionActive}</p>

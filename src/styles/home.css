@@ -380,13 +380,56 @@
 .ghost-button {
   padding: 14px 18px;
   background: transparent;
-  color: var(--surface);
-  border: 1px solid rgba(var(--surface-rgb), 0.18);
+  color: var(--brand);
+  border: 1px solid var(--border);
 }
 
 .home-user-card {
   display: grid;
   gap: 8px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--brand-mid);
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--accent-faint);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.auth-tab.active {
+  background: var(--surface);
+  color: var(--brand);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .home-user-card.hidden,
@@ -529,25 +572,200 @@
   display: none !important;
 }
 
-@media (max-width: 900px) {
+/* ── Tablet ── */
+@media (max-width: 1024px) {
   .home-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .home-panel-left {
+    grid-column: 1 / -1;
   }
 }
 
-@media (max-width: 720px) {
+/* ── Mobile large ── */
+@media (max-width: 768px) {
   .home-root {
-    padding: 24px 16px;
+    padding: 16px 12px;
+    width: 100%;
+  }
+
+  /* Header: apila verticalmente en mobile */
+  .home-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    border-radius: 18px;
+  }
+
+  .header-block {
+    padding: 0 10px;
+    min-height: 44px;
+  }
+
+  .header-logo {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+  }
+
+  .header-module {
+    flex: 0 1 auto;
+  }
+
+  .header-actions {
+    margin-left: auto;
+  }
+
+  /* Grid: una sola columna */
+  .home-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .home-panel {
+    padding: 18px;
+    border-radius: 14px;
+    min-height: unset;
+  }
+
+  /* Hero: texto más pequeño */
+  .home-hero h1 {
+    font-size: clamp(1.4rem, 7vw, 1.9rem);
+    max-width: 100%;
+  }
+
+  .home-copy {
+    max-width: 100%;
+    font-size: 0.95rem;
+  }
+
+  /* Cards de features */
+  .feature-card {
+    grid-template-columns: auto 1fr;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .feature-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Panel derecho */
+  .home-panel-right {
+    min-height: unset;
+    padding: 16px;
+  }
+
+  .home-card {
+    padding: 18px;
+  }
+
+  /* Auth tabs */
+  .auth-tabs {
+    display: flex;
+    gap: 0;
+    background: var(--accent-faint);
+    border-radius: 12px;
+    padding: 4px;
+  }
+
+  .auth-tab {
+    flex: 1;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .auth-tab.active {
+    background: var(--surface);
+    color: var(--brand);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  /* Inputs y botones */
+  .input-group input {
+    padding: 14px 16px;
+    font-size: 1rem;
+  }
+
+  .primary-button {
+    padding: 14px 18px;
+    font-size: 1rem;
+  }
+
+  .ghost-button,
+  .secondary-button {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
+
+  /* link-button para olvide contraseña */
+  .link-button {
+    background: none;
+    border: none;
+    color: var(--brand-mid);
+    font-size: 0.88rem;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  /* Footer: columna única */
+  .home-footer {
+    padding: 16px;
+    border-radius: 18px;
+    margin-top: 20px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* Summary card */
+  .home-summary-card {
+    padding: 14px;
+  }
+
+  .summary-keypoints {
+    gap: 8px;
+  }
+
+  /* Home brief: ocultar en mobile para no duplicar */
+  .home-brief {
+    display: none;
+  }
+}
+
+/* ── Mobile pequeño ── */
+@media (max-width: 480px) {
+  .home-root {
+    padding: 12px 8px;
+  }
+
+  .home-header {
+    border-radius: 14px;
+    padding: 12px 14px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(1.3rem, 8vw, 1.7rem);
   }
 
   .home-panel,
   .home-card {
-    padding: 24px;
-    border-radius: 24px;
-  }
-
-  .home-summary-card,
-  .feature-card {
-    padding: 22px;
+    padding: 14px;
   }
 }
