@@ -14,7 +14,13 @@ const languageNames = {
 
 const translations = {
   es: {
+    brandTag: 'ISOCORE',
     brandSubtitle: 'NUTRICIÓN',
+    headerLogoText: 'ISOCORE',
+    headerLogoUrl: './src/assets/isocore-logo.png',
+    headerLogoAlt: 'IsoCore logo',
+    headerCompanyModuleA: 'Nutrición',
+    headerCompanyModuleB: 'Suplementos',
     productLabel: 'NUTRICIÓN',
     languageLabel: 'ES',
     headerEyebrow: 'Editor de decisiones',
@@ -40,6 +46,20 @@ const translations = {
     summaryLabel: 'Versión actual',
     summaryTitle: 'Home de producto operativo.',
     summaryText: 'Interfaz construida para uso real: ingreso persistente, navegación clara y coherencia visual del sistema IsoCore.',
+    footerEmailTitle: 'Correo electrónico',
+    footerEmailValue: 'contacto@isocore.com',
+    footerPhoneTitle: 'Teléfono',
+    footerPhoneValue: '+34 600 000 000',
+    footerAboutTitle: 'Sobre IsoCore',
+    footerAboutText: 'Soluciones de nutrición práctica con enfoque clínico y premium.',
+    footerPolicyTitle: 'Políticas',
+    footerPolicyLink: 'Ver documento',
+    footerPolicyUrl: '#',
+    footerBottomText: '© 2026 ISOCORE. Todos los derechos reservados.',
+    quickLoginButton: 'Iniciar sesión',
+    summaryPointA: 'Igualdad',
+    summaryPointB: 'Identidad',
+    summaryPointC: 'Consistencia',
     loginHeading: 'Inicia sesión en ISOCORE.',
     loginIntro: 'Ingresa para acceder a tus protocolos, casos y recomendaciones nutricionales.',
     nameLabel: 'Nombre',
@@ -65,7 +85,13 @@ const translations = {
     languageDropdownLabel: 'Elige idioma'
   },
   en: {
+    brandTag: 'ISOCORE',
     brandSubtitle: 'NUTRITION',
+    headerLogoText: 'ISOCORE',
+    headerLogoUrl: './src/assets/isocore-logo.png',
+    headerLogoAlt: 'IsoCore logo',
+    headerCompanyModuleA: 'Nutrition',
+    headerCompanyModuleB: 'Supplements',
     productLabel: 'NUTRITION',
     languageLabel: 'EN',
     headerEyebrow: 'Decision editor',
@@ -91,6 +117,20 @@ const translations = {
     summaryLabel: 'Current version',
     summaryTitle: 'Operational product home.',
     summaryText: 'Interface built for real use: persistent login, clear navigation and IsoCore visual coherence.',
+    footerEmailTitle: 'Email',
+    footerEmailValue: 'contact@isocore.com',
+    footerPhoneTitle: 'Phone',
+    footerPhoneValue: '+34 600 000 000',
+    footerAboutTitle: 'About IsoCore',
+    footerAboutText: 'Practical nutrition solutions with clinical and premium focus.',
+    footerPolicyTitle: 'Policies',
+    footerPolicyLink: 'View document',
+    footerPolicyUrl: '#',
+    footerBottomText: '© 2026 ISOCORE. All rights reserved.',
+    quickLoginButton: 'Enter',
+    summaryPointA: 'Equality',
+    summaryPointB: 'Identity',
+    summaryPointC: 'Consistency',
     loginHeading: 'Sign in to ISOCORE.',
     loginIntro: 'Log in to access your protocols, cases and nutritional recommendations.',
     nameLabel: 'Name',
@@ -116,7 +156,13 @@ const translations = {
     languageDropdownLabel: 'Choose language'
   },
   ca: {
+    brandTag: 'ISOCORE',
     brandSubtitle: 'NUTRICIÓ',
+    headerLogoText: 'ISOCORE',
+    headerLogoUrl: './src/assets/isocore-logo.png',
+    headerLogoAlt: 'IsoCore logo',
+    headerCompanyModuleA: 'Nutrició',
+    headerCompanyModuleB: 'Suplements',
     productLabel: 'NUTRICIÓ',
     languageLabel: 'CA',
     headerEyebrow: 'Editor de decisions',
@@ -142,6 +188,20 @@ const translations = {
     summaryLabel: 'Versió actual',
     summaryTitle: 'Home de producte operatiu.',
     summaryText: 'Interfície construïda per a ús real: accés permanent, navegació clara i coherència visual del sistema IsoCore.',
+    footerEmailTitle: 'Correu electrònic',
+    footerEmailValue: 'contacte@isocore.com',
+    footerPhoneTitle: 'Telèfon',
+    footerPhoneValue: '+34 600 000 000',
+    footerAboutTitle: 'Sobre IsoCore',
+    footerAboutText: 'Solucions de nutrició pràctica amb enfoc clínic i premium.',
+    footerPolicyTitle: 'Polítiques',
+    footerPolicyLink: 'Veure document',
+    footerPolicyUrl: '#',
+    footerBottomText: '© 2026 ISOCORE. Tots els drets reservats.',
+    quickLoginButton: 'Entrar',
+    summaryPointA: 'Igualtat',
+    summaryPointB: 'Identitat',
+    summaryPointC: 'Consistència',
     loginHeading: 'Inicia sessió a ISOCORE.',
     loginIntro: 'Accedeix per entrar als teus protocols, casos i recomanacions nutricionals.',
     nameLabel: 'Nom',
@@ -237,7 +297,7 @@ function updateTexts(t) {
 function createBrandSection(t) {
   return `
     <div class="home-brand">
-      <p class="home-brand-tag">ISOCORE</p>
+      <p class="home-brand-tag">${t.brandTag}</p>
       <p class="home-brand-subtitle">${t.brandSubtitle}</p>
     </div>
   `;
@@ -246,13 +306,43 @@ function createBrandSection(t) {
 function createFeatureCard(feature) {
   return `
     <article class="feature-card">
-      <div class="feature-icon">${feature.icon}</div>
+      <div class="feature-icon">${getIconSVG(feature.title)}</div>
       <div>
         <h3>${feature.title}</h3>
         <p>${feature.description}</p>
       </div>
     </article>
   `;
+}
+
+function getIconSVG(title) {
+  const key = (title || '').toLowerCase();
+  if (key.includes('centro') || key.includes('center')) {
+    return `
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="1.5" fill="none" />
+        <path d="M7 9h10M7 12h10M7 15h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+  }
+  if (key.includes('plan') || key.includes('plan')) {
+    return `
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.5" fill="none" />
+        <path d="M8 8v8l4-2 4 2V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+  }
+  if (key.includes('módul') || key.includes('locked') || key.includes('bloque')) {
+    return `
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="3" y="11" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none" />
+        <path d="M8 11V9a4 4 0 118 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+  }
+  // fallback simple circle
+  return `
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.5" fill="none"/>
+    </svg>`;
 }
 
 function createModuleCard(title, description, locked = true, t) {
@@ -372,6 +462,19 @@ function initHomeInteractions(t) {
     updateLanguageToggle(nextLanguage);
     updateTexts(nextTranslation);
   });
+
+  const quickLoginBtn = document.getElementById('quickLoginBtn');
+  quickLoginBtn?.addEventListener('click', () => {
+    const rightPanel = document.querySelector('.home-panel-right');
+    const form = document.getElementById('homeLoginForm');
+    rightPanel?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (form) {
+      setTimeout(() => {
+        const firstInput = document.getElementById('homeUserEmail') || document.getElementById('homeUserName');
+        firstInput?.focus();
+      }, 320);
+    }
+  });
 }
 
 export function renderHomePage() {
@@ -379,90 +482,125 @@ export function renderHomePage() {
   const t = getTranslation();
   const language = getCurrentLanguage();
 
-  appRoot.innerHTML = `
-    <main class="home-root page-shell">
-      <div class="home-header">
-        ${createBrandSection(t)}
-      </div>
+    appRoot.innerHTML = `
+      <main class="home-root page-shell">
+        <header class="home-header">
+          <div class="header-block header-logo">
+            ${t.headerLogoUrl ? `<img src="${t.headerLogoUrl}" alt="${t.headerLogoAlt}" class="header-logo-image" />` : `<span class="header-logo-text" data-i18n="headerLogoText">${t.headerLogoText}</span>`}
+          </div>
+          <div class="header-block header-module">
+            <span class="header-label" data-i18n="headerCompanyModuleA">${t.headerCompanyModuleA}</span>
+          </div>
+          <div class="header-block header-module">
+            <span class="header-label" data-i18n="headerCompanyModuleB">${t.headerCompanyModuleB}</span>
+          </div>
+          <div class="header-block header-actions">
+            <button id="languageToggle" class="language-toggle" type="button" aria-live="polite">${languageCodes[language]}</button>
+          </div>
+        </header>
+        <section class="home-grid">
+          <div class="home-panel home-panel-left">
+            <div class="home-left-top">
+              ${createBrandSection(t)}
+              <div class="home-left-actions">
+                <button id="quickLoginBtn" class="ghost-button" data-i18n="quickLoginButton">${t.quickLoginButton}</button>
+              </div>
+            </div>
 
-      <section class="home-grid">
-        <div class="home-panel home-panel-left">
-          <div class="home-hero">
-            <p class="eyebrow" data-i18n="headerEyebrow">${t.headerEyebrow}</p>
-            <h1 data-i18n="title">${t.title}</h1>
-            <p class="home-copy" data-i18n="copy">${t.copy}</p>
+            <div class="home-hero">
+              <p class="eyebrow" data-i18n="headerEyebrow">${t.headerEyebrow}</p>
+              <h1 data-i18n="title">${t.title}</h1>
+              <p class="home-copy" data-i18n="copy">${t.copy}</p>
+            </div>
+
+            <div class="home-brief">
+              ${t.features.slice(0,1).map(createFeatureCard).join('')}
+            </div>
           </div>
 
-          <div class="home-brief">
-            ${t.features.slice(0,1).map(createFeatureCard).join('')}
+          <div class="home-panel home-panel-center">
+            <div class="home-details">
+              ${t.features.map(createFeatureCard).join('')}
+            </div>
+
+            <div class="home-summary-card">
+              <div>
+                <p class="summary-label" data-i18n="summaryLabel">${t.summaryLabel}</p>
+                <h2 data-i18n="summaryTitle">${t.summaryTitle}</h2>
+                <p data-i18n="summaryText">${t.summaryText}</p>
+              </div>
+              <div class="summary-keypoints">
+                <span data-i18n="summaryPointA">${t.summaryPointA}</span>
+                <span data-i18n="summaryPointB">${t.summaryPointB}</span>
+                <span data-i18n="summaryPointC">${t.summaryPointC}</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="home-panel home-panel-right">
+            <div class="home-card home-login-card home-login-state">
+              <div class="home-login-heading">
+                <p class="eyebrow" data-i18n="loginHeading">${t.loginHeading}</p>
+              </div>
+              <p id="homeLoginPanelIntro" class="home-login-copy" data-i18n="loginIntro">${t.loginIntro}</p>
+              <form id="homeLoginForm" class="home-login-form">
+                <label class="input-group">
+                  <span data-i18n="nameLabel">${t.nameLabel}</span>
+                  <input id="homeUserName" type="text" placeholder="${t.nameLabel}" data-placeholder-i18n="nameLabel" autocomplete="name" />
+                </label>
+                <label class="input-group">
+                  <span data-i18n="emailLabel">${t.emailLabel}</span>
+                  <input id="homeUserEmail" type="email" placeholder="${t.emailPlaceholder}" data-placeholder-i18n="emailPlaceholder" autocomplete="email" />
+                </label>
+                <button type="submit" class="primary-button" data-i18n="loginButton">${t.loginButton}</button>
+              </form>
+              <div class="home-user-card hidden" aria-live="polite">
+                <p class="eyebrow">${t.sessionActive}</p>
+                <h3 id="homeUserLabel">Usuario</h3>
+                <p id="homeUserWelcome">${t.loginSuccess}</p>
+              </div>
+              <button id="homeLogoutButton" class="ghost-button hidden" type="button">${t.logoutButton}</button>
+            </div>
+
+            <div class="home-card home-lock-card">
+              <div class="home-lock-header">
+                <h3>${t.modulesTitle}</h3>
+                <span class="status-pill">${t.lockedBadge}</span>
+              </div>
+              <p class="module-copy">${t.modulesCopy}</p>
+              <div class="module-grid">
+                ${createModuleCard(t.resourceTitle, t.resourceDesc, true, t)}
+                ${createModuleCard(t.supplementTitle, t.supplementDesc, true, t)}
+              </div>
+            </div>
+
+            <div id="homeLockedNotice" class="home-locked-notice">${t.lockNotice}</div>
+          </aside>
+
+        </section>
+      <footer class="home-footer">
+        <div class="footer-grid">
+          <div class="footer-col footer-field">
+            <h4 data-i18n="footerEmailTitle">Correo electrónico</h4>
+            <p><a href="mailto:${t.footerEmailValue}" class="footer-link" data-i18n="footerEmailValue">${t.footerEmailValue}</a></p>
+          </div>
+          <div class="footer-col footer-field">
+            <h4 data-i18n="footerPhoneTitle">Teléfono</h4>
+            <p><a href="tel:${t.footerPhoneValue}" class="footer-link" data-i18n="footerPhoneValue">${t.footerPhoneValue}</a></p>
+          </div>
+          <div class="footer-col footer-field">
+            <h4 data-i18n="footerAboutTitle">Sobre IsoCore</h4>
+            <p data-i18n="footerAboutText">${t.footerAboutText}</p>
+          </div>
+          <div class="footer-col footer-field">
+            <h4 data-i18n="footerPolicyTitle">Políticas</h4>
+            <p><a href="${t.footerPolicyUrl}" target="_blank" rel="noopener noreferrer" class="footer-link" data-i18n="footerPolicyLink">${t.footerPolicyLink}</a></p>
           </div>
         </div>
-
-        <div class="home-panel home-panel-center">
-          <div class="home-details">
-            ${t.features.map(createFeatureCard).join('')}
-          </div>
-
-          <div class="home-summary-card">
-            <div>
-              <p class="summary-label" data-i18n="summaryLabel">${t.summaryLabel}</p>
-              <h2 data-i18n="summaryTitle">${t.summaryTitle}</h2>
-              <p data-i18n="summaryText">${t.summaryText}</p>
-            </div>
-            <div class="summary-keypoints">
-              <span>Igualdad</span>
-              <span>Identidad</span>
-              <span>Consistencia</span>
-            </div>
-          </div>
-        </div>
-
-        <aside class="home-panel home-panel-right">
-          <div class="home-card home-login-card home-login-state">
-            <div class="home-login-heading">
-              <p class="eyebrow" data-i18n="loginHeading">${t.loginHeading}</p>
-            </div>
-            <p id="homeLoginPanelIntro" class="home-login-copy" data-i18n="loginIntro">${t.loginIntro}</p>
-            <form id="homeLoginForm" class="home-login-form">
-              <label class="input-group">
-                <span data-i18n="nameLabel">${t.nameLabel}</span>
-                <input id="homeUserName" type="text" placeholder="${t.nameLabel}" data-placeholder-i18n="nameLabel" autocomplete="name" />
-              </label>
-              <label class="input-group">
-                <span data-i18n="emailLabel">${t.emailLabel}</span>
-                <input id="homeUserEmail" type="email" placeholder="${t.emailPlaceholder}" data-placeholder-i18n="emailPlaceholder" autocomplete="email" />
-              </label>
-              <button type="submit" class="primary-button" data-i18n="loginButton">${t.loginButton}</button>
-            </form>
-            <div class="home-user-card hidden" aria-live="polite">
-              <p class="eyebrow">${t.sessionActive}</p>
-              <h3 id="homeUserLabel">Usuario</h3>
-              <p id="homeUserWelcome">${t.loginSuccess}</p>
-            </div>
-            <button id="homeLogoutButton" class="ghost-button hidden" type="button">${t.logoutButton}</button>
-          </div>
-
-          <div class="home-card home-lock-card">
-            <div class="home-lock-header">
-              <h3>${t.modulesTitle}</h3>
-              <span class="status-pill">${t.lockedBadge}</span>
-            </div>
-            <p class="module-copy">${t.modulesCopy}</p>
-            <div class="module-grid">
-              ${createModuleCard(t.resourceTitle, t.resourceDesc, true, t)}
-              ${createModuleCard(t.supplementTitle, t.supplementDesc, true, t)}
-            </div>
-          </div>
-
-          <div id="homeLockedNotice" class="home-locked-notice">${t.lockNotice}</div>
-        </aside>
-
-        <div class="language-gutter">
-          <button id="languageToggle" class="language-toggle" type="button" aria-live="polite">${languageCodes[language]}</button>
-        </div>
-      </section>
-    </main>
-  `;
+        <div class="footer-bottom" data-i18n="footerBottomText">${t.footerBottomText}</div>
+      </footer>
+      </main>
+    `;
 
   const persistedUser = getStoredUser();
   renderLoginState(persistedUser, t);
