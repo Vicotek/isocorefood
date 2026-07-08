@@ -1,9 +1,25 @@
 ﻿import { setAuthToken } from '../services/authService.js';
 
 const STORAGE_KEY = 'isocore_home_user';
-const BACKEND_BASE_URL = 'https://TU-N8N.hostinger.com/webhook';
+const BACKEND_BASE_URL = 'https://n8n.srv1569124.hstgr.cloud/webhook';
 const LEGACY_USER_KEY = 'icf_user';
 const LEGACY_TOKEN_KEY = 'icf_token';
+
+// ── Endpoints ──────────────────────────────────────────
+const API = {
+  login:       `${BACKEND_BASE_URL}/login`,
+  register:    `${BACKEND_BASE_URL}/registro`,
+  recover:     `${BACKEND_BASE_URL}/reset-password`,
+  home:        `${BACKEND_BASE_URL}/home`,
+  center:      `${BACKEND_BASE_URL}/center`,
+  modules:     `${BACKEND_BASE_URL}/modules`,
+  resources:   `${BACKEND_BASE_URL}/resources`,
+  recipes:     `${BACKEND_BASE_URL}/recipes`,
+  supplements: `${BACKEND_BASE_URL}/supplements`,
+  profile:     `${BACKEND_BASE_URL}/profile`,
+  logout:      `${BACKEND_BASE_URL}/logout`,
+};
+// ───────────────────────────────────────────────────────
 const LANGUAGE_KEY = 'isocore_home_language';
 const supportedLanguages = ['es', 'en', 'ca'];
 const languageCodes = {
@@ -509,7 +525,7 @@ function initHomeInteractions(t) {
       }
 
       try {
-        const response = await fetch(`${BACKEND_BASE_URL}/login`, {
+        const response = await fetch(API.login, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -561,8 +577,14 @@ function initHomeInteractions(t) {
         return;
       }
 
+      const terms = document.getElementById('homeRegisterTerms')?.checked;
+      if (!terms) {
+        showLockedNotice(t.termsRequired || 'Debes aceptar los términos y condiciones.');
+        return;
+      }
+
       try {
-        const response = await fetch(`${BACKEND_BASE_URL}/registro`, {
+        const response = await fetch(API.register, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ nombre: name, email, password })
@@ -590,7 +612,7 @@ function initHomeInteractions(t) {
       }
 
       try {
-        const response = await fetch(`${BACKEND_BASE_URL}/recuperar`, {
+        const response = await fetch(API.recover, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
@@ -747,6 +769,10 @@ export function renderHomePage() {
                 <label class="input-group">
                   <span data-i18n="label_pass2">${t.passwordLabel} 2</span>
                   <input id="homeRegisterPassword2" type="password" placeholder="${t.passwordPlaceholder}" autocomplete="new-password" />
+                </label>
+                <label class="input-group input-check">
+                  <input id="homeRegisterTerms" type="checkbox" />
+                  <span>${t.termsLabel || 'Acepto los <a href="#">términos y condiciones</a>'}</span>
                 </label>
                 <button type="submit" class="primary-button">${t.registerButton || 'Registrarse'}</button>
               </form>
