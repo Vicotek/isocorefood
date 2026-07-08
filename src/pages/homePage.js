@@ -49,17 +49,17 @@ const translations = {
     copy: 'Accede a fichas de suplementos, planes personalizados y materiales de referencia para aplicar en cada caso.',
     features: [
       {
-        icon: './src/assets/icon-center.png',
+        icon: 'brain',
         title: 'Centro Inteligente',
         description: 'Consulta protocolos clínicos y respuestas directas sin ruido ni entradas largas.'
       },
       {
-        icon: './src/assets/icon-plan.png',
+        icon: 'clipboard-check',
         title: 'Mi Plan',
         description: 'Visualiza objetivos nutricionales y ajustes semanales con foco en resultados reales.'
       },
       {
-        icon: './src/assets/icon-lock.png',
+        icon: 'lock',
         title: 'Módulos bloqueados',
         description: 'Desbloquea funciones con progreso claro y muestra qué parte del producto está disponible.'
       }
@@ -68,9 +68,9 @@ const translations = {
     summaryTitle: 'Home de producto operativo.',
     summaryText: 'Interfaz construida para uso real: ingreso persistente, navegación clara y coherencia visual del sistema IsoCore.',
     footerEmailTitle: 'Correo electrónico',
-    footerEmailValue: 'contacto@isocore.com',
+    footerEmailValue: 'isocorefood@gmail.com',
     footerPhoneTitle: 'Teléfono',
-    footerPhoneValue: '+34 600 000 000',
+    footerPhoneValue: '+34 603 000 845',
     footerAboutTitle: 'Sobre IsoCore',
     footerAboutText: 'Soluciones de nutrición práctica con enfoque clínico y premium.',
     footerPolicyTitle: 'Políticas',
@@ -131,17 +131,17 @@ const translations = {
     copy: 'Access supplement profiles, personalized plans and reference material for practical use.',
     features: [
       {
-        icon: './src/assets/icon-center.png',
+        icon: 'brain',
         title: 'Smart Center',
         description: 'Consult clinical protocols and direct answers without noise or long introductions.'
       },
       {
-        icon: './src/assets/icon-plan.png',
+        icon: 'clipboard-check',
         title: 'My Plan',
         description: 'View nutritional objectives and weekly adjustments focused on real results.'
       },
       {
-        icon: './src/assets/icon-lock.png',
+        icon: 'lock',
         title: 'Locked modules',
         description: 'Unlock features with clear progress and understand which product areas are available.'
       }
@@ -213,17 +213,17 @@ const translations = {
     copy: 'Accedeix a fitxes de suplements, plans personalitzats i materials de referència per aplicar en cada cas.',
     features: [
       {
-        icon: './src/assets/icon-center.png',
+        icon: 'brain',
         title: 'Centre intel·ligent',
         description: 'Consulta protocols clínics i respostes directes sense soroll ni introduccions llargues.'
       },
       {
-        icon: './src/assets/icon-plan.png',
+        icon: 'clipboard-check',
         title: 'El meu Pla',
         description: 'Visualitza objectius nutricionals i ajustos setmanals amb focus en resultats reals.'
       },
       {
-        icon: './src/assets/icon-lock.png',
+        icon: 'lock',
         title: 'Mòduls bloquejats',
         description: 'Desbloca funcions amb progrés clar i mostra quina part del producte està disponible.'
       }
@@ -370,36 +370,50 @@ function createFeatureCard(feature) {
 }
 
 function getFeatureIcon(feature) {
-  if (feature && typeof feature.icon === 'string' && feature.icon.endsWith('.png')) {
-    return `<img src="${feature.icon}" alt="${feature.title} icon" class="feature-icon-image" />`;
+  if (feature && typeof feature.icon === 'string') {
+    return getIconSVG(feature.icon);
   }
   return getIconSVG(feature.title);
 }
 
-function getIconSVG(title) {
-  const key = (title || '').toLowerCase();
-  if (key.includes('centro') || key.includes('center')) {
+function getIconSVG(iconName) {
+  const icon = (iconName || '').toLowerCase();
+  
+  // Lucide: Brain
+  if (icon === 'brain' || icon.includes('centro') || icon.includes('center')) {
     return `
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="1.5" fill="none" />
-        <path d="M7 9h10M7 12h10M7 15h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9.5 2a3.5 3.5 0 0 1 5 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6.5 5a3.5 3.5 0 0 0 0 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M17.5 5a3.5 3.5 0 0 1 0 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 9.5a3.5 3.5 0 0 0 0 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M19 9.5a3.5 3.5 0 0 1 0 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6.5 19a3.5 3.5 0 0 1 0-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M17.5 19a3.5 3.5 0 0 0 0-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9.5 22a3.5 3.5 0 0 0 5 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>`;
   }
-  if (key.includes('plan') || key.includes('plan')) {
+  
+  // Lucide: Clipboard-Check
+  if (icon === 'clipboard-check' || icon.includes('plan')) {
     return `
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.5" fill="none" />
-        <path d="M8 8v8l4-2 4 2V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16 4h-2.5A1.5 1.5 0 0 0 12 2.5a1.5 1.5 0 0 0-1.5 1.5H8c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h8c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>`;
   }
-  if (key.includes('módul') || key.includes('locked') || key.includes('bloque')) {
+  
+  // Lucide: Lock
+  if (icon === 'lock' || icon.includes('módul') || icon.includes('locked') || icon.includes('bloque')) {
     return `
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="3" y="11" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none" />
-        <path d="M8 11V9a4 4 0 118 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="17" r="1" fill="currentColor"/>
       </svg>`;
   }
-  // fallback simple circle
+  
+  // Fallback
   return `
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.5" fill="none"/>
