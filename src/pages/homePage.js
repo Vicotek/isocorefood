@@ -8,16 +8,15 @@ const LEGACY_TOKEN_KEY = 'icf_token';
 // ── Endpoints ──────────────────────────────────────────
 const API = {
   login:       `${BACKEND_BASE_URL}/login`,
-  register:    `${BACKEND_BASE_URL}/registro`,
-  recover:     `${BACKEND_BASE_URL}/reset-password`,
+  register:    `${BACKEND_BASE_URL}/register`,
+  recover:     `${BACKEND_BASE_URL}/recover`,
   home:        `${BACKEND_BASE_URL}/home`,
   center:      `${BACKEND_BASE_URL}/center`,
-  modules:     `${BACKEND_BASE_URL}/modules`,
-  resources:   `${BACKEND_BASE_URL}/resources`,
   recipes:     `${BACKEND_BASE_URL}/recipes`,
   supplements: `${BACKEND_BASE_URL}/supplements`,
+  resources:   `${BACKEND_BASE_URL}/resources`,
   profile:     `${BACKEND_BASE_URL}/profile`,
-  logout:      `${BACKEND_BASE_URL}/logout`,
+  logout:      `${BACKEND_BASE_URL}/logout`
 };
 // ───────────────────────────────────────────────────────
 const LANGUAGE_KEY = 'isocore_home_language';
