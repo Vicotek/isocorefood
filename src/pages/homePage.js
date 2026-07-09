@@ -1,4 +1,18 @@
 ﻿import { setAuthToken } from '../services/authService.js';
+import { updateUIByPlan, savePlan, clearPlan, loadUserPlan } from '../services/planService.js';
+import { getUserPlanFromSupabase } from '../services/supabaseClient.js';
+import { MenuService } from '../services/menuService.js';
+import { DashboardService } from '../services/dashboardService.js';
+import * as FavoritesService from '../services/favoritesService.js';
+import * as SearchService from '../services/searchService.js';
+import * as ArticlesService from '../services/articlesService.js';
+import * as ProfileService from '../services/profileService.js';
+import * as AIService from '../services/aiService.js';
+import * as AdminService from '../services/adminService.js';
+import * as ArticlesPage from './articlesPage.js';
+import * as ProfilePage from './profilePage.js';
+import * as AIPage from './aiPage.js';
+import * as AdminPage from './adminPage.js';
 
 const STORAGE_KEY = 'isocore_home_user';
 const BACKEND_BASE_URL = 'https://n8n.srv1569124.hstgr.cloud/webhook';
@@ -99,10 +113,20 @@ const translations = {
     welcomeGreeting: 'Bienvenido de nuevo,',
     modulesTitle: 'Módulos',
     modulesCopy: 'Los módulos se presentan aquí como parte del producto. La navegación es clara y el acceso se desbloquea de forma controlada.',
+    centerTitle: 'Centro Inteligente',
+    centerDesc: 'Consulta protocolos clínicos y respuestas directas sin ruido ni entradas largas.',
+    planTitle: 'Mi Plan',
+    planDesc: 'Visualiza objetivos nutricionales y ajustes semanales con foco en resultados reales.',
+    recipesTitle: 'Recetas',
+    recipesDesc: 'Descubre recetas nutricionales personalizadas según tus necesidades.',
     resourceTitle: 'Recursos',
     resourceDesc: 'Explora artículos, guías y protocolos cuidadosamente seleccionados.',
     supplementTitle: 'Suplementos',
     supplementDesc: 'Analiza suplementos con evidencia, contexto y recomendaciones clínicas.',
+    aiTitle: 'IA',
+    aiDesc: 'Asistente inteligente para consultas nutricionales avanzadas.',
+    productsTitle: 'Infoproductos',
+    productsDesc: 'Accede a recursos premium y herramientas exclusivas.',
     lockedBadge: 'BLOQUEADO',
     previewButton: 'Vista previa',
     logoutButton: 'Cerrar sesión',
@@ -111,6 +135,7 @@ const translations = {
     loginSuccess: 'Has iniciado sesión. Tu acceso permanece activo en esta pantalla.',
     logoutNotice: 'Has cerrado sesión. Puedes iniciar sesión de nuevo en cualquier momento.',
     loginValidation: 'Completa el nombre y el correo para iniciar sesión.',
+    recoverValidation: 'Por favor, ingresa tu correo electrónico.',
     languageDropdownLabel: 'Elige idioma'
   },
   en: {
@@ -181,10 +206,20 @@ const translations = {
     welcomeGreeting: 'Welcome back,',
     modulesTitle: 'Modules',
     modulesCopy: 'Modules are presented here as part of the product. Navigation is clear and access unlocks in a controlled way.',
+    centerTitle: 'Smart Center',
+    centerDesc: 'Consult clinical protocols and direct answers without noise or long entries.',
+    planTitle: 'My Plan',
+    planDesc: 'View nutritional objectives and weekly adjustments with a focus on real results.',
+    recipesTitle: 'Recipes',
+    recipesDesc: 'Discover personalized nutritional recipes tailored to your needs.',
     resourceTitle: 'Resources',
     resourceDesc: 'Explore selected articles, guides and protocols.',
     supplementTitle: 'Supplements',
     supplementDesc: 'Analyze supplements with evidence, context and clinical recommendations.',
+    aiTitle: 'AI',
+    aiDesc: 'Intelligent assistant for advanced nutritional queries.',
+    productsTitle: 'Infoproducts',
+    productsDesc: 'Access premium resources and exclusive tools.',
     lockedBadge: 'LOCKED',
     previewButton: 'Preview',
     logoutButton: 'Sign out',
@@ -192,8 +227,7 @@ const translations = {
     lockedAction: 'This module is locked. Complete the initial experience to unlock it.',
     loginSuccess: 'You are signed in. Your access remains active on this screen.',
     logoutNotice: 'You have signed out. You can log in again at any time.',
-    loginValidation: 'Complete name and email to sign in.',
-    languageDropdownLabel: 'Choose language'
+    loginValidation: 'Complete name and email to sign in.',    recoverValidation: 'Please enter your email address.',    languageDropdownLabel: 'Choose language'
   },
   ca: {
     brandTag: 'ISOCORE',
@@ -263,10 +297,20 @@ const translations = {
     welcomeGreeting: 'Benvingut de nou,',
     modulesTitle: 'Mòduls',
     modulesCopy: 'Els mòduls es presenten aquí com a part del producte. La navegació és clara i l’accés es desbloqueja de forma controlada.',
+    centerTitle: 'Centre Intel·ligent',
+    centerDesc: 'Consulta protocols clínics i respostes directes sense soroll ni entrades llargues.',
+    planTitle: 'El Meu Pla',
+    planDesc: 'Visualitza objectius nutricionals i ajustos setmanals amb enfocament en resultats reals.',
+    recipesTitle: 'Receptes',
+    recipesDesc: 'Descobreix receptes nutricionals personalitzades segons les teves necessitats.',
     resourceTitle: 'Recursos',
     resourceDesc: 'Explora articles, guies i protocols seleccionats.',
     supplementTitle: 'Suplements',
     supplementDesc: 'Analitza suplements amb evidència, context i recomanacions clíniques.',
+    aiTitle: 'IA',
+    aiDesc: 'Assistent intel·ligent per a consultes nutricionals avançades.',
+    productsTitle: 'Infoproductes',
+    productsDesc: 'Accedeix a recursos premium i eines exclusives.',
     lockedBadge: 'BLOQUEJAT',
     previewButton: 'Previsualitza',
     logoutButton: 'Tanca sessió',
@@ -274,8 +318,7 @@ const translations = {
     lockedAction: 'Aquest mòdul està bloquejat. Completa l’experiència inicial per desbloquejar-lo.',
     loginSuccess: 'Has iniciat sessió. El teu accés roman actiu en aquesta pantalla.',
     logoutNotice: 'Has tancat sessió. Pots iniciar sessió de nou en qualsevol moment.',
-    loginValidation: 'Completa el nom i el correu per iniciar sessió.',
-    languageDropdownLabel: 'Tria idioma'
+    loginValidation: 'Completa el nom i el correu per iniciar sessió.',    recoverValidation: 'Si us plau, introdueix el teu correu electrònic.',    languageDropdownLabel: 'Tria idioma'
   }
 };
 
@@ -318,9 +361,17 @@ function renderModuleCards(t) {
   const moduleGrid = document.querySelector('.module-grid');
   if (!moduleGrid) return;
   moduleGrid.innerHTML = `
-      ${createModuleCard(t.resourceTitle, t.resourceDesc, true, t)}
-      ${createModuleCard(t.supplementTitle, t.supplementDesc, true, t)}
+      ${createModuleCard(t.centerTitle, t.centerDesc, 'center', false, t)}
+      ${createModuleCard(t.planTitle, t.planDesc, 'plan', false, t)}
+      ${createModuleCard(t.recipesTitle, t.recipesDesc, 'recipes', true, t)}
+      ${createModuleCard(t.supplementTitle, t.supplementDesc, 'supplements', true, t)}
+      ${createModuleCard(t.resourceTitle, t.resourceDesc, 'resources', false, t)}
+      ${createModuleCard(t.aiTitle, t.aiDesc, 'ai', true, t)}
+      ${createModuleCard(t.productsTitle, t.productsDesc, 'products', true, t)}
     `;
+  
+  // Aplicar estilos de plan
+  updateUIByPlan();
 }
 
 function updateTexts(t) {
@@ -417,12 +468,21 @@ function getIconSVG(iconName) {
     </svg>`;
 }
 
-function createModuleCard(title, description, locked = true, t) {
+function createModuleCard(title, description, moduleName = '', locked = true, t) {
+  const isFav = FavoritesService.isFavorite('module', moduleName);
+  
   return `
-    <article class="module-card ${locked ? 'module-locked' : ''}">
-      <div>
-        <h4>${title}</h4>
-        <p>${description}</p>
+    <article class="module-card ${locked ? 'module-locked' : ''}" data-module="${moduleName}">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div style="flex: 1;">
+          <h4>${title}</h4>
+          <p>${description}</p>
+        </div>
+        <button class="favorite-btn ${isFav ? 'active' : ''}" data-favorite-id="${moduleName}" 
+                onclick="window.homePage_toggleFavModule(event, '${moduleName}', '${title}')" 
+                title="Agregar a favoritos" type="button">
+          ${isFav ? '♥' : '♡'}
+        </button>
       </div>
       <div class="module-footer">
         <span class="module-badge">${locked ? t.lockedBadge : 'ACTIVO'}</span>
@@ -431,6 +491,12 @@ function createModuleCard(title, description, locked = true, t) {
     </article>
   `;
 }
+
+// Función global para toggle de favorito en módulos
+window.homePage_toggleFavModule = async (event, moduleId, moduleName) => {
+  event.stopPropagation();
+  await toggleFavorite('module', moduleId, moduleName);
+};
 
 function getStoredUser() {
   try {
@@ -458,6 +524,9 @@ function renderLoginState(user, t) {
   const userWelcome = document.getElementById('homeUserWelcome');
   const loginForm = document.getElementById('homeLoginForm');
   const logoutButton = document.getElementById('homeLogoutButton');
+  const profileButton = document.getElementById('homeProfileButton');
+  const aiButton = document.getElementById('homeAIButton');
+  const adminButton = document.getElementById('homeAdminButton');
   const loginPanelIntro = document.getElementById('homeLoginPanelIntro');
 
   if (!loginState) return;
@@ -469,28 +538,522 @@ function renderLoginState(user, t) {
     if (userEmail) userEmail.value = user.email;
     loginForm.classList.add('hidden');
     logoutButton.classList.remove('hidden');
+    profileButton.classList.remove('hidden');
+    aiButton.classList.remove('hidden');
+    adminButton.classList.remove('hidden');
     loginPanelIntro.textContent = t.loginIntro;
   } else {
     loginState.classList.remove('home-user-logged');
     loginForm.classList.remove('hidden');
     logoutButton.classList.add('hidden');
+    profileButton.classList.add('hidden');
+    aiButton.classList.add('hidden');
+    adminButton.classList.add('hidden');
     loginPanelIntro.textContent = t.loginIntro;
   }
 }
 
 function showLockedNotice(message) {
-  // Mostrar popup visible
-  alert(message);
-  
-  // También mostrar en la notificación interna
+  // Solo mostrar en la notificación visual interna (sin alert bloqueante)
   const notice = document.getElementById('homeLockedNotice');
   if (!notice) return;
+  
   notice.textContent = message;
   notice.classList.add('visible');
+  
+  // Auto-hide después de 3.5 segundos
   window.clearTimeout(showLockedNotice.timeoutId);
   showLockedNotice.timeoutId = window.setTimeout(() => {
     notice.classList.remove('visible');
-  }, 5000);
+  }, 3500);
+}
+
+/**
+ * Renderiza el dashboard personalizado del usuario
+ * @param {Object} dashboard - Datos del dashboard desde DashboardService
+ */
+async function renderDashboard(dashboard) {
+  if (!dashboard) return;
+
+  const container = document.getElementById('dashboardContainer');
+  if (!container) {
+    console.warn('⚠️ Dashboard container no encontrado');
+    return;
+  }
+
+  const lastLoginDate = new Date(dashboard.user.lastLogin);
+  const lastLoginText = lastLoginDate.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  container.innerHTML = `
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <div class="dashboard-header-top">
+          <div class="dashboard-user-info">
+            <h2 id="dashboardUserName">${dashboard.user.name}</h2>
+            <p class="dashboard-objective" id="dashboardObjective">${dashboard.objective}</p>
+          </div>
+          <span class="dashboard-user-plan" id="dashboardPlan">${getPlanBadgeLabel(dashboard.user.plan)}</span>
+        </div>
+
+        <div class="dashboard-progress-section">
+          <div class="dashboard-progress-label">
+            <span>Progreso</span>
+            <span id="dashboardProgressText">${dashboard.progress}%</span>
+          </div>
+          <div class="dashboard-progress-bar">
+            <div class="dashboard-progress-fill" id="dashboardProgress" style="width: ${dashboard.progress}%"></div>
+          </div>
+        </div>
+
+        <div class="dashboard-stats" id="dashboardStats">
+          <div class="stat-item">
+            <span class="stat-number">${dashboard.stats.totalRecipes}</span>
+            <span class="stat-label">Recetas</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">${dashboard.stats.totalResources}</span>
+            <span class="stat-label">Recursos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">${dashboard.stats.totalSupplements}</span>
+            <span class="stat-label">Suplementos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">${dashboard.stats.streak}</span>
+            <span class="stat-label">Racha</span>
+          </div>
+        </div>
+
+        <div class="dashboard-last-login">
+          ⏱️ Último acceso: ${lastLoginText}
+        </div>
+      </div>
+
+      <div class="dashboard-cards" id="dashboardCards">
+        ${dashboard.cards.map(card => createCardHTML(card)).join('')}
+      </div>
+    </div>
+  `;
+
+  // Actualizar UI con datos
+  DashboardService.updateDashboardUI(dashboard);
+
+  console.log('✅ Dashboard renderizado');
+}
+
+/**
+ * Genera HTML para una tarjeta del dashboard
+ * @param {Object} card - Datos de la tarjeta
+ * @returns {string} - HTML de la tarjeta
+ */
+function createCardHTML(card) {
+  return `
+    <div class="dashboard-card dashboard-card-${card.type}">
+      <div class="card-icon">${card.icon}</div>
+      <div class="card-content">
+        <h4 class="card-title">${card.title}</h4>
+        <p class="card-subtitle">${card.subtitle}</p>
+      </div>
+      <button class="card-cta" data-card-type="${card.type}">${card.cta}</button>
+    </div>
+  `;
+}
+
+/**
+ * Obtiene la etiqueta visual del plan
+ * @param {string} plan - Plan del usuario (gratis, premium, vip)
+ * @returns {string} - Etiqueta para mostrar
+ */
+function getPlanBadgeLabel(plan) {
+  const labels = {
+    gratis: '🎯 FREE',
+    free: '🎯 FREE',
+    premium: '⭐ PREMIUM',
+    vip: '👑 VIP'
+  };
+  return labels[plan] || labels.gratis;
+}
+
+/**
+ * Agregar elemento a favoritos
+ * @param {string} module - Tipo de módulo (recipe, resource, supplement, article)
+ * @param {string} referenceId - ID único del elemento
+ * @param {string} name - Nombre del elemento
+ * @param {Object} metadata - Datos adicionales
+ */
+export async function toggleFavorite(module, referenceId, name, metadata = {}) {
+  if (FavoritesService.isFavorite(module, referenceId)) {
+    // Eliminar favorito
+    const removed = await FavoritesService.removeFavorite(module, referenceId);
+    if (removed) {
+      updateFavoriteBtnUI(referenceId, false);
+      showLockedNotice('❌ Favorito eliminado');
+    }
+  } else {
+    // Agregar favorito
+    const added = await FavoritesService.addFavorite(module, referenceId, name, metadata);
+    if (added) {
+      updateFavoriteBtnUI(referenceId, true);
+      showLockedNotice('❤️ Guardado en favoritos');
+    }
+  }
+}
+
+/**
+ * Actualizar UI del botón de favorito
+ * @param {string} elementId - ID del elemento
+ * @param {boolean} isFav - true si es favorito
+ */
+function updateFavoriteBtnUI(elementId, isFav) {
+  const btn = document.querySelector(`[data-favorite-id="${elementId}"]`);
+  if (btn) {
+    btn.classList.toggle('active', isFav);
+    btn.textContent = isFav ? '♥' : '♡';
+  }
+}
+
+/**
+ * Renderizar panel de favoritos (para el menú/perfil)
+ * @returns {string} - HTML del panel de favoritos
+ */
+function renderFavoritesPanel() {
+  const favorites = FavoritesService.getFavorites();
+  
+  if (favorites.length === 0) {
+    return `
+      <div class="favorites-section">
+        <div class="favorites-header">
+          <h3>❤️ Favoritos</h3>
+        </div>
+        <div class="favorites-empty">
+          <h3>Sin favoritos aún</h3>
+          <p>Agrega contenido a favoritos desde cualquier módulo</p>
+        </div>
+      </div>
+    `;
+  }
+
+  const favByModule = {
+    recipe: favorites.filter(f => f.type === 'recipe'),
+    resource: favorites.filter(f => f.type === 'resource'),
+    supplement: favorites.filter(f => f.type === 'supplement'),
+    article: favorites.filter(f => f.type === 'article')
+  };
+
+  const moduleNames = {
+    recipe: '🍽️ Recetas',
+    resource: '📄 Recursos',
+    supplement: '💊 Suplementos',
+    article: '📰 Artículos'
+  };
+
+  let html = `
+    <div class="favorites-section">
+      <div class="favorites-header">
+        <h3>❤️ Favoritos</h3>
+        <span class="favorites-count">${favorites.length}</span>
+      </div>
+  `;
+
+  Object.entries(favByModule).forEach(([module, items]) => {
+    if (items.length > 0) {
+      html += `
+        <h4 style="margin-top: 16px; margin-bottom: 8px; font-size: 0.95rem; color: var(--text-primary);">
+          ${moduleNames[module]}
+        </h4>
+        <div class="favorites-container">
+      `;
+      
+      items.forEach(fav => {
+        html += `
+          <div class="favorite-item-card">
+            <div class="favorite-item-header">
+              <div class="favorite-item-title">${fav.name}</div>
+              <button class="favorite-remove-btn" onclick="window.homePage_removeFavorite('${fav.resource_id}', '${module}')" title="Eliminar">✕</button>
+            </div>
+            <span class="favorite-item-type">${module}</span>
+            <small style="color: var(--text-secondary);">
+              ${new Date(fav.created_at).toLocaleDateString('es-ES')}
+            </small>
+          </div>
+        `;
+      });
+      
+      html += `</div>`;
+    }
+  });
+
+  html += `</div>`;
+  return html;
+}
+
+/**
+ * Mostrar favoritos en el panel lateral
+ */
+export function showFavoritesPanel() {
+  const rightPanel = document.querySelector('.home-panel-right');
+  if (rightPanel) {
+    const existingPanel = rightPanel.querySelector('.favorites-section');
+    if (existingPanel) {
+      existingPanel.remove();
+    }
+    
+    const favPanel = document.createElement('div');
+    favPanel.innerHTML = renderFavoritesPanel();
+    rightPanel.appendChild(favPanel);
+  }
+}
+
+// Función global para eliminar favorito (desde el HTML)
+window.homePage_removeFavorite = async (referenceId, module) => {
+  await FavoritesService.removeFavorite(module, referenceId);
+  showFavoritesPanel();
+  showLockedNotice('❌ Favorito eliminado');
+};
+
+// ──────────────────────────────────────────────────────────────
+// BÚSQUEDA GLOBAL
+// ──────────────────────────────────────────────────────────────
+
+/**
+ * Manejar entrada de búsqueda en tiempo real
+ */
+async function handleSearchInput(query) {
+  const dropdown = document.getElementById('searchResultsDropdown');
+  const clearBtn = document.getElementById('searchClearBtn');
+
+  // Mostrar botón de limpiar si hay texto
+  clearBtn?.classList.toggle('visible', query.length > 0);
+
+  if (query.length < 2) {
+    // Mostrar búsquedas recientes
+    if (query.length === 0) {
+      dropdown.innerHTML = renderRecentSearchesDropdown();
+      dropdown.classList.add('visible');
+    } else {
+      dropdown.classList.remove('visible');
+    }
+    return;
+  }
+
+  // Mostrar loading
+  dropdown.innerHTML = '<div class="search-loading">Buscando</div>';
+  dropdown.classList.add('visible');
+
+  // Realizar búsqueda
+  try {
+    const results = await SearchService.searchAll(query);
+    dropdown.innerHTML = renderSearchResultsDropdown(results);
+    dropdown.classList.add('visible');
+  } catch (error) {
+    console.error('Error en búsqueda:', error);
+    dropdown.innerHTML = `
+      <div class="search-empty-state">
+        <div class="search-empty-state-icon">❌</div>
+        <div class="search-empty-state-title">Error en la búsqueda</div>
+      </div>
+    `;
+  }
+}
+
+/**
+ * Renderizar búsquedas recientes en dropdown
+ */
+function renderRecentSearchesDropdown() {
+  const recent = SearchService.getRecentSearches();
+
+  if (recent.length === 0) {
+    return `
+      <div class="search-empty-state">
+        <div class="search-empty-state-icon">🔍</div>
+        <div class="search-empty-state-title">Búsqueda Global</div>
+        <p style="font-size: 0.85rem; margin-top: 8px;">Escribe al menos 2 caracteres</p>
+      </div>
+    `;
+  }
+
+  let html = '<div class="search-recent-title">Búsquedas Recientes</div>';
+  
+  recent.slice(0, 5).forEach(search => {
+    html += `
+      <div class="search-recent-item" onclick="window.homePage_selectSearch('${search.query}')">
+        ${search.query}
+      </div>
+    `;
+  });
+
+  return html;
+}
+
+/**
+ * Renderizar resultados de búsqueda en dropdown
+ */
+function renderSearchResultsDropdown(results) {
+  if (!results.hasResults) {
+    return `
+      <div class="search-empty-state">
+        <div class="search-empty-state-icon">😕</div>
+        <div class="search-empty-state-title">Sin resultados</div>
+        <p style="font-size: 0.85rem; margin-top: 8px;">Intenta con otros términos</p>
+      </div>
+    `;
+  }
+
+  let html = '';
+
+  const categories = [
+    { type: 'recipes', label: '🍽️ Recetas' },
+    { type: 'supplements', label: '💊 Suplementos' },
+    { type: 'resources', label: '📄 Recursos' },
+    { type: 'articles', label: '📰 Artículos' }
+  ];
+
+  categories.forEach(cat => {
+    const items = results[cat.type];
+    if (items && items.length > 0) {
+      html += `
+        <div class="search-results-group">
+          <div class="search-group-title">${cat.label}</div>
+      `;
+
+      items.slice(0, 3).forEach(item => {
+        html += `
+          <div class="search-result-item" onclick="window.homePage_selectResult('${item.id}', '${cat.type}')">
+            <div class="search-result-title">${item.title}</div>
+            <div class="search-result-description">${item.description}</div>
+          </div>
+        `;
+      });
+
+      if (items.length > 3) {
+        html += `<div class="search-result-item" style="padding: 8px 16px; text-align: center; color: var(--brand); cursor: pointer; font-weight: 600;">
+          Ver todos (${items.length})
+        </div>`;
+      }
+
+      html += '</div>';
+    }
+  });
+
+  return html;
+}
+
+/**
+ * Seleccionar resultado y realizar acción
+ */
+window.homePage_selectResult = (itemId, type) => {
+  console.log(`📌 Seleccionado: ${itemId} (${type})`);
+  // En el futuro: navegar al módulo correspondiente
+  showLockedNotice(`Abriendo ${type}: ${itemId}`);
+};
+
+/**
+ * Seleccionar búsqueda reciente
+ */
+window.homePage_selectSearch = (query) => {
+  const input = document.getElementById('searchInput');
+  if (input) {
+    input.value = query;
+    handleSearchInput(query);
+  }
+};
+
+/**
+ * Navegar a la biblioteca de artículos
+ */
+window.homePage_navigateToArticles = () => {
+  console.log('📚 Navegando a Biblioteca de Artículos');
+  ArticlesPage.renderArticlesPage();
+};
+
+/**
+ * Navegar al perfil del usuario
+ */
+window.homePage_navigateToProfile = () => {
+  console.log('👤 Navegando a Perfil');
+  ProfilePage.renderProfilePage();
+};
+
+/**
+ * Navegar al Centro IA
+ */
+window.homePage_navigateToAI = () => {
+  console.log('🤖 Navegando a Centro IA');
+  AIPage.renderAIPage();
+};
+
+/**
+ * Navegar a Administración
+ */
+window.homePage_navigateToAdmin = () => {
+  console.log('🔧 Navegando a Administración');
+  AdminPage.renderAdminPage();
+};
+
+/**
+ * Limpiar búsqueda
+ */
+function clearSearch() {
+  const input = document.getElementById('searchInput');
+  const dropdown = document.getElementById('searchResultsDropdown');
+  const clearBtn = document.getElementById('searchClearBtn');
+
+  if (input) {
+    input.value = '';
+    input.focus();
+  }
+  
+  dropdown.classList.remove('visible');
+  clearBtn?.classList.remove('visible');
+}
+
+// Función global para limpiar desde el botón
+window.homePage_clearSearch = () => {
+  clearSearch();
+};
+
+/**
+ * Inicializar listeners de búsqueda
+ */
+function setupSearchListeners() {
+  const searchInput = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('searchClearBtn');
+  const dropdown = document.getElementById('searchResultsDropdown');
+
+  if (!searchInput) return;
+
+  // Input en tiempo real
+  searchInput.addEventListener('input', (e) => {
+    handleSearchInput(e.target.value);
+  });
+
+  // Click en el botón de limpiar
+  clearBtn?.addEventListener('click', () => {
+    window.homePage_clearSearch();
+  });
+
+  // Cerrar dropdown al clickear fuera
+  document.addEventListener('click', (e) => {
+    if (
+      !e.target.closest('.search-container') &&
+      !e.target.closest('.search-results-dropdown')
+    ) {
+      dropdown?.classList.remove('visible');
+    }
+  });
+
+  // Focus: mostrar búsquedas recientes
+  searchInput.addEventListener('focus', () => {
+    if (searchInput.value.length === 0) {
+      handleSearchInput('');
+    }
+  });
 }
 
 function initHomeInteractions(t) {
@@ -545,27 +1108,89 @@ function initHomeInteractions(t) {
         });
         const data = await response.json();
 
-        if (!response.ok || !data.success) {
-          showLockedNotice(data.mensaje || t.loginAuthFailed);
+        // Aceptar diferentes formatos de respuesta
+        const isSuccess = response.ok && (data.success || data.token || data.id || data.email_confirm);
+        
+        if (!isSuccess) {
+          const errorMsg = data.mensaje || data.message || data.error || t.loginAuthFailed;
+          showLockedNotice(errorMsg);
           return;
         }
 
+        // Guardar token si existe
         if (data.token) {
           setAuthToken(data.token);
           localStorage.setItem(LEGACY_TOKEN_KEY, data.token);
+        } else if (data.access_token) {
+          setAuthToken(data.access_token);
+          localStorage.setItem(LEGACY_TOKEN_KEY, data.access_token);
         }
 
+        // Extraer datos del usuario de diferentes formatos posibles
         const user = {
-          name: data.nombre || email.split('@')[0],
+          name: data.nombre || data.name || data.user?.name || email.split('@')[0],
           email: data.email || email,
-          plan: data.plan || null,
+          plan: data.plan || data.user?.plan || 'free',
           loggedAt: new Date().toISOString()
         };
 
+        // Intentar obtener plan desde Supabase
+        const supabasePlan = await getUserPlanFromSupabase(email);
+        if (supabasePlan) {
+          user.plan = supabasePlan;
+          console.log(`📊 Plan obtenido desde Supabase: ${supabasePlan}`);
+        }
+
         storeUser(user);
-        renderHomePage();
+        savePlan(user.plan);
+        MenuService.onLoginSuccess(user);
+        await renderHomePage();
+        updateUIByPlan(user.plan);
+        
+        // ── Inicializar FavoritesService ──
+        await FavoritesService.initializeFavoritesService(user.email);
+        
+        // ── Inicializar SearchService ──
+        SearchService.initializeSearchService(user.email);
+        
+        // ── Inicializar ArticlesService ──
+        ArticlesService.initializeArticlesService(user.email);
+        
+        // ── Inicializar ProfileService ──
+        ProfileService.initializeProfileService(user.email);
+        
+        // ── Inicializar AIService ──
+        AIService.initializeAIService(user.email);
+        
+        // ── Inicializar AdminService ──
+        AdminService.initializeAdminService(user.email, 'admin');
+        
+        // ── Cargar dashboard personalizado ──
+        (async () => {
+          try {
+            const dashboard = await DashboardService.loadDashboard(user.email);
+            if (dashboard) {
+              await renderDashboard(dashboard);
+              
+              // Mostrar dashboard, ocultar login
+              const container = document.getElementById('dashboardContainer');
+              const loginCard = document.querySelector('.home-login-card');
+              if (container && loginCard) {
+                container.classList.remove('hidden');
+                loginCard.classList.add('hidden');
+              }
+              
+              // Iniciar auto-actualización del dashboard
+              DashboardService.startDashboardAutoRefresh(user.email);
+            }
+          } catch (error) {
+            console.error('Error cargando dashboard:', error);
+          }
+        })();
+        
         showLockedNotice(t.loginSuccess);
       } catch (error) {
+        console.error('Error en login:', error);
         showLockedNotice(t.loginConnectionError);
       }
   });
@@ -604,14 +1229,21 @@ function initHomeInteractions(t) {
         });
         const data = await response.json();
 
-        if (!response.ok || !data.success) {
-          showLockedNotice(data.mensaje || t.loginAuthFailed);
+        // Aceptar diferentes formatos de respuesta exitosa
+        const isSuccess = response.ok && (data.success || data.email_confirm || data.created || data.id);
+        
+        if (!isSuccess && !response.ok) {
+          const errorMsg = data.mensaje || data.message || data.error || t.loginAuthFailed;
+          showLockedNotice(errorMsg);
           return;
         }
 
-        showLockedNotice(data.mensaje || t.registerSuccess);
+        // Mostrar mensaje de éxito
+        const successMsg = data.mensaje || data.message || t.registerSuccess;
+        showLockedNotice(successMsg);
         setAuthTab('login');
       } catch (error) {
+        console.error('Error en registro:', error);
         showLockedNotice(t.loginConnectionError);
       }
   });
@@ -620,7 +1252,7 @@ function initHomeInteractions(t) {
       event.preventDefault();
       const email = document.getElementById('homeRecoverEmail')?.value?.trim();
       if (!email) {
-        showLockedNotice(t.loginValidation);
+        showLockedNotice(t.recoverValidation);
         return;
       }
 
@@ -632,31 +1264,83 @@ function initHomeInteractions(t) {
         });
         const data = await response.json();
 
-        if (!response.ok || !data.success) {
-          showLockedNotice(data.mensaje || t.loginAuthFailed);
+        // Aceptar diferentes formatos de respuesta exitosa
+        const isSuccess = response.ok && (data.success || data.email_sent || data.message || data.id);
+        
+        if (!isSuccess) {
+          const errorMsg = data.mensaje || data.message || data.error || t.loginAuthFailed;
+          showLockedNotice(errorMsg);
           return;
         }
 
-        showLockedNotice(data.mensaje || t.recoverSuccess);
+        const successMsg = data.mensaje || data.message || t.recoverSuccess;
+        showLockedNotice(successMsg);
       } catch (error) {
+        console.error('Error en recuperación:', error);
         showLockedNotice(t.loginConnectionError);
       }
   });
 
   logoutButton?.addEventListener('click', () => {
     clearStoredUser();
+    clearPlan();
+    MenuService.onLogout();
+    DashboardService.stopDashboardAutoRefresh();
+    FavoritesService.clearFavorites();
+    SearchService.clearSearchService();
+    ArticlesService.clearArticlesService();
+    ProfileService.clearProfileService();
+    AIService.clearAIService();
+    AdminService.clearAdminService();
     renderHomePage();
     showLockedNotice(t.logoutNotice);
+  });
+
+  // Profile Button
+  const profileButton = document.getElementById('homeProfileButton');
+  profileButton?.addEventListener('click', () => {
+    console.log('👤 Abriendo perfil del usuario');
+    window.homePage_navigateToProfile();
+  });
+
+  // AI Button
+  const aiButton = document.getElementById('homeAIButton');
+  aiButton?.addEventListener('click', () => {
+    console.log('🤖 Abriendo Centro IA');
+    window.homePage_navigateToAI();
+  });
+
+  // Admin Button
+  const adminButton = document.getElementById('homeAdminButton');
+  adminButton?.addEventListener('click', () => {
+    console.log('🔧 Abriendo Administración');
+    window.homePage_navigateToAdmin();
   });
 
   lockedButtons.forEach((button) => {
     button.addEventListener('click', () => {
       const isLocked = button.dataset.locked === 'true';
+      const moduleCard = button.closest('.module-card');
+      const moduleName = moduleCard?.dataset.module;
+
+      // Módulos desbloqueados con navegación especial
+      if (!isLocked) {
+        switch (moduleName) {
+          case 'resources':
+            window.homePage_navigateToArticles();
+            return;
+          // Aquí se pueden agregar más módulos con navegación especial
+          default:
+            showLockedNotice('Módulo en desarrollo');
+            return;
+        }
+      }
+
+      // Módulos bloqueados
       if (isLocked) {
         showLockedNotice(t.lockedAction);
         return;
       }
-      showLockedNotice(t.lockNotice);
     });
   });
 
@@ -670,7 +1354,24 @@ function initHomeInteractions(t) {
 
 }
 
-export function renderHomePage() {
+/**
+ * Configurar listeners para cambios en favoritos
+ */
+function setupFavoritesListeners() {
+  // Escuchar cuando se agrega un favorito
+  FavoritesService.onFavoriteChange('favorite-added', (detail) => {
+    console.log('♥️ Favorito agregado:', detail);
+    updateFavoriteBtnUI(detail.referenceId, true);
+  });
+
+  // Escuchar cuando se elimina un favorito
+  FavoritesService.onFavoriteChange('favorite-removed', (detail) => {
+    console.log('💔 Favorito eliminado:', detail);
+    updateFavoriteBtnUI(detail.referenceId, false);
+  });
+}
+
+export async function renderHomePage() {
   const appRoot = document.getElementById('app');
   const t = getTranslation();
   const language = getCurrentLanguage();
@@ -691,6 +1392,22 @@ export function renderHomePage() {
             <button id="languageToggle" class="language-toggle" type="button" aria-live="polite">${languageCodes[language]}</button>
           </div>
         </header>
+        
+        <!-- Barra de búsqueda global -->
+        <section class="search-container" style="margin: 16px auto; padding: 0 20px;">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input 
+              id="searchInput" 
+              type="text" 
+              placeholder="Buscar artículos, recetas, suplementos, recursos..."
+              autocomplete="off"
+            />
+            <button class="search-clear-btn" id="searchClearBtn" type="button" title="Limpiar búsqueda">✕</button>
+          </div>
+          <div class="search-results-dropdown" id="searchResultsDropdown"></div>
+        </section>
+        
         <section class="home-grid">
           <div class="home-panel home-panel-left">
             <div class="home-left-top">
@@ -728,6 +1445,9 @@ export function renderHomePage() {
           </div>
 
           <aside class="home-panel home-panel-right">
+            <!-- Dashboard container (mostrado tras login) -->
+            <div id="dashboardContainer" class="hidden"></div>
+
             <div class="home-card home-login-card home-login-state">
               <div class="home-login-heading">
                 <p class="eyebrow" data-i18n="loginHeading">${t.loginHeading}</p>
@@ -788,7 +1508,12 @@ export function renderHomePage() {
                 <h3 id="homeUserLabel">Usuario</h3>
                 <p id="homeUserWelcome">${t.loginSuccess}</p>
               </div>
-              <button id="homeLogoutButton" class="ghost-button hidden" type="button">${t.logoutButton}</button>
+              <div class="home-user-buttons">
+                <button id="homeProfileButton" class="primary-button hidden" type="button">👤 Mi Perfil</button>
+                <button id="homeAIButton" class="primary-button hidden" type="button">🤖 Centro IA</button>
+                <button id="homeAdminButton" class="primary-button hidden" type="button">🔧 Admin</button>
+                <button id="homeLogoutButton" class="ghost-button hidden" type="button">${t.logoutButton}</button>
+              </div>
             </div>
 
             <div class="home-card home-lock-card">
@@ -798,8 +1523,13 @@ export function renderHomePage() {
               </div>
               <p class="module-copy">${t.modulesCopy}</p>
               <div class="module-grid">
-                ${createModuleCard(t.resourceTitle, t.resourceDesc, true, t)}
-                ${createModuleCard(t.supplementTitle, t.supplementDesc, true, t)}
+                ${createModuleCard(t.centerTitle, t.centerDesc, 'center', false, t)}
+                ${createModuleCard(t.planTitle, t.planDesc, 'plan', false, t)}
+                ${createModuleCard(t.recipesTitle, t.recipesDesc, 'recipes', true, t)}
+                ${createModuleCard(t.supplementTitle, t.supplementDesc, 'supplements', true, t)}
+                ${createModuleCard(t.resourceTitle, t.resourceDesc, 'resources', false, t)}
+                ${createModuleCard(t.aiTitle, t.aiDesc, 'ai', true, t)}
+                ${createModuleCard(t.productsTitle, t.productsDesc, 'products', true, t)}
               </div>
             </div>
 
@@ -835,4 +1565,27 @@ export function renderHomePage() {
   renderLoginState(persistedUser, t);
   initHomeInteractions(t);
   updateLanguageToggle(language);
+  
+  // ── MenuService: Restaurar estado dinámico ──
+  MenuService.restoreMenuState();
+  
+  // ── FavoritesService: Restaurar estado y listeners ──
+  FavoritesService.restoreFavoritesState();
+  setupFavoritesListeners();
+  
+  // ── SearchService: Reinicializar si el usuario está autenticado ──
+  if (persistedUser && persistedUser.email) {
+    await FavoritesService.initializeFavoritesService(persistedUser.email);
+    SearchService.initializeSearchService(persistedUser.email);
+  }
+  SearchService.restoreSearchState();
+  setupSearchListeners();
+  
+  // ── ArticlesService: Reinicializar si el usuario está autenticado ──
+  if (persistedUser && persistedUser.email) {
+    ArticlesService.initializeArticlesService(persistedUser.email);
+    ProfileService.initializeProfileService(persistedUser.email);
+    AIService.initializeAIService(persistedUser.email);
+    AdminService.initializeAdminService(persistedUser.email, 'admin');
+  }
 }
