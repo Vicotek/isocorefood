@@ -6,8 +6,14 @@
 import { getCurrentPlan, savePlan } from './planService.js';
 import { updateUserPlanInSupabase } from './supabaseClient.js';
 
-const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_'; // Placeholder
+// ✅ Leer configuración desde window.APP_CONFIG en lugar de import.meta.env
+const STRIPE_PUBLIC_KEY = window.APP_CONFIG?.STRIPE_PUBLIC_KEY || 'pk_test_'; // Placeholder
 let stripePromise = null;
+
+// Validar que Stripe está configurado
+if (!STRIPE_PUBLIC_KEY || STRIPE_PUBLIC_KEY === 'pk_test_') {
+  console.warn('⚠️ STRIPE_PUBLIC_KEY no configurada correctamente. Actualiza window.APP_CONFIG en src/config.js');
+}
 
 /**
  * Obtener Stripe (lazy load)
