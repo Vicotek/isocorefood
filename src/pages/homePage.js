@@ -54,13 +54,7 @@ const languageNames = {
 
 const translations = {
   es: {
-    brandTag: '    let STRIPE_PUBLIC_KEY = null;
-    
-    async function initializeStripeKey() {
-      const response = await fetch('https://n8n.srv1569124.hstgr.cloud/webhook/stripe-config');
-      const data = await response.json();
-      STRIPE_PUBLIC_KEY = data.publicKey;
-    }',
+    brandTag: 'ISOCORE',
     brandSubtitle: 'NUTRICIÓN',
     headerLogoText: 'ISOCORE',
     headerLogoUrl: './src/assets/isocore-logo.png',
