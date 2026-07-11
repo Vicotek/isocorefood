@@ -7,7 +7,10 @@ import {
   getArticlesFromSupabase,
   getArticleFromSupabase,
   searchArticlesInSupabase,
-  getArticlesByCategoryFromSupabase
+  getArticlesByCategoryFromSupabase,
+  getFeaturedArticlesFromSupabase,
+  getArticlesByConditionFromSupabase,
+  getReferencesByArticleFromSupabase
 } from './supabaseClient.js';
 
 // Cache local de artículos
@@ -329,4 +332,83 @@ export function clearArticlesService() {
   currentUserEmail = null;
   cacheTimestamp = 0;
   console.log('🗑️ ArticlesService limpiado');
+}
+
+/**
+ * Obtener artículos destacados (featured)
+ * @param {number} limit - Número máximo de artículos
+ * @returns {Promise<Array>} - Array de artículos destacados
+ */
+export async function getFeaturedArticles(limit = 5) {
+  try {
+    console.log('⭐ Obteniendo artículos destacados...');
+    const featured = await getFeaturedArticlesFromSupabase(limit);
+    
+    if (featured && featured.length > 0) {
+      console.log(`✅ ${featured.length} artículos destacados cargados`);
+      return featured;
+    }
+    
+    console.log('ℹ️ No hay artículos destacados');
+    return [];
+  } catch (error) {
+    console.error('❌ Error obteniendo artículos destacados:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener referencias científicas de un artículo
+ * @param {string} articleId - ID del artículo
+ * @returns {Promise<Array>} - Array de referencias
+ */
+export async function getArticleReferences(articleId) {
+  try {
+    if (!articleId) {
+      console.warn('⚠️ articleId no proporcionado');
+      return [];
+    }
+
+    console.log(`📖 Obteniendo referencias del artículo ${articleId}...`);
+    const references = await getReferencesByArticleFromSupabase(articleId);
+    
+    if (references && references.length > 0) {
+      console.log(`✅ ${references.length} referencias obtenidas`);
+      return references;
+    }
+    
+    console.log('ℹ️ No hay referencias para este artículo');
+    return [];
+  } catch (error) {
+    console.error('❌ Error obteniendo referencias:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener artículos relacionados a una condición
+ * @param {string} conditionId - ID de la condición
+ * @returns {Promise<Array>} - Array de artículos
+ */
+export async function getArticlesByCondition(conditionId) {
+  try {
+    if (!conditionId) {
+      console.warn('⚠️ conditionId no proporcionado');
+      return [];
+    }
+
+    console.log(`📚 Obteniendo artículos para condición ${conditionId}...`);
+    const articles = await getArticlesByConditionFromSupabase(conditionId);
+    
+    if (articles && articles.length > 0) {
+      console.log(`✅ ${articles.length} artículos obtenidos`);
+      return articles;
+    }
+    
+    console.log('ℹ️ No hay artículos para esta condición');
+    return [];
+  } catch (error) {
+    console.error('❌ Error obteniendo artículos por condición:', error);
+    return [];
+  }
 }

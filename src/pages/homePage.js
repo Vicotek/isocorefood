@@ -1,6 +1,8 @@
 ﻿import { setAuthToken } from '../services/authService.js';
 import { updateUIByPlan, savePlan, clearPlan, loadUserPlan } from '../services/planService.js';
 import { getUserPlanFromSupabase } from '../services/supabaseClient.js';
+import * as SecurityService from '../services/securityService.js';
+import * as StripeService from '../services/stripeService.js';
 import { MenuService } from '../services/menuService.js';
 import { DashboardService } from '../services/dashboardService.js';
 import * as FavoritesService from '../services/favoritesService.js';
@@ -9,6 +11,12 @@ import * as ArticlesService from '../services/articlesService.js';
 import * as ProfileService from '../services/profileService.js';
 import * as AIService from '../services/aiService.js';
 import * as AdminService from '../services/adminService.js';
+import * as RecipesService from '../services/recipesService.js';
+import * as EducationalModulesService from '../services/educationalModulesService.js';
+import * as NutritionalPlansService from '../services/nutritionalPlansService.js';
+import * as ProtocolsService from '../services/protocolsService.js';
+import * as ConditionsService from '../services/conditionsService.js';
+import * as ReferencesService from '../services/referencesService.js';
 import * as ArticlesPage from './articlesPage.js';
 import * as ProfilePage from './profilePage.js';
 import * as AIPage from './aiPage.js';
@@ -540,7 +548,21 @@ function renderLoginState(user, t) {
     logoutButton.classList.remove('hidden');
     profileButton.classList.remove('hidden');
     aiButton.classList.remove('hidden');
-    adminButton.classList.remove('hidden');
+    
+    // ✅ VALIDAR ROLE ANTES DE MOSTRAR ADMIN BUTTON
+    SecurityService.isAdmin(user.email).then(isAdminUser => {
+      if (isAdminUser) {
+        adminButton.classList.remove('hidden');
+        console.log('🔧 Botón Admin mostrado (usuario es admin)');
+      } else {
+        adminButton.classList.add('hidden');
+        console.log('🔒 Botón Admin oculto (usuario no es admin)');
+      }
+    }).catch(error => {
+      console.error('Error validando rol de admin:', error);
+      adminButton.classList.add('hidden');
+    });
+    
     loginPanelIntro.textContent = t.loginIntro;
   } else {
     loginState.classList.remove('home-user-logged');
@@ -990,8 +1012,32 @@ window.homePage_navigateToAI = () => {
 
 /**
  * Navegar a Administración
+ * ✅ VALIDAR PERMISOS - Solo admin puede acceder
  */
-window.homePage_navigateToAdmin = () => {
+window.homePage_navigateToAdmin = async () => {
+  const user = getStoredUser();
+  
+  if (!user) {
+    console.error('❌ Usuario no autenticado');
+    SecurityService.showAccessDeniedModal({
+      title: '🔒 Acceso Denegado',
+      message: 'Debes iniciar sesión para acceder a administración.'
+    });
+    return;
+  }
+
+  // ✅ VALIDAR ROL DEL USUARIO
+  const isAdmin = await SecurityService.isAdmin(user.email);
+  
+  if (!isAdmin) {
+    console.error('❌ Usuario no tiene permisos de admin');
+    SecurityService.showAccessDeniedModal({
+      title: '🔒 Acceso Denegado (403)',
+      message: 'No tienes permisos de administrador para acceder a esta sección. Contacta al equipo de soporte.'
+    });
+    return;
+  }
+
   console.log('🔧 Navegando a Administración');
   AdminPage.renderAdminPage();
 };
@@ -1165,6 +1211,24 @@ function initHomeInteractions(t) {
         // ── Inicializar AdminService ──
         AdminService.initializeAdminService(user.email, 'admin');
         
+        // ── Inicializar RecipesService ──
+        RecipesService.initializeRecipesService(user.email);
+        
+        // ── Inicializar EducationalModulesService ──
+        EducationalModulesService.initializeEducationalModulesService();
+        
+        // ── Inicializar NutritionalPlansService ──
+        NutritionalPlansService.initializeNutritionalPlansService(user.email);
+        
+        // ── Inicializar ProtocolsService ──
+        ProtocolsService.initializeProtocolsService();
+        
+        // ── Inicializar ConditionsService ──
+        ConditionsService.initializeConditionsService();
+        
+        // ── Inicializar ReferencesService ──
+        ReferencesService.initializeReferencesService();
+        
         // ── Cargar dashboard personalizado ──
         (async () => {
           try {
@@ -1292,6 +1356,12 @@ function initHomeInteractions(t) {
     ProfileService.clearProfileService();
     AIService.clearAIService();
     AdminService.clearAdminService();
+    RecipesService.clearRecipesService();
+    EducationalModulesService.clearModulesCache();
+    NutritionalPlansService.clearNutritionalPlansService();
+    ProtocolsService.clearProtocolsService();
+    ConditionsService.clearConditionsService();
+    ReferencesService.clearReferencesService();
     renderHomePage();
     showLockedNotice(t.logoutNotice);
   });
@@ -1351,6 +1421,23 @@ function initHomeInteractions(t) {
     updateLanguageToggle(nextLanguage);
     updateTexts(nextTranslation);
   });
+
+  // ✅ NUEVOS LISTENERS PARA UX CORRECTIONS v1.0
+
+  // CTA de Actualizar Plan (si existe)
+  const upgradePlanBtn = document.querySelector('.upgrade-plan-btn, [data-action="upgrade-plan"]');
+  if (upgradePlanBtn) {
+    upgradePlanBtn.addEventListener('click', () => {
+      console.log('📈 Abriendo modal de selección de plan');
+      const user = getStoredUser();
+      if (user) {
+        StripeService.renderPlanSelectionModal((selectedPlan) => {
+          console.log(`💳 Plan seleccionado: ${selectedPlan}`);
+          StripeService.startStripeCheckout(selectedPlan, user.email);
+        });
+      }
+    });
+  }
 
 }
 
@@ -1587,5 +1674,11 @@ export async function renderHomePage() {
     ProfileService.initializeProfileService(persistedUser.email);
     AIService.initializeAIService(persistedUser.email);
     AdminService.initializeAdminService(persistedUser.email, 'admin');
+    RecipesService.initializeRecipesService(persistedUser.email);
+    EducationalModulesService.initializeEducationalModulesService();
+    NutritionalPlansService.initializeNutritionalPlansService(persistedUser.email);
+    ProtocolsService.initializeProtocolsService();
+    ConditionsService.initializeConditionsService();
+    ReferencesService.initializeReferencesService();
   }
 }

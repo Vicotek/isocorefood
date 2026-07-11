@@ -458,3 +458,805 @@ export async function getArticlesByCategoryFromSupabase(category) {
     return [];
   }
 }
+
+// ═════════════════════════════════════════════════════════════════════════
+// 🍽️ PRIORIDAD 2: RECETAS - Biblioteca de recetas desde Supabase
+// ═════════════════════════════════════════════════════════════════════════
+
+/**
+ * Obtener todas las recetas
+ * @param {number} limit - Límite de resultados
+ * @param {number} offset - Offset para paginación
+ * @returns {Promise<Array>} - Array de recetas
+ */
+export async function getRecipesFromSupabase(limit = 999, offset = 0) {
+  try {
+    console.log('🍽️ Obteniendo recetas desde Supabase...');
+    
+    const response = await fetch(
+      `${API_URL}/recetas?order=created_at.desc&limit=${limit}&offset=${offset}&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo recetas (${response.status})`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(`✅ ${data.length || 0} recetas obtenidas`);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo recetas:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener una receta específica por ID
+ * @param {string} recipeId - ID de la receta
+ * @returns {Promise<Object|null>} - Objeto de la receta o null
+ */
+export async function getRecipeFromSupabase(recipeId) {
+  try {
+    const response = await fetch(
+      `${API_URL}/recetas?id=eq.${recipeId}&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo receta ${recipeId}`);
+      return null;
+    }
+
+    const data = await response.json();
+    return data && data.length > 0 ? data[0] : null;
+  } catch (error) {
+    console.error('❌ Error obteniendo receta:', error);
+    return null;
+  }
+}
+
+/**
+ * Buscar recetas por término de búsqueda
+ * @param {string} query - Término de búsqueda
+ * @returns {Promise<Array>} - Array de recetas que coinciden
+ */
+export async function searchRecipesInSupabase(query) {
+  try {
+    if (!query || query.length < 2) return [];
+
+    console.log(`🔍 Buscando recetas: ${query}`);
+    
+    const response = await fetch(
+      `${API_URL}/recetas?or=(name.ilike.%${encodeURIComponent(query)}%,description.ilike.%${encodeURIComponent(query)}%,ingredients.ilike.%${encodeURIComponent(query)}%)&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error buscando recetas`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error buscando recetas:', error);
+    return [];
+  }
+}
+
+/**
+ * Filtrar recetas por criterios (dificultad, tiempo, etc)
+ * @param {Object} filters - Objeto con filtros
+ * @returns {Promise<Array>} - Array de recetas filtradas
+ */
+export async function filterRecipesInSupabase(filters = {}) {
+  try {
+    let query = `${API_URL}/recetas?`;
+    const params = [];
+
+    if (filters.difficulty) {
+      params.push(`difficulty=eq.${encodeURIComponent(filters.difficulty)}`);
+    }
+
+    if (filters.prepTime) {
+      params.push(`prep_time=lte.${filters.prepTime}`);
+    }
+
+    if (filters.servings) {
+      params.push(`servings=eq.${filters.servings}`);
+    }
+
+    if (filters.mealType) {
+      params.push(`meal_type=eq.${encodeURIComponent(filters.mealType)}`);
+    }
+
+    query += params.join('&') + '&select=*&order=created_at.desc';
+
+    console.log(`🔍 Filtrando recetas con criterios...`);
+    
+    const response = await fetch(query, {
+      method: 'GET',
+      headers: AUTH_HEADER
+    });
+
+    if (!response.ok) {
+      console.error(`❌ Error filtrando recetas`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error filtrando recetas:', error);
+    return [];
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// 📚 PRIORIDAD 3: MÓDULOS EDUCATIVOS - Módulos reales del Centro
+// ═════════════════════════════════════════════════════════════════════════
+
+/**
+ * Obtener módulos educativos
+ * @param {string} status - Estado de los módulos (published, draft, all)
+ * @returns {Promise<Array>} - Array de módulos educativos
+ */
+export async function getEducationalModulesFromSupabase(status = 'published') {
+  try {
+    console.log('📚 Obteniendo módulos educativos desde Supabase...');
+    
+    let query = `${API_URL}/modulos_educativos?`;
+    if (status !== 'all') {
+      query += `status=eq.${status}&`;
+    }
+    query += `order=order_index.asc&select=*`;
+
+    const response = await fetch(query, {
+      method: 'GET',
+      headers: AUTH_HEADER
+    });
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo módulos educativos (${response.status})`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(`✅ ${data.length || 0} módulos educativos obtenidos`);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo módulos educativos:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener un módulo educativo específico
+ * @param {string} moduleId - ID del módulo
+ * @returns {Promise<Object|null>} - Objeto del módulo o null
+ */
+export async function getEducationalModuleFromSupabase(moduleId) {
+  try {
+    const response = await fetch(
+      `${API_URL}/modulos_educativos?id=eq.${moduleId}&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo módulo ${moduleId}`);
+      return null;
+    }
+
+    const data = await response.json();
+    return data && data.length > 0 ? data[0] : null;
+  } catch (error) {
+    console.error('❌ Error obteniendo módulo:', error);
+    return null;
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// 📋 PRIORIDAD 4: PLANES NUTRICIONALES - Conectar con "Mi Plan"
+// ═════════════════════════════════════════════════════════════════════════
+
+/**
+ * Obtener todos los planes nutricionales
+ * @returns {Promise<Array>} - Array de planes
+ */
+export async function getNutritionalPlansFromSupabase() {
+  try {
+    console.log('📋 Obteniendo planes nutricionales desde Supabase...');
+    
+    const response = await fetch(
+      `${API_URL}/planes_nutricionales?order=created_at.desc&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo planes nutricionales`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(`✅ ${data.length || 0} planes obtenidos`);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo planes nutricionales:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener un plan nutricional específico
+ * @param {string} planId - ID del plan
+ * @returns {Promise<Object|null>} - Objeto del plan o null
+ */
+export async function getNutritionalPlanFromSupabase(planId) {
+  try {
+    const response = await fetch(
+      `${API_URL}/planes_nutricionales?id=eq.${planId}&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo plan ${planId}`);
+      return null;
+    }
+
+    const data = await response.json();
+    return data && data.length > 0 ? data[0] : null;
+  } catch (error) {
+    console.error('❌ Error obteniendo plan:', error);
+    return null;
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// 🔬 PRIORIDAD 5: PROTOCOLOS - Apartado Protocolos en Centro IA
+// ═════════════════════════════════════════════════════════════════════════
+
+/**
+ * Obtener todos los protocolos
+ * @param {number} limit - Límite de resultados
+ * @param {number} offset - Offset para paginación
+ * @returns {Promise<Array>} - Array de protocolos
+ */
+export async function getProtocolsFromSupabase(limit = 999, offset = 0) {
+  try {
+    console.log('🔬 Obteniendo protocolos desde Supabase...');
+    
+    const response = await fetch(
+      `${API_URL}/protocolos?order=created_at.desc&limit=${limit}&offset=${offset}&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo protocolos`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(`✅ ${data.length || 0} protocolos obtenidos`);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo protocolos:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener un protocolo específico
+ * @param {string} protocolId - ID del protocolo
+ * @returns {Promise<Object|null>} - Objeto del protocolo o null
+ */
+export async function getProtocolFromSupabase(protocolId) {
+  try {
+    const response = await fetch(
+      `${API_URL}/protocolos?id=eq.${protocolId}&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo protocolo ${protocolId}`);
+      return null;
+    }
+
+    const data = await response.json();
+    return data && data.length > 0 ? data[0] : null;
+  } catch (error) {
+    console.error('❌ Error obteniendo protocolo:', error);
+    return null;
+  }
+}
+
+/**
+ * Buscar protocolos por término
+ * @param {string} query - Término de búsqueda
+ * @returns {Promise<Array>} - Array de protocolos que coinciden
+ */
+export async function searchProtocolsInSupabase(query) {
+  try {
+    if (!query || query.length < 2) return [];
+
+    console.log(`🔍 Buscando protocolos: ${query}`);
+    
+    const response = await fetch(
+      `${API_URL}/protocolos?or=(name.ilike.%${encodeURIComponent(query)}%,description.ilike.%${encodeURIComponent(query)}%,content.ilike.%${encodeURIComponent(query)}%)&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error buscando protocolos`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error buscando protocolos:', error);
+    return [];
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// 🏥 PRIORIDAD 6: CONDICIONES - Relacionar artículos, protocolos y suplementos
+// ═════════════════════════════════════════════════════════════════════════
+
+/**
+ * Obtener todas las condiciones
+ * @returns {Promise<Array>} - Array de condiciones
+ */
+export async function getConditionsFromSupabase() {
+  try {
+    console.log('🏥 Obteniendo condiciones desde Supabase...');
+    
+    const response = await fetch(
+      `${API_URL}/condiciones?order=name.asc&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo condiciones`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(`✅ ${data.length || 0} condiciones obtenidas`);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo condiciones:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener una condición específica
+ * @param {string} conditionId - ID de la condición
+ * @returns {Promise<Object|null>} - Objeto de la condición o null
+ */
+export async function getConditionFromSupabase(conditionId) {
+  try {
+    const response = await fetch(
+      `${API_URL}/condiciones?id=eq.${conditionId}&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo condición ${conditionId}`);
+      return null;
+    }
+
+    const data = await response.json();
+    return data && data.length > 0 ? data[0] : null;
+  } catch (error) {
+    console.error('❌ Error obteniendo condición:', error);
+    return null;
+  }
+}
+
+/**
+ * Obtener artículos relacionados a una condición
+ * @param {string} conditionId - ID de la condición
+ * @returns {Promise<Array>} - Array de artículos relacionados
+ */
+export async function getArticlesByConditionFromSupabase(conditionId) {
+  try {
+    if (!conditionId) return [];
+
+    console.log(`📚 Obteniendo artículos para condición ${conditionId}...`);
+    
+    const response = await fetch(
+      `${API_URL}/articles?condition_id=eq.${conditionId}&select=*&order=created_at.desc`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo artículos por condición`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo artículos por condición:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener protocolos relacionados a una condición
+ * @param {string} conditionId - ID de la condición
+ * @returns {Promise<Array>} - Array de protocolos relacionados
+ */
+export async function getProtocolsByConditionFromSupabase(conditionId) {
+  try {
+    if (!conditionId) return [];
+
+    console.log(`🔬 Obteniendo protocolos para condición ${conditionId}...`);
+    
+    const response = await fetch(
+      `${API_URL}/protocolos?condition_id=eq.${conditionId}&select=*&order=created_at.desc`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo protocolos por condición`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo protocolos por condición:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener suplementos relacionados a una condición
+ * @param {string} conditionId - ID de la condición
+ * @returns {Promise<Array>} - Array de suplementos relacionados
+ */
+export async function getSupplementsByConditionFromSupabase(conditionId) {
+  try {
+    if (!conditionId) return [];
+
+    console.log(`💊 Obteniendo suplementos para condición ${conditionId}...`);
+    
+    const response = await fetch(
+      `${API_URL}/supplements?condition_id=eq.${conditionId}&select=*&order=created_at.desc`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo suplementos por condición`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo suplementos por condición:', error);
+    return [];
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// 📖 PRIORIDAD 7: REFERENCIAS CIENTÍFICAS - Referencias al final de artículos
+// ═════════════════════════════════════════════════════════════════════════
+
+/**
+ * Obtener todas las referencias científicas
+ * @returns {Promise<Array>} - Array de referencias
+ */
+export async function getScientificReferencesFromSupabase() {
+  try {
+    console.log('📖 Obteniendo referencias científicas desde Supabase...');
+    
+    const response = await fetch(
+      `${API_URL}/referencias_cientificas?order=created_at.desc&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo referencias científicas`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(`✅ ${data.length || 0} referencias obtenidas`);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo referencias científicas:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener referencias científicas asociadas a un artículo
+ * @param {string} articleId - ID del artículo
+ * @returns {Promise<Array>} - Array de referencias para el artículo
+ */
+export async function getReferencesByArticleFromSupabase(articleId) {
+  try {
+    if (!articleId) return [];
+
+    console.log(`📖 Obteniendo referencias para artículo ${articleId}...`);
+    
+    const response = await fetch(
+      `${API_URL}/referencias_cientificas?article_id=eq.${articleId}&order=order_index.asc&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo referencias del artículo`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo referencias del artículo:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener referencias científicas asociadas a un protocolo
+ * @param {string} protocolId - ID del protocolo
+ * @returns {Promise<Array>} - Array de referencias para el protocolo
+ */
+export async function getReferencesByProtocolFromSupabase(protocolId) {
+  try {
+    if (!protocolId) return [];
+
+    console.log(`📖 Obteniendo referencias para protocolo ${protocolId}...`);
+    
+    const response = await fetch(
+      `${API_URL}/referencias_cientificas?protocol_id=eq.${protocolId}&order=order_index.asc&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo referencias del protocolo`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo referencias del protocolo:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener referencias científicas de un suplemento
+ * @param {string} supplementId - ID del suplemento
+ * @returns {Promise<Array>} - Array de referencias para el suplemento
+ */
+export async function getReferencesBySupplementFromSupabase(supplementId) {
+  try {
+    if (!supplementId) return [];
+
+    console.log(`📖 Obteniendo referencias para suplemento ${supplementId}...`);
+    
+    const response = await fetch(
+      `${API_URL}/referencias_cientificas?supplement_id=eq.${supplementId}&order=order_index.asc&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo referencias del suplemento`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo referencias del suplemento:', error);
+    return [];
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// ✨ FUNCIONES AUXILIARES - Featured/Destacados
+// ═════════════════════════════════════════════════════════════════════════
+
+/**
+ * Obtener artículos destacados (featured)
+ * @param {number} limit - Número máximo de artículos a retornar
+ * @returns {Promise<Array>} - Array de artículos destacados
+ */
+export async function getFeaturedArticlesFromSupabase(limit = 5) {
+  try {
+    console.log('⭐ Obteniendo artículos destacados...');
+    
+    const response = await fetch(
+      `${API_URL}/articles?featured=eq.true&order=created_at.desc&limit=${limit}&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo artículos destacados`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo artículos destacados:', error);
+    return [];
+  }
+}
+
+/**
+ * Obtener suplementos destacados (featured)
+ * @param {number} limit - Número máximo de suplementos a retornar
+ * @returns {Promise<Array>} - Array de suplementos destacados
+ */
+export async function getFeaturedSupplementsFromSupabase(limit = 5) {
+  try {
+    console.log('⭐ Obteniendo suplementos destacados...');
+    
+    const response = await fetch(
+      `${API_URL}/supplements?featured=eq.true&order=created_at.desc&limit=${limit}&select=*`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error obteniendo suplementos destacados`);
+      return [];
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ Error obteniendo suplementos destacados:', error);
+    return [];
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// 🔐 GESTIÓN DE ROLES - Control de acceso a funcionalidades
+// ═════════════════════════════════════════════════════════════════════════
+
+/**
+ * Obtener rol del usuario desde Supabase
+ * @param {string} email - Email del usuario
+ * @returns {Promise<string|null>} - Role: 'admin', 'user' o null
+ */
+export async function getUserRoleFromSupabase(email) {
+  if (!email) return null;
+
+  try {
+    console.log(`🔐 Obteniendo rol del usuario: ${email}`);
+    
+    const response = await fetch(
+      `${API_URL}/usuarios?email=eq.${encodeURIComponent(email)}&select=role`,
+      {
+        method: 'GET',
+        headers: AUTH_HEADER
+      }
+    );
+
+    if (!response.ok) {
+      console.warn(`⚠️ Error obteniendo rol (${response.status})`);
+      return null;
+    }
+
+    const data = await response.json();
+    const role = data && data.length > 0 ? data[0].role : null;
+    console.log(`✅ Rol obtenido: ${role || 'user'}`);
+    return role || 'user';
+  } catch (error) {
+    console.error('❌ Error obteniendo rol del usuario:', error);
+    return null;
+  }
+}
+
+/**
+ * Actualizar rol del usuario en Supabase
+ * @param {string} email - Email del usuario
+ * @param {string} role - Nuevo rol ('admin' o 'user')
+ * @returns {Promise<boolean>} - true si se actualizó correctamente
+ */
+export async function updateUserRoleInSupabase(email, role) {
+  if (!email || !role) return false;
+
+  try {
+    console.log(`🔐 Actualizando rol: ${email} → ${role}`);
+    
+    const response = await fetch(
+      `${API_URL}/usuarios?email=eq.${encodeURIComponent(email)}`,
+      {
+        method: 'PATCH',
+        headers: AUTH_HEADER,
+        body: JSON.stringify({ role })
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`❌ Error actualizando rol (${response.status}):`, await response.text());
+      return false;
+    }
+
+    console.log(`✅ Rol actualizado correctamente`);
+    return true;
+  } catch (error) {
+    console.error('❌ Error actualizando rol:', error);
+    return false;
+  }
+}
+
+/**
+ * Verificar si un usuario tiene rol de administrador
+ * @param {string} email - Email del usuario
+ * @returns {Promise<boolean>} - true si es admin
+ */
+export async function isUserAdminFromSupabase(email) {
+  const role = await getUserRoleFromSupabase(email);
+  return role === 'admin';
+}
