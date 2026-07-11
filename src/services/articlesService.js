@@ -113,14 +113,6 @@ export function getArticle(id) {
 }
 
 /**
- * Obtener artículos destacados (featured)
- * @returns {Array} - Array de artículos destacados
- */
-export function getFeaturedArticles() {
-  return articlesCache.filter(a => a.featured === true).slice(0, 3);
-}
-
-/**
  * Obtener artículos por categoría
  * @param {string} category - Nombre de la categoría
  * @returns {Array} - Array de artículos en la categoría
