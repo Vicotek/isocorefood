@@ -45,6 +45,42 @@ const API = {
   stripeConfirm:    `${BACKEND_BASE_URL}/stripe-confirm`
 };
 // ───────────────────────────────────────────────────────
+
+// Enlaces del menú del header — config, no hardcodeados en el markup.
+// "guest" = visible sin sesión, "auth" = visible con sesión.
+const MENU_LINKS = {
+  guest: [
+    { label: 'Artículos', action: 'articles' },
+    { label: 'Planes', action: 'plans' }
+  ],
+  auth: [
+    { label: 'Mi Perfil', action: 'profile' },
+    { label: 'Centro IA', action: 'ai' },
+    { label: 'Artículos', action: 'articles' }
+  ]
+};
+
+// Baseline del plan Free para la comparativa (Premium/VIP vienen de StripeService.getAvailablePlans()).
+const FREE_PLAN_CONFIG = {
+  id: 'free',
+  name: 'Free',
+  price: 0,
+  currency: 'eur',
+  interval: 'siempre',
+  description: 'Acceso a lo esencial para empezar.',
+  features: ['Centro Inteligente', 'Mi Plan', 'Recursos']
+};
+
+// Slides del carrusel hero — config, nunca hardcodeado en el componente.
+// Imágenes V1 provisionales; sustituir "image" más adelante sin tocar lógica.
+const heroSlides = [
+  { tag: 'Plato saludable', image: null, title: 'Nutrición basada en evidencia', subtitle: 'Planes reales, resultados medibles.', cta: 'Empieza Gratis' },
+  { tag: 'Suplemento', image: null, title: 'Suplementación con criterio', subtitle: 'Solo lo que tu cuerpo necesita, con respaldo científico.', cta: 'Empieza Gratis' },
+  { tag: 'Ebook / Infoproducto', image: null, title: 'Recursos para llevar', subtitle: 'Guías y materiales descargables, siempre a mano.', cta: 'Empieza Gratis' },
+  { tag: 'IA / Tecnología', image: null, title: 'Tu asistente nutricional', subtitle: 'Respuestas claras, cuando las necesitas.', cta: 'Empieza Gratis' },
+  { tag: 'Plan nutricional', image: null, title: 'Un plan hecho para ti', subtitle: 'Ajustado a tus objetivos y tu día a día.', cta: 'Empieza Gratis' }
+];
+
 const LANGUAGE_KEY = 'isocore_home_language';
 const supportedLanguages = ['es', 'en', 'ca'];
 const languageCodes = {
@@ -404,13 +440,104 @@ function updateTexts(t) {
   renderLoginState(persistedUser, t);
 }
 
-function createBrandSection(t) {
+/**
+ * Header compacto compartido por Landing y Dashboard.
+ * Único contenido: Logo, Menú, Buscar (reutilizado), Idioma, Entrar/Usuario.
+ */
+function renderHeaderHTML(t, language, user) {
+  const menuItems = user ? MENU_LINKS.auth : MENU_LINKS.guest;
+  const authSlot = user
+    ? `<button type="button" class="header-user-btn" id="homeLogoutButton" title="Cerrar sesión">👤 ${escapeHtml((user.name || '').split(' ')[0] || 'Cuenta')} · Salir</button>`
+    : `<button type="button" class="header-login-btn" id="headerLoginBtn">${t.loginButton || 'Entrar'}</button>`;
+
   return `
-    <div class="home-brand">
-      <p class="home-brand-tag">${t.brandTag}</p>
-      <p class="home-brand-subtitle">${t.brandSubtitle}</p>
+    <header class="home-header">
+      <div class="header-block header-logo">
+        ${t.headerLogoUrl ? `<img src="${t.headerLogoUrl}" alt="${t.headerLogoAlt}" class="header-logo-image" />` : `<span class="header-logo-text" data-i18n="headerLogoText">${t.headerLogoText}</span>`}
+      </div>
+
+      <div class="header-block header-menu">
+        <button type="button" class="menu-toggle" id="menuToggle" aria-haspopup="true" aria-expanded="false">Menú ▾</button>
+        <div class="menu-dropdown" id="menuDropdown">
+          ${menuItems.map(item => `<button type="button" class="menu-link" data-menu-action="${item.action}">${escapeHtml(item.label)}</button>`).join('')}
+        </div>
+      </div>
+
+      <div class="header-block header-search">
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Buscar artículos, recetas, suplementos, recursos..."
+              autocomplete="off"
+            />
+            <button class="search-clear-btn" id="searchClearBtn" type="button" title="Limpiar búsqueda">✕</button>
+          </div>
+          <div class="search-results-dropdown" id="searchResultsDropdown"></div>
+        </div>
+      </div>
+
+      <div class="header-block header-actions">
+        <button id="languageToggle" class="language-toggle" type="button" aria-live="polite">${languageCodes[language]}</button>
+        ${authSlot}
+      </div>
+    </header>
+  `;
+}
+
+/**
+ * Carrusel hero de la columna izquierda (Landing) — config-driven vía heroSlides.
+ * Fade automático cada 7s. Respeta prefers-reduced-motion.
+ */
+function renderHeroCarouselHTML() {
+  return `
+    <div class="hero-carousel" id="heroCarousel">
+      ${heroSlides.map((slide, i) => `
+        <div class="hero-slide ${i === 0 ? 'on' : ''}">
+          ${slide.image ? `<img src="${escapeHtml(slide.image)}" alt="" class="hero-slide-image" />` : ''}
+          <div class="hero-slide-overlay">
+            <span class="hero-slide-tag">${escapeHtml(slide.tag)}</span>
+            <h2 class="hero-slide-title">${escapeHtml(slide.title)}</h2>
+            <p class="hero-slide-subtitle">${escapeHtml(slide.subtitle)}</p>
+            <button type="button" class="hero-slide-cta" data-hero-cta="${i}">${escapeHtml(slide.cta)}</button>
+          </div>
+        </div>
+      `).join('')}
+      <div class="hero-dots">
+        ${heroSlides.map((_, i) => `<span class="${i === 0 ? 'on' : ''}"></span>`).join('')}
+      </div>
     </div>
   `;
+}
+
+function initHeroCarousel() {
+  const root = document.getElementById('heroCarousel');
+  if (!root) return;
+
+  const slides = Array.from(root.querySelectorAll('.hero-slide'));
+  const dots = Array.from(root.querySelectorAll('.hero-dots span'));
+  if (slides.length <= 1) return;
+
+  root.querySelectorAll('[data-hero-cta]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const authTab = document.querySelector('.auth-tab[data-tab="registro"]');
+      authTab?.click();
+      document.getElementById('homeRegisterName')?.focus();
+    });
+  });
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) return;
+
+  let index = 0;
+  window.clearInterval(initHeroCarousel.timerId);
+  initHeroCarousel.timerId = window.setInterval(() => {
+    index = (index + 1) % slides.length;
+    slides.forEach((slide, i) => slide.classList.toggle('on', i === index));
+    dots.forEach((dot, i) => dot.classList.toggle('on', i === index));
+  }, 7000);
 }
 
 function getIconSVG(iconName) {
@@ -534,9 +661,10 @@ async function fetchFeaturedArticle() {
 
 async function fetchFeaturedRecipe() {
   try {
-    const recipes = await getRecipesFromSupabase(30);
-    if (!recipes.length) return null;
-    return recipes.find((recipe) => recipe.featured) || recipes[0];
+    const recipes = await getRecipesFromSupabase(60);
+    // Selección 100% editorial vía "destacada" en Supabase. Sin fallback:
+    // si nadie la marcó, el bloque se omite (nunca "próximamente").
+    return recipes.find((recipe) => recipe.featured) || null;
   } catch (error) {
     console.error('Feed: error obteniendo receta destacada', error);
     return null;
@@ -545,10 +673,11 @@ async function fetchFeaturedRecipe() {
 
 async function fetchFeaturedProtocol() {
   try {
+    // "protocolos" no tiene columna editorial de selección ni de nivel de
+    // acceso: se usa el más reciente como proxy (acordado, sin tocar esquema)
+    // y se trata como contenido premium por defecto.
     const protocols = await getProtocolsFromSupabase(5);
     const protocol = protocols && protocols[0];
-    // La tabla "protocolos" no tiene columna de nivel de acceso todavía:
-    // se trata como contenido premium por defecto.
     return protocol ? { ...protocol, tier: 'premium' } : null;
   } catch (error) {
     console.error('Feed: error obteniendo protocolo destacado', error);
@@ -558,6 +687,8 @@ async function fetchFeaturedProtocol() {
 
 async function fetchFeaturedResource() {
   try {
+    // "orden" es el campo editorial ya existente en modulos_educativos:
+    // el de menor orden (ya viene ordenado asc) hace de "destacado".
     const modules = await getEducationalModulesFromSupabase();
     const resource = modules && modules[0];
     return resource ? { ...resource, tier: 'free' } : null;
@@ -604,18 +735,9 @@ function createFeedCard(item, type, typeLabel, state = 'loaded') {
     `;
   }
 
-  if (!item) {
-    return `
-      <article class="feed-card feed-card-empty" data-feed-section="${type}">
-        <div class="feed-card-media feed-card-image-placeholder">${getIconSVG(type)}</div>
-        <div class="feed-card-body">
-          <span class="feed-card-badge">${escapeHtml(typeLabel)}</span>
-          <h3 class="feed-card-title">Próximamente</h3>
-          <p class="feed-card-summary">Todavía no hay contenido publicado en esta sección.</p>
-        </div>
-      </article>
-    `;
-  }
+  // Sin contenido editorial en esta categoría: no se dibuja placeholder ni
+  // "próximamente" — el bloque se omite y el resto reordena hacia arriba.
+  if (!item) return '';
 
   const locked = !canAccessTier(item.tier || 'free');
   const title = item.title || 'Sin título';
@@ -658,8 +780,12 @@ function createNewsItemHTML(item) {
 }
 
 function updateFeedSection(type, label, item) {
-  const el = document.querySelector(`.feed-card[data-feed-section="${type}"], .feed-card-loading[data-feed-section="${type}"], .feed-card-empty[data-feed-section="${type}"]`);
+  const el = document.querySelector(`[data-feed-section="${type}"]`);
   if (!el) return;
+  if (!item) {
+    el.remove();
+    return;
+  }
   el.outerHTML = createFeedCard(item, type, label);
 }
 
@@ -801,9 +927,12 @@ function showLockedNotice(message) {
 async function renderDashboard(dashboard) {
   if (!dashboard) return;
 
-  const container = document.getElementById('dashboardContainer');
-  if (!container) {
-    console.warn('⚠️ Dashboard container no encontrado');
+  // Presentación dividida en 2 columnas — misma data de DashboardService,
+  // solo cambia dónde se inserta cada parte (izquierda=resumen, centro=feed).
+  const summaryEl = document.getElementById('dashboardUserSummary');
+  const feedEl = document.getElementById('dashboardFeed');
+  if (!summaryEl && !feedEl) {
+    console.warn('⚠️ Contenedores del dashboard no encontrados');
     return;
   }
 
@@ -816,8 +945,8 @@ async function renderDashboard(dashboard) {
     minute: '2-digit'
   });
 
-  container.innerHTML = `
-    <div class="dashboard-container">
+  if (summaryEl) {
+    summaryEl.innerHTML = `
       <div class="dashboard-header">
         <div class="dashboard-header-top">
           <div class="dashboard-user-info">
@@ -860,12 +989,32 @@ async function renderDashboard(dashboard) {
           ⏱️ Último acceso: ${lastLoginText}
         </div>
       </div>
+    `;
+  }
 
-      <div class="dashboard-cards" id="dashboardCards">
-        ${dashboard.cards.map(card => createCardHTML(card)).join('')}
+  if (feedEl) {
+    const cardsHTML = dashboard.cards.map(card => createCardHTML(card)).join('');
+    feedEl.innerHTML = `
+      <div class="dashboard-feed-block">
+        <h3 class="feed-section-title">Tu actividad</h3>
+        <div class="dashboard-cards" id="dashboardCards">
+          ${cardsHTML || '<p class="feed-empty">Todavía no tienes actividad ni favoritos guardados.</p>'}
+        </div>
       </div>
-    </div>
-  `;
+      <div class="dashboard-feed-block">
+        <h3 class="feed-section-title">Centro Inteligente</h3>
+        <button type="button" class="dashboard-ai-cta" id="dashboardAICta">🤖 Pregunta a tu asistente nutricional</button>
+      </div>
+      <div class="dashboard-feed-block feed-news-section">
+        <h3 class="feed-section-title">Contenido reciente</h3>
+        <div class="feed-news-list" id="feedNewsList">
+          <p class="feed-loading">Cargando…</p>
+        </div>
+      </div>
+    `;
+    document.getElementById('dashboardAICta')?.addEventListener('click', () => window.homePage_navigateToAI());
+    fetchRecentNews().then(renderNewsList);
+  }
 
   // Actualizar UI con datos
   DashboardService.updateDashboardUI(dashboard);
@@ -1023,7 +1172,9 @@ function renderFavoritesPanel() {
  * Mostrar favoritos en el panel lateral
  */
 export function showFavoritesPanel() {
-  const rightPanel = document.querySelector('.home-panel-right');
+  // Favoritos es una función solo para usuario autenticado — vive en el
+  // Dashboard (columna de accesos rápidos), nunca en la Landing pública.
+  const rightPanel = document.querySelector('.dashboard-col-quick');
   if (rightPanel) {
     const existingPanel = rightPanel.querySelector('.favorites-section');
     if (existingPanel) {
@@ -1433,29 +1584,8 @@ function initHomeInteractions(t) {
         // ── Inicializar ReferencesService ──
         ReferencesService.initializeReferencesService();
         
-        // ── Cargar dashboard personalizado ──
-        (async () => {
-          try {
-            const dashboard = await DashboardService.loadDashboard(user.email);
-            if (dashboard) {
-              await renderDashboard(dashboard);
-              
-              // Mostrar dashboard, ocultar login
-              const container = document.getElementById('dashboardContainer');
-              const loginCard = document.querySelector('.home-login-card');
-              if (container && loginCard) {
-                container.classList.remove('hidden');
-                loginCard.classList.add('hidden');
-              }
-              
-              // Iniciar auto-actualización del dashboard
-              DashboardService.startDashboardAutoRefresh(user.email);
-            }
-          } catch (error) {
-            console.error('Error cargando dashboard:', error);
-          }
-        })();
-        
+        // Nota: renderHomePage() (llamado arriba) ya carga y renderiza el
+        // dashboard personalizado al detectar el usuario guardado.
         showLockedNotice(t.loginSuccess);
       } catch (error) {
         console.error('Error en login:', error);
@@ -1632,13 +1762,17 @@ function initHomeInteractions(t) {
   const upgradePlanBtn = document.querySelector('.upgrade-plan-btn, [data-action="upgrade-plan"]');
   if (upgradePlanBtn) {
     upgradePlanBtn.addEventListener('click', () => {
-      console.log('📈 Abriendo modal de selección de plan');
       const user = getStoredUser();
       if (user) {
+        console.log('📈 Abriendo modal de selección de plan');
         StripeService.renderPlanSelectionModal((selectedPlan) => {
           console.log(`💳 Plan seleccionado: ${selectedPlan}`);
           StripeService.startStripeCheckout(selectedPlan, user.email);
         });
+      } else {
+        // Visitante sin sesión: primero se registra, el checkout requiere email.
+        document.querySelector('.auth-tab[data-tab="registro"]')?.click();
+        document.getElementById('homeRegisterName')?.focus();
       }
     });
   }
@@ -1662,201 +1796,269 @@ function setupFavoritesListeners() {
   });
 }
 
+function renderFooterHTML(t) {
+  return `
+    <footer class="home-footer">
+      <div class="footer-grid">
+        <div class="footer-col footer-field">
+          <h4 data-i18n="footerEmailTitle">Correo electrónico</h4>
+          <p><a href="mailto:${t.footerEmailValue}" class="footer-link" data-i18n="footerEmailValue">${t.footerEmailValue}</a></p>
+        </div>
+        <div class="footer-col footer-field">
+          <h4 data-i18n="footerPhoneTitle">Teléfono</h4>
+          <p><a href="tel:${t.footerPhoneValue}" class="footer-link" data-i18n="footerPhoneValue">${t.footerPhoneValue}</a></p>
+        </div>
+        <div class="footer-col footer-field">
+          <h4 data-i18n="footerAboutTitle">Sobre IsoCore</h4>
+          <p data-i18n="footerAboutText">${t.footerAboutText}</p>
+        </div>
+        <div class="footer-col footer-field">
+          <h4 data-i18n="footerPolicyTitle">Políticas</h4>
+          <p><a href="${t.footerPolicyUrl}" target="_blank" rel="noopener noreferrer" class="footer-link" data-i18n="footerPolicyLink">${t.footerPolicyLink}</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom" data-i18n="footerBottomText">${t.footerBottomText}</div>
+    </footer>
+  `;
+}
+
+/**
+ * Panel de login/registro/recuperación — idéntico al ya existente,
+ * misma lógica en initHomeInteractions (no se toca).
+ */
+function renderLoginPanelHTML(t) {
+  return `
+    <div class="home-card home-login-card home-login-state">
+      <div class="home-login-heading">
+        <p class="eyebrow" data-i18n="loginHeading">${t.loginHeading}</p>
+      </div>
+      <p id="homeLoginPanelIntro" class="home-login-copy" data-i18n="loginIntro">${t.loginIntro}</p>
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-tab="login">${t.loginButton}</button>
+        <button type="button" class="auth-tab" data-tab="registro">${t.registerButton || 'Registrarse'}</button>
+      </div>
+      <form id="homeLoginForm" class="home-login-form">
+        <label class="input-group">
+          <span data-i18n="emailLabel">${t.emailLabel}</span>
+          <input id="homeUserEmail" type="email" placeholder="${t.emailPlaceholder}" data-placeholder-i18n="emailPlaceholder" autocomplete="email" />
+        </label>
+        <label class="input-group">
+          <span data-i18n="passwordLabel">${t.passwordLabel}</span>
+          <input id="homeUserPassword" type="password" placeholder="${t.passwordPlaceholder}" data-placeholder-i18n="passwordPlaceholder" autocomplete="current-password" />
+        </label>
+        <div class="form-footer">
+          <button id="homeLinkForgot" type="button" class="link-button">${t.linkForgot}</button>
+        </div>
+        <button type="submit" class="primary-button" data-i18n="loginButton">${t.loginButton}</button>
+      </form>
+      <form id="homeRegisterForm" class="home-login-form hidden">
+        <label class="input-group">
+          <span data-i18n="nameLabel">${t.nameLabel}</span>
+          <input id="homeRegisterName" type="text" placeholder="${t.nameLabel}" autocomplete="name" />
+        </label>
+        <label class="input-group">
+          <span data-i18n="emailLabel">${t.emailLabel}</span>
+          <input id="homeRegisterEmail" type="email" placeholder="${t.emailPlaceholder}" autocomplete="email" />
+        </label>
+        <label class="input-group">
+          <span data-i18n="passwordLabel">${t.passwordLabel}</span>
+          <input id="homeRegisterPassword" type="password" placeholder="${t.passwordPlaceholder}" autocomplete="new-password" />
+        </label>
+        <label class="input-group">
+          <span data-i18n="label_pass2">${t.passwordLabel} 2</span>
+          <input id="homeRegisterPassword2" type="password" placeholder="${t.passwordPlaceholder}" autocomplete="new-password" />
+        </label>
+        <label class="input-group input-check">
+          <input id="homeRegisterTerms" type="checkbox" />
+          <span>${t.termsLabel || 'Acepto los <a href="#">términos y condiciones</a>'}</span>
+        </label>
+        <button type="submit" class="primary-button">${t.registerButton || 'Registrarse'}</button>
+      </form>
+      <form id="homeRecoveryForm" class="home-login-form hidden">
+        <p class="home-login-copy">${t.recoverDesc}</p>
+        <label class="input-group">
+          <span data-i18n="emailLabel">${t.emailLabel}</span>
+          <input id="homeRecoverEmail" type="email" placeholder="${t.emailPlaceholder}" autocomplete="email" />
+        </label>
+        <button type="submit" class="primary-button">${t.btnRecover || 'Enviar enlace'}</button>
+        <button id="homeLinkBackLogin" type="button" class="ghost-button">${t.linkBackLogin}</button>
+      </form>
+      <div class="home-user-card hidden" aria-live="polite">
+        <p class="eyebrow">${t.sessionActive}</p>
+        <h3 id="homeUserLabel">Usuario</h3>
+        <p id="homeUserWelcome">${t.loginSuccess}</p>
+      </div>
+      <div class="home-user-buttons">
+        <button id="homeProfileButton" class="primary-button hidden" type="button">👤 Mi Perfil</button>
+        <button id="homeAIButton" class="primary-button hidden" type="button">🤖 Centro IA</button>
+        <button id="homeAdminButton" class="primary-button hidden" type="button">🔧 Admin</button>
+        <button id="homeLogoutButton" class="ghost-button hidden" type="button">${t.logoutButton}</button>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Comparativa de planes — config-driven vía FREE_PLAN_CONFIG + StripeService.getAvailablePlans().
+ * El CTA reutiliza el flujo de Stripe ya existente (renderPlanSelectionModal + startStripeCheckout).
+ */
+function renderPlanComparisonHTML() {
+  const plans = [FREE_PLAN_CONFIG, ...StripeService.getAvailablePlans()];
+
+  return `
+    <div class="home-card plan-comparison-card">
+      <h3 class="feed-section-title">Elige tu plan</h3>
+      <div class="plan-mini-grid">
+        ${plans.map(plan => `
+          <div class="plan-mini-card ${plan.id !== 'free' ? 'plan-mini-paid' : ''}">
+            <span class="plan-mini-name">${escapeHtml(plan.name)}</span>
+            <span class="plan-mini-price">${plan.price > 0 ? `${plan.price.toFixed(2)}€/mes` : 'Gratis'}</span>
+            <ul class="plan-mini-features">
+              ${(plan.features || []).slice(0, 2).map(feature => `<li>${escapeHtml(feature)}</li>`).join('')}
+            </ul>
+          </div>
+        `).join('')}
+      </div>
+      <button type="button" class="primary-button upgrade-plan-btn" data-action="upgrade-plan">Hazte Premium</button>
+    </div>
+  `;
+}
+
+/**
+ * Landing pública (sin sesión) — conversión: hero + contenido real + login/planes.
+ */
+function renderLandingHTML(t, language) {
+  return `
+    <main class="home-root page-shell">
+      ${renderHeaderHTML(t, language, null)}
+
+      <section class="landing-grid">
+        <div class="landing-col landing-col-hero">
+          ${renderHeroCarouselHTML()}
+        </div>
+
+        <div class="landing-col landing-col-feed">
+          <div class="home-details" id="homeContentFeed">
+            ${FEED_SECTIONS.map(section => createFeedCard(null, section.type, section.label, 'loading')).join('')}
+          </div>
+          <div class="feed-section feed-news-section">
+            <h3 class="feed-section-title">Últimas publicaciones</h3>
+            <div class="feed-news-list" id="feedNewsList">
+              <p class="feed-loading">Cargando…</p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="landing-col landing-col-convert">
+          ${renderLoginPanelHTML(t)}
+          ${renderPlanComparisonHTML()}
+          <div id="homeLockedNotice" class="home-locked-notice">${t.lockNotice}</div>
+        </aside>
+      </section>
+
+      ${renderFooterHTML(t)}
+    </main>
+  `;
+}
+
+/**
+ * Dashboard (con sesión) — nunca convive con la Landing.
+ */
+function renderDashboardHTML(t, language, user) {
+  return `
+    <main class="home-root page-shell">
+      ${renderHeaderHTML(t, language, user)}
+
+      <section class="landing-grid dashboard-grid">
+        <div class="landing-col dashboard-col-summary" id="dashboardUserSummary">
+          <p class="feed-loading">Cargando resumen…</p>
+        </div>
+
+        <div class="landing-col dashboard-col-feed" id="dashboardFeed">
+          <p class="feed-loading">Cargando tu feed…</p>
+        </div>
+
+        <aside class="landing-col dashboard-col-quick">
+          <div class="home-card home-lock-card">
+            <div class="home-lock-header">
+              <h3>Accesos rápidos</h3>
+            </div>
+            <div class="module-grid">
+              ${createModuleCard(t.centerTitle, t.centerDesc, 'center', false, t)}
+              ${createModuleCard(t.planTitle, t.planDesc, 'plan', false, t)}
+              ${createModuleCard(t.recipesTitle, t.recipesDesc, 'recipes', true, t)}
+              ${createModuleCard(t.supplementTitle, t.supplementDesc, 'supplements', true, t)}
+              ${createModuleCard(t.resourceTitle, t.resourceDesc, 'resources', false, t)}
+              ${createModuleCard(t.aiTitle, t.aiDesc, 'ai', true, t)}
+              ${createModuleCard(t.productsTitle, t.productsDesc, 'products', true, t)}
+            </div>
+          </div>
+          <div id="homeLockedNotice" class="home-locked-notice">${t.lockNotice}</div>
+        </aside>
+      </section>
+
+      ${renderFooterHTML(t)}
+    </main>
+  `;
+}
+
+// Cierra el dropdown del menú al hacer click fuera. Se registra una sola vez
+// (a nivel de documento) para no acumular listeners en cada re-render.
+document.addEventListener('click', () => {
+  document.getElementById('menuDropdown')?.classList.remove('open');
+  document.getElementById('menuToggle')?.setAttribute('aria-expanded', 'false');
+});
+
+function initMenuDropdown() {
+  const toggle = document.getElementById('menuToggle');
+  const dropdown = document.getElementById('menuDropdown');
+  const loginBtn = document.getElementById('headerLoginBtn');
+
+  loginBtn?.addEventListener('click', () => {
+    document.querySelector('.landing-col-convert')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('homeUserEmail')?.focus();
+  });
+
+  if (!toggle || !dropdown) return;
+
+  toggle.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const isOpen = dropdown.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  dropdown.querySelectorAll('[data-menu-action]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const action = link.dataset.menuAction;
+      if (action === 'articles') window.homePage_navigateToArticles();
+      else if (action === 'profile') window.homePage_navigateToProfile();
+      else if (action === 'ai') window.homePage_navigateToAI();
+      else if (action === 'plans') document.querySelector('.plan-comparison-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+}
+
 export async function renderHomePage() {
   const appRoot = document.getElementById('app');
   const t = getTranslation();
   const language = getCurrentLanguage();
-
-    appRoot.innerHTML = `
-      <main class="home-root page-shell">
-        <header class="home-header">
-          <div class="header-block header-logo">
-            ${t.headerLogoUrl ? `<img src="${t.headerLogoUrl}" alt="${t.headerLogoAlt}" class="header-logo-image" />` : `<span class="header-logo-text" data-i18n="headerLogoText">${t.headerLogoText}</span>`}
-          </div>
-          <div class="header-block header-module">
-            <span class="header-label" data-i18n="headerCompanyModuleA">${t.headerCompanyModuleA}</span>
-          </div>
-          <div class="header-block header-module">
-            <span class="header-label" data-i18n="headerCompanyModuleB">${t.headerCompanyModuleB}</span>
-          </div>
-          <div class="header-block header-search">
-            <div class="search-container">
-              <div class="search-input-wrapper">
-                <span class="search-icon">🔍</span>
-                <input
-                  id="searchInput"
-                  type="text"
-                  placeholder="Buscar artículos, recetas, suplementos, recursos..."
-                  autocomplete="off"
-                />
-                <button class="search-clear-btn" id="searchClearBtn" type="button" title="Limpiar búsqueda">✕</button>
-              </div>
-              <div class="search-results-dropdown" id="searchResultsDropdown"></div>
-            </div>
-          </div>
-          <div class="header-block header-actions">
-            <button id="languageToggle" class="language-toggle" type="button" aria-live="polite">${languageCodes[language]}</button>
-          </div>
-        </header>
-
-        <section class="home-grid">
-          <div class="home-panel home-panel-left">
-            <div class="home-left-top">
-              ${createBrandSection(t)}
-            </div>
-
-            <div class="home-hero">
-              <h1 data-i18n="title">${t.title}</h1>
-              <p class="home-copy" data-i18n="copy">${t.copy}</p>
-            </div>
-          </div>
-
-          <div class="home-panel home-panel-center">
-            <div class="home-details" id="homeContentFeed">
-              ${FEED_SECTIONS.map(section => createFeedCard(null, section.type, section.label, 'loading')).join('')}
-            </div>
-            <div class="feed-section feed-news-section">
-              <h3 class="feed-section-title">Novedades recientes</h3>
-              <div class="feed-news-list" id="feedNewsList">
-                <p class="feed-loading">Cargando novedades…</p>
-              </div>
-            </div>
-          </div>
-
-          <aside class="home-panel home-panel-right">
-            <!-- Dashboard container (mostrado tras login) -->
-            <div id="dashboardContainer" class="hidden"></div>
-
-            <div class="home-card home-login-card home-login-state">
-              <div class="home-login-heading">
-                <p class="eyebrow" data-i18n="loginHeading">${t.loginHeading}</p>
-              </div>
-              <p id="homeLoginPanelIntro" class="home-login-copy" data-i18n="loginIntro">${t.loginIntro}</p>
-              <div class="auth-tabs">
-                <button type="button" class="auth-tab active" data-tab="login">${t.loginButton}</button>
-                <button type="button" class="auth-tab" data-tab="registro">${t.registerButton || 'Registrarse'}</button>
-              </div>
-              <form id="homeLoginForm" class="home-login-form">
-                <label class="input-group">
-                  <span data-i18n="emailLabel">${t.emailLabel}</span>
-                  <input id="homeUserEmail" type="email" placeholder="${t.emailPlaceholder}" data-placeholder-i18n="emailPlaceholder" autocomplete="email" />
-                </label>
-                <label class="input-group">
-                  <span data-i18n="passwordLabel">${t.passwordLabel}</span>
-                  <input id="homeUserPassword" type="password" placeholder="${t.passwordPlaceholder}" data-placeholder-i18n="passwordPlaceholder" autocomplete="current-password" />
-                </label>
-                <div class="form-footer">
-                  <button id="homeLinkForgot" type="button" class="link-button">${t.linkForgot}</button>
-                </div>
-                <button type="submit" class="primary-button" data-i18n="loginButton">${t.loginButton}</button>
-              </form>
-              <form id="homeRegisterForm" class="home-login-form hidden">
-                <label class="input-group">
-                  <span data-i18n="nameLabel">${t.nameLabel}</span>
-                  <input id="homeRegisterName" type="text" placeholder="${t.nameLabel}" autocomplete="name" />
-                </label>
-                <label class="input-group">
-                  <span data-i18n="emailLabel">${t.emailLabel}</span>
-                  <input id="homeRegisterEmail" type="email" placeholder="${t.emailPlaceholder}" autocomplete="email" />
-                </label>
-                <label class="input-group">
-                  <span data-i18n="passwordLabel">${t.passwordLabel}</span>
-                  <input id="homeRegisterPassword" type="password" placeholder="${t.passwordPlaceholder}" autocomplete="new-password" />
-                </label>
-                <label class="input-group">
-                  <span data-i18n="label_pass2">${t.passwordLabel} 2</span>
-                  <input id="homeRegisterPassword2" type="password" placeholder="${t.passwordPlaceholder}" autocomplete="new-password" />
-                </label>
-                <label class="input-group input-check">
-                  <input id="homeRegisterTerms" type="checkbox" />
-                  <span>${t.termsLabel || 'Acepto los <a href="#">términos y condiciones</a>'}</span>
-                </label>
-                <button type="submit" class="primary-button">${t.registerButton || 'Registrarse'}</button>
-              </form>
-              <form id="homeRecoveryForm" class="home-login-form hidden">
-                <p class="home-login-copy">${t.recoverDesc}</p>
-                <label class="input-group">
-                  <span data-i18n="emailLabel">${t.emailLabel}</span>
-                  <input id="homeRecoverEmail" type="email" placeholder="${t.emailPlaceholder}" autocomplete="email" />
-                </label>
-                <button type="submit" class="primary-button">${t.btnRecover || 'Enviar enlace'}</button>
-                <button id="homeLinkBackLogin" type="button" class="ghost-button">${t.linkBackLogin}</button>
-              </form>
-              <div class="home-user-card hidden" aria-live="polite">
-                <p class="eyebrow">${t.sessionActive}</p>
-                <h3 id="homeUserLabel">Usuario</h3>
-                <p id="homeUserWelcome">${t.loginSuccess}</p>
-              </div>
-              <div class="home-user-buttons">
-                <button id="homeProfileButton" class="primary-button hidden" type="button">👤 Mi Perfil</button>
-                <button id="homeAIButton" class="primary-button hidden" type="button">🤖 Centro IA</button>
-                <button id="homeAdminButton" class="primary-button hidden" type="button">🔧 Admin</button>
-                <button id="homeLogoutButton" class="ghost-button hidden" type="button">${t.logoutButton}</button>
-              </div>
-            </div>
-
-            <div class="home-card home-lock-card">
-              <div class="home-lock-header">
-                <h3>${t.modulesTitle}</h3>
-                <span class="status-pill">${t.lockedBadge}</span>
-              </div>
-              <p class="module-copy">${t.modulesCopy}</p>
-              <div class="module-grid">
-                ${createModuleCard(t.centerTitle, t.centerDesc, 'center', false, t)}
-                ${createModuleCard(t.planTitle, t.planDesc, 'plan', false, t)}
-                ${createModuleCard(t.recipesTitle, t.recipesDesc, 'recipes', true, t)}
-                ${createModuleCard(t.supplementTitle, t.supplementDesc, 'supplements', true, t)}
-                ${createModuleCard(t.resourceTitle, t.resourceDesc, 'resources', false, t)}
-                ${createModuleCard(t.aiTitle, t.aiDesc, 'ai', true, t)}
-                ${createModuleCard(t.productsTitle, t.productsDesc, 'products', true, t)}
-              </div>
-            </div>
-
-            <div id="homeLockedNotice" class="home-locked-notice">${t.lockNotice}</div>
-          </aside>
-
-        </section>
-      <footer class="home-footer">
-        <div class="footer-grid">
-          <div class="footer-col footer-field">
-            <h4 data-i18n="footerEmailTitle">Correo electrónico</h4>
-            <p><a href="mailto:${t.footerEmailValue}" class="footer-link" data-i18n="footerEmailValue">${t.footerEmailValue}</a></p>
-          </div>
-          <div class="footer-col footer-field">
-            <h4 data-i18n="footerPhoneTitle">Teléfono</h4>
-            <p><a href="tel:${t.footerPhoneValue}" class="footer-link" data-i18n="footerPhoneValue">${t.footerPhoneValue}</a></p>
-          </div>
-          <div class="footer-col footer-field">
-            <h4 data-i18n="footerAboutTitle">Sobre IsoCore</h4>
-            <p data-i18n="footerAboutText">${t.footerAboutText}</p>
-          </div>
-          <div class="footer-col footer-field">
-            <h4 data-i18n="footerPolicyTitle">Políticas</h4>
-            <p><a href="${t.footerPolicyUrl}" target="_blank" rel="noopener noreferrer" class="footer-link" data-i18n="footerPolicyLink">${t.footerPolicyLink}</a></p>
-          </div>
-        </div>
-        <div class="footer-bottom" data-i18n="footerBottomText">${t.footerBottomText}</div>
-      </footer>
-      </main>
-    `;
-
   const persistedUser = getStoredUser();
-  renderLoginState(persistedUser, t);
+
+  appRoot.innerHTML = persistedUser
+    ? renderDashboardHTML(t, language, persistedUser)
+    : renderLandingHTML(t, language);
+
   initHomeInteractions(t);
   updateLanguageToggle(language);
-
-  // ── Feed dinámico de la columna central ──
-  const feedContainer = document.querySelector('.home-panel-center');
-  feedContainer?.addEventListener('click', handleFeedClick);
-  renderCentralFeed();
+  initMenuDropdown();
 
   // ── MenuService: Restaurar estado dinámico ──
   MenuService.restoreMenuState();
-  
+
   // ── FavoritesService: Restaurar estado y listeners ──
   FavoritesService.restoreFavoritesState();
   setupFavoritesListeners();
-  
+
   // ── SearchService: Reinicializar si el usuario está autenticado ──
   if (persistedUser && persistedUser.email) {
     await FavoritesService.initializeFavoritesService(persistedUser.email);
@@ -1864,7 +2066,7 @@ export async function renderHomePage() {
   }
   SearchService.restoreSearchState();
   setupSearchListeners();
-  
+
   // ── ArticlesService: Reinicializar si el usuario está autenticado ──
   if (persistedUser && persistedUser.email) {
     ArticlesService.initializeArticlesService(persistedUser.email);
@@ -1877,5 +2079,28 @@ export async function renderHomePage() {
     ProtocolsService.initializeProtocolsService();
     ConditionsService.initializeConditionsService();
     ReferencesService.initializeReferencesService();
+  }
+
+  if (persistedUser) {
+    // ── Dashboard: aplicar bloqueo de módulos según plan (misma lógica de siempre) ──
+    updateUIByPlan(persistedUser.plan);
+
+    // ── Dashboard: cargar datos reales (misma lógica de siempre) + auto-refresh ──
+    try {
+      const dashboard = await DashboardService.loadDashboard(persistedUser.email);
+      if (dashboard) {
+        await renderDashboard(dashboard);
+        DashboardService.startDashboardAutoRefresh(persistedUser.email);
+      }
+    } catch (error) {
+      console.error('Error cargando dashboard:', error);
+    }
+  } else {
+    // ── Landing: estado de login + feed dinámico + carrusel hero ──
+    renderLoginState(null, t);
+    const feedContainer = document.querySelector('.landing-col-feed');
+    feedContainer?.addEventListener('click', handleFeedClick);
+    renderCentralFeed();
+    initHeroCarousel();
   }
 }
