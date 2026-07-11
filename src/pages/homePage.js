@@ -1,6 +1,12 @@
 ﻿import { setAuthToken } from '../services/authService.js';
-import { updateUIByPlan, savePlan, clearPlan, loadUserPlan } from '../services/planService.js';
-import { getUserPlanFromSupabase } from '../services/supabaseClient.js';
+import { updateUIByPlan, savePlan, clearPlan, loadUserPlan, getCurrentPlan } from '../services/planService.js';
+import {
+  getUserPlanFromSupabase,
+  getFeaturedArticlesFromSupabase,
+  getRecipesFromSupabase,
+  getProtocolsFromSupabase,
+  getEducationalModulesFromSupabase
+} from '../services/supabaseClient.js';
 import * as SecurityService from '../services/securityService.js';
 import * as StripeService from '../services/stripeService.js';
 import { MenuService } from '../services/menuService.js';
@@ -359,11 +365,6 @@ function updateLanguageToggle(language) {
   );
 }
 
-function renderFeatureCards(t) {
-  const details = document.querySelector('.home-details');
-  if (!details) return;
-  details.innerHTML = t.features.map(createFeatureCard).join('');
-}
 
 function renderModuleCards(t) {
   const moduleGrid = document.querySelector('.module-grid');
@@ -397,7 +398,6 @@ function updateTexts(t) {
     element.placeholder = t[key];
   });
 
-  renderFeatureCards(t);
   renderModuleCards(t);
 
   const persistedUser = getStoredUser();
@@ -411,25 +411,6 @@ function createBrandSection(t) {
       <p class="home-brand-subtitle">${t.brandSubtitle}</p>
     </div>
   `;
-}
-
-function createFeatureCard(feature) {
-  return `
-    <article class="feature-card">
-      <div class="feature-icon">${getFeatureIcon(feature)}</div>
-      <div>
-        <h3>${feature.title}</h3>
-        <p>${feature.description}</p>
-      </div>
-    </article>
-  `;
-}
-
-function getFeatureIcon(feature) {
-  if (feature && typeof feature.icon === 'string') {
-    return getIconSVG(feature.icon);
-  }
-  return getIconSVG(feature.title);
 }
 
 function getIconSVG(iconName) {
@@ -505,6 +486,229 @@ window.homePage_toggleFavModule = async (event, moduleId, moduleName) => {
   event.stopPropagation();
   await toggleFavorite('module', moduleId, moduleName);
 };
+
+// ═════════════════════════════════════════════════════════════════════════
+// 📰 FEED DINÁMICO — Columna central (contenido real desde Supabase)
+// Estructura modular: añadir un nuevo tipo de contenido = añadir una entrada
+// en FEED_SECTIONS + una función fetchFeatured<Tipo>(), sin tocar el resto.
+// ═════════════════════════════════════════════════════════════════════════
+
+const FEED_SECTIONS = [
+  { type: 'article', label: 'Artículo destacado', fetch: fetchFeaturedArticle },
+  { type: 'recipe', label: 'Receta destacada', fetch: fetchFeaturedRecipe },
+  { type: 'protocol', label: 'Protocolo destacado', fetch: fetchFeaturedProtocol },
+  { type: 'resource', label: 'Recurso destacado', fetch: fetchFeaturedResource }
+];
+
+const TIER_RANK = { free: 0, premium: 1, vip: 2 };
+
+function canAccessTier(tier) {
+  const plan = getCurrentPlan();
+  const tierRank = TIER_RANK[tier] ?? 0;
+  const planRank = TIER_RANK[plan] ?? 0;
+  return tierRank <= planRank;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[char]));
+}
+
+function truncateText(value, maxLength = 140) {
+  const text = String(value ?? '').trim();
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength).trim()}…`;
+}
+
+async function fetchFeaturedArticle() {
+  try {
+    const articles = await getFeaturedArticlesFromSupabase(1);
+    const article = articles && articles[0];
+    return article ? { ...article, tier: 'free' } : null;
+  } catch (error) {
+    console.error('Feed: error obteniendo artículo destacado', error);
+    return null;
+  }
+}
+
+async function fetchFeaturedRecipe() {
+  try {
+    const recipes = await getRecipesFromSupabase(30);
+    if (!recipes.length) return null;
+    return recipes.find((recipe) => recipe.featured) || recipes[0];
+  } catch (error) {
+    console.error('Feed: error obteniendo receta destacada', error);
+    return null;
+  }
+}
+
+async function fetchFeaturedProtocol() {
+  try {
+    const protocols = await getProtocolsFromSupabase(5);
+    const protocol = protocols && protocols[0];
+    // La tabla "protocolos" no tiene columna de nivel de acceso todavía:
+    // se trata como contenido premium por defecto.
+    return protocol ? { ...protocol, tier: 'premium' } : null;
+  } catch (error) {
+    console.error('Feed: error obteniendo protocolo destacado', error);
+    return null;
+  }
+}
+
+async function fetchFeaturedResource() {
+  try {
+    const modules = await getEducationalModulesFromSupabase();
+    const resource = modules && modules[0];
+    return resource ? { ...resource, tier: 'free' } : null;
+  } catch (error) {
+    console.error('Feed: error obteniendo recurso destacado', error);
+    return null;
+  }
+}
+
+async function fetchRecentNews(limit = 5) {
+  try {
+    const [articles, recipes, modules] = await Promise.all([
+      getFeaturedArticlesFromSupabase(5),
+      getRecipesFromSupabase(30),
+      getEducationalModulesFromSupabase()
+    ]);
+
+    const items = [
+      ...articles.map((item) => ({ ...item, tier: 'free', feedType: 'article', feedLabel: 'Artículo' })),
+      ...recipes.filter((recipe) => recipe.isNew).map((item) => ({ ...item, feedType: 'recipe', feedLabel: 'Receta' })),
+      ...modules.map((item) => ({ ...item, tier: 'free', feedType: 'resource', feedLabel: 'Recurso' }))
+    ];
+
+    return items
+      .filter((item) => item.created_at)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, limit);
+  } catch (error) {
+    console.error('Feed: error obteniendo novedades', error);
+    return [];
+  }
+}
+
+function createFeedCard(item, type, typeLabel, state = 'loaded') {
+  if (state === 'loading') {
+    return `
+      <article class="feed-card feed-card-loading" data-feed-section="${type}">
+        <div class="feed-card-media feed-card-image-placeholder"></div>
+        <div class="feed-card-body">
+          <span class="feed-card-badge">${escapeHtml(typeLabel)}</span>
+          <p class="feed-card-summary">Cargando…</p>
+        </div>
+      </article>
+    `;
+  }
+
+  if (!item) {
+    return `
+      <article class="feed-card feed-card-empty" data-feed-section="${type}">
+        <div class="feed-card-media feed-card-image-placeholder">${getIconSVG(type)}</div>
+        <div class="feed-card-body">
+          <span class="feed-card-badge">${escapeHtml(typeLabel)}</span>
+          <h3 class="feed-card-title">Próximamente</h3>
+          <p class="feed-card-summary">Todavía no hay contenido publicado en esta sección.</p>
+        </div>
+      </article>
+    `;
+  }
+
+  const locked = !canAccessTier(item.tier || 'free');
+  const title = item.title || 'Sin título';
+  const summary = truncateText(item.summary || item.description || '', 140);
+  const media = item.image
+    ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(title)}" class="feed-card-image" loading="lazy" />`
+    : `<div class="feed-card-image feed-card-image-placeholder">${getIconSVG(type)}</div>`;
+
+  const cta = locked
+    ? `<button type="button" class="feed-card-cta feed-card-cta-locked" data-feed-unlock="${item.tier}">🔒 ${item.tier === 'vip' ? 'Hazte VIP' : 'Desbloquear'}</button>`
+    : `<button type="button" class="feed-card-cta" data-feed-view="${type}" data-feed-id="${item.id ?? ''}">Ver más</button>`;
+
+  return `
+    <article class="feed-card ${locked ? 'feed-card-locked' : ''}" data-feed-section="${type}" data-feed-id="${item.id ?? ''}">
+      <div class="feed-card-media">
+        ${media}
+        ${locked ? '<span class="feed-card-lock-overlay">🔒</span>' : ''}
+      </div>
+      <div class="feed-card-body">
+        <span class="feed-card-badge">${escapeHtml(typeLabel)}</span>
+        <h3 class="feed-card-title">${escapeHtml(title)}</h3>
+        <p class="feed-card-summary">${escapeHtml(summary)}</p>
+        ${cta}
+      </div>
+    </article>
+  `;
+}
+
+function createNewsItemHTML(item) {
+  const date = item.created_at ? new Date(item.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) : '';
+  const locked = !canAccessTier(item.tier || 'free');
+  return `
+    <div class="feed-news-item ${locked ? 'feed-news-item-locked' : ''}" data-feed-view="${item.feedType}" data-feed-id="${item.id ?? ''}">
+      <span class="feed-news-badge">${escapeHtml(item.feedLabel)}</span>
+      <span class="feed-news-title">${escapeHtml(item.title || 'Sin título')}</span>
+      ${date ? `<span class="feed-news-date">${date}</span>` : ''}
+      ${locked ? '<span class="feed-news-lock">🔒</span>' : ''}
+    </div>
+  `;
+}
+
+function updateFeedSection(type, label, item) {
+  const el = document.querySelector(`.feed-card[data-feed-section="${type}"], .feed-card-loading[data-feed-section="${type}"], .feed-card-empty[data-feed-section="${type}"]`);
+  if (!el) return;
+  el.outerHTML = createFeedCard(item, type, label);
+}
+
+function renderNewsList(items) {
+  const list = document.getElementById('feedNewsList');
+  if (!list) return;
+  if (!items || items.length === 0) {
+    list.innerHTML = '<p class="feed-empty">Sin novedades recientes.</p>';
+    return;
+  }
+  list.innerHTML = items.map(createNewsItemHTML).join('');
+}
+
+/**
+ * Carga y renderiza el feed dinámico de la columna central.
+ * Modular: cada sección se resuelve y actualiza de forma independiente.
+ */
+async function renderCentralFeed() {
+  const container = document.getElementById('homeContentFeed');
+  if (!container) return;
+
+  await Promise.all(
+    FEED_SECTIONS.map(async (section) => {
+      const item = await section.fetch();
+      updateFeedSection(section.type, section.label, item);
+    })
+  );
+
+  const news = await fetchRecentNews();
+  renderNewsList(news);
+}
+
+function handleFeedClick(event) {
+  const unlockBtn = event.target.closest('[data-feed-unlock]');
+  if (unlockBtn) {
+    showLockedNotice('🔒 Contenido premium. Actualiza tu plan para acceder.');
+    return;
+  }
+
+  const viewTarget = event.target.closest('[data-feed-view]');
+  if (viewTarget) {
+    const type = viewTarget.dataset.feedView;
+    if (type === 'article') {
+      window.homePage_navigateToArticles();
+    } else {
+      showLockedNotice('Sección en desarrollo');
+    }
+  }
+}
 
 function getStoredUser() {
   try {
@@ -1502,31 +1706,19 @@ export async function renderHomePage() {
             </div>
 
             <div class="home-hero">
-              <p class="eyebrow" data-i18n="headerEyebrow">${t.headerEyebrow}</p>
               <h1 data-i18n="title">${t.title}</h1>
               <p class="home-copy" data-i18n="copy">${t.copy}</p>
-            </div>
-
-            <div class="home-brief">
-              ${t.features.slice(0,1).map(createFeatureCard).join('')}
             </div>
           </div>
 
           <div class="home-panel home-panel-center">
-            <div class="home-details">
-              ${t.features.map(createFeatureCard).join('')}
+            <div class="home-details" id="homeContentFeed">
+              ${FEED_SECTIONS.map(section => createFeedCard(null, section.type, section.label, 'loading')).join('')}
             </div>
-
-            <div class="home-summary-card">
-              <div>
-                <p class="summary-label" data-i18n="summaryLabel">${t.summaryLabel}</p>
-                <h2 data-i18n="summaryTitle">${t.summaryTitle}</h2>
-                <p data-i18n="summaryText">${t.summaryText}</p>
-              </div>
-              <div class="summary-keypoints">
-                <span data-i18n="summaryPointA">${t.summaryPointA}</span>
-                <span data-i18n="summaryPointB">${t.summaryPointB}</span>
-                <span data-i18n="summaryPointC">${t.summaryPointC}</span>
+            <div class="feed-section feed-news-section">
+              <h3 class="feed-section-title">Novedades recientes</h3>
+              <div class="feed-news-list" id="feedNewsList">
+                <p class="feed-loading">Cargando novedades…</p>
               </div>
             </div>
           </div>
@@ -1652,7 +1844,12 @@ export async function renderHomePage() {
   renderLoginState(persistedUser, t);
   initHomeInteractions(t);
   updateLanguageToggle(language);
-  
+
+  // ── Feed dinámico de la columna central ──
+  const feedContainer = document.querySelector('.home-panel-center');
+  feedContainer?.addEventListener('click', handleFeedClick);
+  renderCentralFeed();
+
   // ── MenuService: Restaurar estado dinámico ──
   MenuService.restoreMenuState();
   

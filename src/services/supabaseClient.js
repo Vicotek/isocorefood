@@ -347,12 +347,43 @@ export async function saveFavoriteToSupabase(email, favorite) {
  * @param {number} offset - Offset para paginación
  * @returns {Promise<Array>} - Array de artículos
  */
+function normalizeArticleRow(row) {
+  if (!row) return row;
+  const content = row.contenido || '';
+  const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
+
+  const summary = row.resumen || (content ? `${content.slice(0, 180)}${content.length > 180 ? '…' : ''}` : '');
+
+  return {
+    id: row.id,
+    title: row.titulo,
+    summary,
+    description: row.resumen || '',
+    excerpt: summary,
+    content,
+    category: row.categoria,
+    topic: row.tema,
+    subcategory: row.subcategoria,
+    author: row.autor || 'IsoCore',
+    tags: row.tags || [],
+    slug: row.slug,
+    evidence_level: row.nivel_evidencia,
+    reference_url: row.referencia_url,
+    source: row.fuente,
+    status: row.activo === false ? 'draft' : 'published',
+    reading_time: wordCount ? Math.max(1, Math.round(wordCount / 200)) : null,
+    image: null,
+    created_at: row.fecha_creacion,
+    updated_at: row.fecha_actualizacion
+  };
+}
+
 export async function getArticlesFromSupabase(limit = 999, offset = 0) {
   try {
-    console.log('📚 Obteniendo artículos desde Supabase...');
-    
+    console.log('📚 Obteniendo artículos desde Supabase (base_conocimientos)...');
+
     const response = await fetch(
-      `${API_URL}/articles?limit=${limit}&offset=${offset}&status=published`,
+      `${API_URL}/base_conocimientos?activo=eq.true&order=fecha_creacion.desc&limit=${limit}&offset=${offset}&select=*`,
       {
         method: 'GET',
         headers: AUTH_HEADER
@@ -366,7 +397,7 @@ export async function getArticlesFromSupabase(limit = 999, offset = 0) {
 
     const data = await response.json();
     console.log(`✅ ${data.length || 0} artículos obtenidos`);
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map(normalizeArticleRow) : [];
   } catch (error) {
     console.error('Error obteniendo artículos:', error);
     return [];
@@ -381,7 +412,7 @@ export async function getArticlesFromSupabase(limit = 999, offset = 0) {
 export async function getArticleFromSupabase(articleId) {
   try {
     const response = await fetch(
-      `${API_URL}/articles/${articleId}`,
+      `${API_URL}/base_conocimientos?id=eq.${articleId}&select=*`,
       {
         method: 'GET',
         headers: AUTH_HEADER
@@ -394,7 +425,7 @@ export async function getArticleFromSupabase(articleId) {
     }
 
     const data = await response.json();
-    return data;
+    return data && data.length > 0 ? normalizeArticleRow(data[0]) : null;
   } catch (error) {
     console.error('Error obteniendo artículo:', error);
     return null;
@@ -411,7 +442,7 @@ export async function searchArticlesInSupabase(query) {
     if (!query || query.length < 2) return [];
 
     const response = await fetch(
-      `${API_URL}/articles/search?q=${encodeURIComponent(query)}`,
+      `${API_URL}/base_conocimientos?activo=eq.true&or=(titulo.ilike.%${encodeURIComponent(query)}%,resumen.ilike.%${encodeURIComponent(query)}%,contenido.ilike.%${encodeURIComponent(query)}%)&select=*`,
       {
         method: 'GET',
         headers: AUTH_HEADER
@@ -424,7 +455,7 @@ export async function searchArticlesInSupabase(query) {
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map(normalizeArticleRow) : [];
   } catch (error) {
     console.error('Error buscando artículos:', error);
     return [];
@@ -439,7 +470,7 @@ export async function searchArticlesInSupabase(query) {
 export async function getArticlesByCategoryFromSupabase(category) {
   try {
     const response = await fetch(
-      `${API_URL}/articles/category/${encodeURIComponent(category)}?status=published`,
+      `${API_URL}/base_conocimientos?categoria=eq.${encodeURIComponent(category)}&activo=eq.true&order=fecha_creacion.desc&select=*`,
       {
         method: 'GET',
         headers: AUTH_HEADER
@@ -452,7 +483,7 @@ export async function getArticlesByCategoryFromSupabase(category) {
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map(normalizeArticleRow) : [];
   } catch (error) {
     console.error('Error obteniendo artículos por categoría:', error);
     return [];
@@ -469,12 +500,47 @@ export async function getArticlesByCategoryFromSupabase(category) {
  * @param {number} offset - Offset para paginación
  * @returns {Promise<Array>} - Array de recetas
  */
+/**
+ * Normaliza una fila real de `recetas` (esquema en español: nombre_es,
+ * imagen_url, destacada, nueva, nivel_acceso...) a los campos en inglés
+ * que espera recipesService.js (title, featured, image, difficulty...).
+ * @param {Object} row - Fila cruda de Supabase
+ * @returns {Object} - Receta normalizada
+ */
+function normalizeRecipeRow(row) {
+  if (!row) return row;
+  return {
+    id: row.id,
+    title: row.nombre_es,
+    name_ca: row.nombre_ca,
+    name_en: row.nombre_en,
+    category: row.categoria,
+    meal_type: row.tipo_comida,
+    tier: row.nivel_acceso === 'gratis' ? 'free' : row.nivel_acceso,
+    calories: row.calorias ?? row.kcal,
+    protein: row.proteina_g ?? row.proteinas,
+    carbs: row.carbos_g ?? row.carbohidratos,
+    fat: row.grasas_g ?? row.grasas,
+    prep_time: row.tiempo_preparacion ?? row.tiempo_min,
+    difficulty: row.dificultad,
+    ingredients: row.ingredientes,
+    steps: row.pasos,
+    image: row.imagen_url,
+    featured: row.destacada === true,
+    isNew: row.nueva === true,
+    active: row.activa !== false,
+    tags: row.etiquetas || [],
+    slug: row.slug,
+    created_at: row.fecha_creacion
+  };
+}
+
 export async function getRecipesFromSupabase(limit = 999, offset = 0) {
   try {
     console.log('🍽️ Obteniendo recetas desde Supabase...');
-    
+
     const response = await fetch(
-      `${API_URL}/recetas?order=created_at.desc&limit=${limit}&offset=${offset}&select=*`,
+      `${API_URL}/recetas?order=fecha_creacion.desc&limit=${limit}&offset=${offset}&select=*`,
       {
         method: 'GET',
         headers: AUTH_HEADER
@@ -488,7 +554,7 @@ export async function getRecipesFromSupabase(limit = 999, offset = 0) {
 
     const data = await response.json();
     console.log(`✅ ${data.length || 0} recetas obtenidas`);
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map(normalizeRecipeRow) : [];
   } catch (error) {
     console.error('❌ Error obteniendo recetas:', error);
     return [];
@@ -516,7 +582,7 @@ export async function getRecipeFromSupabase(recipeId) {
     }
 
     const data = await response.json();
-    return data && data.length > 0 ? data[0] : null;
+    return data && data.length > 0 ? normalizeRecipeRow(data[0]) : null;
   } catch (error) {
     console.error('❌ Error obteniendo receta:', error);
     return null;
@@ -612,15 +678,34 @@ export async function filterRecipesInSupabase(filters = {}) {
  * @param {string} status - Estado de los módulos (published, draft, all)
  * @returns {Promise<Array>} - Array de módulos educativos
  */
+/**
+ * Normaliza una fila real de `modulos_educativos` (titulo, descripcion,
+ * orden, activo) a los campos genéricos que usa el resto de la app.
+ */
+function normalizeModuleRow(row) {
+  if (!row) return row;
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.titulo,
+    description: row.descripcion,
+    order_index: row.orden,
+    category: row.categoria,
+    active: row.activo !== false,
+    image: null,
+    created_at: row.fecha_creacion
+  };
+}
+
 export async function getEducationalModulesFromSupabase(status = 'published') {
   try {
     console.log('📚 Obteniendo módulos educativos desde Supabase...');
-    
+
     let query = `${API_URL}/modulos_educativos?`;
     if (status !== 'all') {
-      query += `status=eq.${status}&`;
+      query += `activo=eq.true&`;
     }
-    query += `order=order_index.asc&select=*`;
+    query += `order=orden.asc&select=*`;
 
     const response = await fetch(query, {
       method: 'GET',
@@ -634,7 +719,7 @@ export async function getEducationalModulesFromSupabase(status = 'published') {
 
     const data = await response.json();
     console.log(`✅ ${data.length || 0} módulos educativos obtenidos`);
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map(normalizeModuleRow) : [];
   } catch (error) {
     console.error('❌ Error obteniendo módulos educativos:', error);
     return [];
@@ -662,7 +747,7 @@ export async function getEducationalModuleFromSupabase(moduleId) {
     }
 
     const data = await response.json();
-    return data && data.length > 0 ? data[0] : null;
+    return data && data.length > 0 ? normalizeModuleRow(data[0]) : null;
   } catch (error) {
     console.error('❌ Error obteniendo módulo:', error);
     return null;
@@ -741,10 +826,30 @@ export async function getNutritionalPlanFromSupabase(planId) {
  * @param {number} offset - Offset para paginación
  * @returns {Promise<Array>} - Array de protocolos
  */
+/**
+ * Normaliza una fila real de `protocolos` (nombre, descripcion, objetivo,
+ * evidencia, activo) a los campos genéricos que usa el resto de la app.
+ */
+function normalizeProtocolRow(row) {
+  if (!row) return row;
+  return {
+    id: row.id,
+    name: row.nombre,
+    title: row.nombre,
+    description: row.descripcion,
+    content: row.descripcion || '',
+    objective: row.objetivo,
+    evidence: row.evidencia,
+    active: row.activo !== false,
+    image: null,
+    created_at: row.created_at
+  };
+}
+
 export async function getProtocolsFromSupabase(limit = 999, offset = 0) {
   try {
     console.log('🔬 Obteniendo protocolos desde Supabase...');
-    
+
     const response = await fetch(
       `${API_URL}/protocolos?order=created_at.desc&limit=${limit}&offset=${offset}&select=*`,
       {
@@ -760,7 +865,7 @@ export async function getProtocolsFromSupabase(limit = 999, offset = 0) {
 
     const data = await response.json();
     console.log(`✅ ${data.length || 0} protocolos obtenidos`);
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map(normalizeProtocolRow) : [];
   } catch (error) {
     console.error('❌ Error obteniendo protocolos:', error);
     return [];
@@ -788,7 +893,7 @@ export async function getProtocolFromSupabase(protocolId) {
     }
 
     const data = await response.json();
-    return data && data.length > 0 ? data[0] : null;
+    return data && data.length > 0 ? normalizeProtocolRow(data[0]) : null;
   } catch (error) {
     console.error('❌ Error obteniendo protocolo:', error);
     return null;
@@ -807,7 +912,7 @@ export async function searchProtocolsInSupabase(query) {
     console.log(`🔍 Buscando protocolos: ${query}`);
     
     const response = await fetch(
-      `${API_URL}/protocolos?or=(name.ilike.%${encodeURIComponent(query)}%,description.ilike.%${encodeURIComponent(query)}%,content.ilike.%${encodeURIComponent(query)}%)&select=*`,
+      `${API_URL}/protocolos?or=(nombre.ilike.%${encodeURIComponent(query)}%,descripcion.ilike.%${encodeURIComponent(query)}%,objetivo.ilike.%${encodeURIComponent(query)}%)&select=*`,
       {
         method: 'GET',
         headers: AUTH_HEADER
@@ -820,7 +925,7 @@ export async function searchProtocolsInSupabase(query) {
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map(normalizeProtocolRow) : [];
   } catch (error) {
     console.error('❌ Error buscando protocolos:', error);
     return [];
@@ -1127,9 +1232,10 @@ export async function getReferencesBySupplementFromSupabase(supplementId) {
 export async function getFeaturedArticlesFromSupabase(limit = 5) {
   try {
     console.log('⭐ Obteniendo artículos destacados...');
-    
+
+    // base_conocimientos no tiene columna "featured": usamos los más recientes
     const response = await fetch(
-      `${API_URL}/articles?featured=eq.true&order=created_at.desc&limit=${limit}&select=*`,
+      `${API_URL}/base_conocimientos?activo=eq.true&order=fecha_creacion.desc&limit=${limit}&select=*`,
       {
         method: 'GET',
         headers: AUTH_HEADER
@@ -1142,7 +1248,7 @@ export async function getFeaturedArticlesFromSupabase(limit = 5) {
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map(normalizeArticleRow) : [];
   } catch (error) {
     console.error('❌ Error obteniendo artículos destacados:', error);
     return [];
