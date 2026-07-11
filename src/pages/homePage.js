@@ -54,7 +54,13 @@ const languageNames = {
 
 const translations = {
   es: {
-    brandTag: 'ISOCORE',
+    brandTag: '    let STRIPE_PUBLIC_KEY = null;
+    
+    async function initializeStripeKey() {
+      const response = await fetch('https://n8n.srv1569124.hstgr.cloud/webhook/stripe-config');
+      const data = await response.json();
+      STRIPE_PUBLIC_KEY = data.publicKey;
+    }',
     brandSubtitle: 'NUTRICIÓN',
     headerLogoText: 'ISOCORE',
     headerLogoUrl: './src/assets/isocore-logo.png',
@@ -1475,26 +1481,26 @@ export async function renderHomePage() {
           <div class="header-block header-module">
             <span class="header-label" data-i18n="headerCompanyModuleB">${t.headerCompanyModuleB}</span>
           </div>
+          <div class="header-block header-search">
+            <div class="search-container">
+              <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input
+                  id="searchInput"
+                  type="text"
+                  placeholder="Buscar artículos, recetas, suplementos, recursos..."
+                  autocomplete="off"
+                />
+                <button class="search-clear-btn" id="searchClearBtn" type="button" title="Limpiar búsqueda">✕</button>
+              </div>
+              <div class="search-results-dropdown" id="searchResultsDropdown"></div>
+            </div>
+          </div>
           <div class="header-block header-actions">
             <button id="languageToggle" class="language-toggle" type="button" aria-live="polite">${languageCodes[language]}</button>
           </div>
         </header>
-        
-        <!-- Barra de búsqueda global -->
-        <section class="search-container" style="margin: 16px auto; padding: 0 20px;">
-          <div class="search-input-wrapper">
-            <span class="search-icon">🔍</span>
-            <input 
-              id="searchInput" 
-              type="text" 
-              placeholder="Buscar artículos, recetas, suplementos, recursos..."
-              autocomplete="off"
-            />
-            <button class="search-clear-btn" id="searchClearBtn" type="button" title="Limpiar búsqueda">✕</button>
-          </div>
-          <div class="search-results-dropdown" id="searchResultsDropdown"></div>
-        </section>
-        
+
         <section class="home-grid">
           <div class="home-panel home-panel-left">
             <div class="home-left-top">

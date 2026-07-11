@@ -22,13 +22,12 @@
 }
 
 .home-header {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr auto;
-  gap: 16px;
+  display: flex;
   align-items: center;
-  padding: 18px 20px;
+  gap: 16px;
+  padding: 12px 22px;
   margin-bottom: 24px;
-  border-radius: 28px;
+  border-radius: 20px;
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
@@ -38,14 +37,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 56px;
-  padding: 0 18px;
-  border-radius: 28px;
-  background: rgba(var(--surface-rgb), 0.95);
+  min-height: 44px;
+  flex: 0 0 auto;
 }
 
 .header-logo-image {
-  max-height: 56px;
+  max-height: 44px;
   width: auto;
   display: block;
 }
@@ -65,14 +62,22 @@
   justify-content: center;
 }
 
+.header-search {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 420px;
+  justify-content: stretch;
+}
+
 .header-actions {
   justify-content: flex-end;
+  margin-left: auto;
 }
 
 .home-footer {
   margin-top: 32px;
   padding: 24px 20px;
-  border-radius: 28px;
+  border-radius: 20px;
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
@@ -134,12 +139,13 @@
 .home-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 20px;
   box-shadow: 0 8px 20px var(--shadow-soft);
   padding: 22px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 24px;
   min-height: 100%;
 }
 
@@ -292,13 +298,13 @@
 }
 
 .home-panel-right {
-  display: grid;
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 20px;
-  min-height: 620px;
 }
 
 .home-card {
@@ -1015,7 +1021,6 @@
 .search-container {
   position: relative;
   width: 100%;
-  max-width: 600px;
 }
 
 .search-input-wrapper {
@@ -1388,6 +1393,12 @@
 
   .header-actions {
     margin-left: auto;
+  }
+
+  .header-search {
+    flex: 1 1 100%;
+    max-width: 100%;
+    order: 3;
   }
 
   /* Grid: una sola columna */
