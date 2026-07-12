@@ -1,6 +1,7 @@
 :root {
   color-scheme: light;
   font-family: 'Manrope', sans-serif;
+  --header-bg: #F4F4EC;
 }
 
 .home-root {
@@ -25,10 +26,12 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 12px 22px;
+  padding: 10px 22px;
   margin-bottom: 24px;
   border-radius: 20px;
-  background: var(--surface);
+  /* Mismo color exacto que el fondo del PNG del logo (#F4F4EC), para que
+     el logo quede integrado sin recuadro visible. */
+  background: var(--header-bg, #F4F4EC);
   border: 1px solid var(--border);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
 }
@@ -37,12 +40,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
+  min-height: 60px;
   flex: 0 0 auto;
 }
 
 .header-logo-image {
-  max-height: 44px;
+  max-height: 60px;
   width: auto;
   display: block;
 }
@@ -1636,7 +1639,11 @@
 
   .header-block {
     padding: 0 10px;
-    min-height: 44px;
+    min-height: 48px;
+  }
+
+  .header-logo-image {
+    max-height: 48px;
   }
 
   .header-logo {
