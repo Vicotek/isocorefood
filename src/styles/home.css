@@ -11,7 +11,15 @@
   justify-content: flex-start;
   min-height: 100vh;
   width: min(1320px, 100%);
-  padding: 32px 20px;
+  padding: 0 20px 32px;
+  background: var(--background);
+}
+
+/* Vive fuera de <main> a propósito: las sub-páginas solo sustituyen <main>,
+   así el header (y el logo como enlace a Home) sobrevive a la navegación. */
+.home-header-wrap {
+  width: min(1320px, 100%);
+  padding: 32px 20px 0;
   background: var(--background);
 }
 
@@ -42,6 +50,15 @@
   justify-content: center;
   min-height: 60px;
   flex: 0 0 auto;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.header-logo {
+  cursor: pointer;
 }
 
 .header-logo-image {

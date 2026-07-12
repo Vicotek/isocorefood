@@ -451,10 +451,11 @@ function renderHeaderHTML(t, language, user) {
     : `<button type="button" class="header-login-btn" id="headerLoginBtn">${t.loginButton || 'Entrar'}</button>`;
 
   return `
+    <div class="home-header-wrap">
     <header class="home-header">
-      <div class="header-block header-logo">
+      <button type="button" class="header-block header-logo" id="headerLogoBtn" title="Ir al inicio" aria-label="Ir al inicio">
         ${t.headerLogoUrl ? `<img src="${t.headerLogoUrl}" alt="${t.headerLogoAlt}" class="header-logo-image" />` : `<span class="header-logo-text" data-i18n="headerLogoText">${t.headerLogoText}</span>`}
-      </div>
+      </button>
 
       <div class="header-block header-menu">
         <button type="button" class="menu-toggle" id="menuToggle" aria-haspopup="true" aria-expanded="false">Menú ▾</button>
@@ -484,6 +485,7 @@ function renderHeaderHTML(t, language, user) {
         ${authSlot}
       </div>
     </header>
+    </div>
   `;
 }
 
@@ -1929,9 +1931,8 @@ function renderPlanComparisonHTML() {
  */
 function renderLandingHTML(t, language) {
   return `
+    ${renderHeaderHTML(t, language, null)}
     <main class="home-root page-shell">
-      ${renderHeaderHTML(t, language, null)}
-
       <section class="landing-grid">
         <div class="landing-col landing-col-hero">
           ${renderHeroCarouselHTML()}
@@ -1966,9 +1967,8 @@ function renderLandingHTML(t, language) {
  */
 function renderDashboardHTML(t, language, user) {
   return `
+    ${renderHeaderHTML(t, language, user)}
     <main class="home-root page-shell">
-      ${renderHeaderHTML(t, language, user)}
-
       <section class="landing-grid dashboard-grid">
         <div class="landing-col dashboard-col-summary" id="dashboardUserSummary">
           <p class="feed-loading">Cargando resumen…</p>
@@ -2008,6 +2008,19 @@ document.addEventListener('click', () => {
   document.getElementById('menuDropdown')?.classList.remove('open');
   document.getElementById('menuToggle')?.setAttribute('aria-expanded', 'false');
 });
+
+// Logo del header = enlace a Home en todas las vistas (Landing, Dashboard y
+// sub-páginas). Delegado en <body> para que funcione aunque el header se
+// re-renderice o la sub-página activa haya sustituido <main>.
+document.body.addEventListener('click', (event) => {
+  if (event.target.closest('#headerLogoBtn')) {
+    window.homePage_goHome();
+  }
+});
+
+window.homePage_goHome = () => {
+  renderHomePage();
+};
 
 function initMenuDropdown() {
   const toggle = document.getElementById('menuToggle');
