@@ -1,12 +1,12 @@
 :root {
   color-scheme: light;
   font-family: 'Inter', -apple-system, 'SF Pro Text', system-ui, 'Manrope', sans-serif;
-  background: #F8F7F2;
+  background: #184A3A;
   color: #1F2833;
   font-size: 16px;
   line-height: 1.6;
   /* Design system — Master Prompt V1.0 */
-  --background: #F8F7F2;
+  --background: #184A3A;
   --surface: #FFFFFF;
   --surface-rgb: 255, 255, 255;
   --card: #FFFFFF;
