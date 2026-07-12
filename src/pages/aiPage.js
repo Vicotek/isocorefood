@@ -5,6 +5,7 @@
  */
 
 import * as AIService from '../services/aiService.js';
+import { getIcon } from '../components/icons.js';
 
 /**
  * Renderizar página del Centro IA
@@ -22,9 +23,9 @@ export function renderAIPage() {
         <!-- Sidebar: Historial -->
         <aside class="ai-sidebar">
           <div class="ai-sidebar-header">
-            <h3>🤖 Mi Centro IA</h3>
+            <h3>${getIcon('robot', 20)} Mi Centro IA</h3>
             <button id="aiNewChatBtn" class="icon-button" title="Nuevo chat">
-              ➕
+              ${getIcon('plus', 18)}
             </button>
           </div>
           <div id="aiConversationsList" class="ai-conversations-list">
@@ -41,14 +42,14 @@ export function renderAIPage() {
               <p class="ai-subtitle">Recomendaciones basadas en evidencia científica</p>
             </div>
             <div class="ai-header-info">
-              <span class="ai-source-badge">📚 Basado en IsoCore</span>
+              <span class="ai-source-badge">${getIcon('book', 14)} Basado en IsoCore</span>
             </div>
           </header>
 
           <!-- Mensajes del chat -->
           <div id="aiChatMessages" class="ai-chat-messages">
             <div class="ai-welcome">
-              <div class="ai-welcome-icon">🤖</div>
+              <div class="ai-welcome-icon">${getIcon('robot', 32)}</div>
               <h3>¡Bienvenido al Centro IA!</h3>
               <p>Hago recomendaciones de suplementos, recetas, artículos y recursos basadas en tu pregunta.</p>
               <p class="ai-welcome-note">Toda la información proviene de fuentes validadas de IsoCore.</p>
@@ -72,10 +73,10 @@ export function renderAIPage() {
                 autocomplete="off"
               />
               <button type="submit" class="ai-send-button" id="aiSendBtn">
-                📤 Enviar
+                ${getIcon('send', 16)} Enviar
               </button>
             </form>
-            <p class="ai-input-help">💡 Pregunta sobre suplementos, recetas, nutrición o analíticas</p>
+            <p class="ai-input-help">${getIcon('info', 14)} Pregunta sobre suplementos, recetas, nutrición o analíticas</p>
           </footer>
         </main>
       </div>
@@ -262,7 +263,7 @@ async function handleSendMessage(e) {
       errorDiv.className = 'ai-message ai-bot-message ai-error';
       errorDiv.innerHTML = `
         <div class="ai-message-content">
-          <p>⚠️ ${result.error}</p>
+          <p>${getIcon('warning', 16)} ${result.error}</p>
         </div>
       `;
       messagesContainer.appendChild(errorDiv);
@@ -290,13 +291,13 @@ async function handleSendMessage(e) {
     errorDiv.className = 'ai-message ai-bot-message ai-error';
     errorDiv.innerHTML = `
       <div class="ai-message-content">
-        <p>⚠️ Error procesando tu pregunta. Intenta de nuevo.</p>
+        <p>${getIcon('warning', 16)} Error procesando tu pregunta. Intenta de nuevo.</p>
       </div>
     `;
     messagesContainer.appendChild(errorDiv);
   } finally {
     sendBtn.disabled = false;
-    sendBtn.textContent = '📤 Enviar';
+    sendBtn.innerHTML = `${getIcon('send', 16)} Enviar`;
     input.focus();
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
@@ -312,7 +313,7 @@ async function handleNewChat() {
   if (messagesContainer) {
     messagesContainer.innerHTML = `
       <div class="ai-welcome">
-        <div class="ai-welcome-icon">🤖</div>
+        <div class="ai-welcome-icon">${getIcon('robot', 32)}</div>
         <h3>¡Nuevo chat iniciado!</h3>
         <p>Hago recomendaciones de suplementos, recetas, artículos y recursos basadas en tu pregunta.</p>
       </div>
@@ -349,7 +350,7 @@ function renderSources(sources) {
   });
 
   let html = '<div class="ai-sources">';
-  html += '<p class="sources-title">📚 Fuentes:</p>';
+  html += `<p class="sources-title">${getIcon('book', 14)} Fuentes:</p>`;
 
   Object.entries(byType).forEach(([type, items]) => {
     html += `<div class="source-group source-${type}">`;
@@ -362,8 +363,8 @@ function renderSources(sources) {
         <div class="source-item">
           <p class="source-title">${source.title}</p>
           ${source.description ? `<p class="source-desc">${truncateText(source.description, 80)}</p>` : ''}
-          ${source.benefits ? `<p class="source-meta">💪 ${source.benefits}</p>` : ''}
-          ${source.dosage ? `<p class="source-meta">⚖️ ${source.dosage}</p>` : ''}
+          ${source.benefits ? `<p class="source-meta">${getIcon('muscle', 14)} ${source.benefits}</p>` : ''}
+          ${source.dosage ? `<p class="source-meta">${getIcon('scale', 14)} ${source.dosage}</p>` : ''}
           ${source.author ? `<p class="source-author">Por ${source.author}</p>` : ''}
           ${source.url ? `<a href="${source.url}" target="_blank" class="source-link">Ver más →</a>` : ''}
         </div>
@@ -382,10 +383,10 @@ function renderSources(sources) {
  */
 function getSourceTypeLabel(type) {
   const labels = {
-    'article': '📄 Artículos',
-    'recipe': '🍽️ Recetas',
-    'supplement': '💊 Suplementos',
-    'resource': '📖 Recursos'
+    'article': `${getIcon('book', 14)} Artículos`,
+    'recipe': `${getIcon('leaf', 14)} Recetas`,
+    'supplement': `${getIcon('droplet', 14)} Suplementos`,
+    'resource': `${getIcon('book', 14)} Recursos`
   };
   return labels[type] || type;
 }

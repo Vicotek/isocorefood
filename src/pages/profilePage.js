@@ -6,6 +6,7 @@
 import * as ProfileService from '../services/profileService.js';
 import * as FavoritesService from '../services/favoritesService.js';
 import { API_URL, AUTH_HEADER } from '../services/supabaseClient.js';
+import { getIcon } from '../components/icons.js';
 
 /**
  * Renderizar página de perfil
@@ -34,12 +35,12 @@ export function renderProfilePage() {
     <div class="profile-main-content">
       <!-- Tabs de navegación -->
       <div class="profile-tabs">
-        <button class="profile-tab active" data-tab="personal">👤 Personal</button>
-        <button class="profile-tab" data-tab="objetivos">🎯 Objetivos</button>
-        <button class="profile-tab" data-tab="favoritos">❤️ Favoritos</button>
-        <button class="profile-tab" data-tab="historial">📜 Historial</button>
-        <button class="profile-tab" data-tab="notificaciones">🔔 Notificaciones</button>
-        <button class="profile-tab" data-tab="preferencias">⚙️ Preferencias</button>
+        <button class="profile-tab active" data-tab="personal">${getIcon('user', 16)} Personal</button>
+        <button class="profile-tab" data-tab="objetivos">${getIcon('target', 16)} Objetivos</button>
+        <button class="profile-tab" data-tab="favoritos">${getIcon('heart', 16)} Favoritos</button>
+        <button class="profile-tab" data-tab="historial">${getIcon('clock', 16)} Historial</button>
+        <button class="profile-tab" data-tab="notificaciones">${getIcon('bell', 16)} Notificaciones</button>
+        <button class="profile-tab" data-tab="preferencias">${getIcon('gear', 16)} Preferencias</button>
       </div>
 
       <!-- Contenido de tabs -->
@@ -72,7 +73,7 @@ export function renderProfilePage() {
                 <div class="profile-preview" id="profilePreview"></div>
               </div>
 
-              <button class="btn btn-primary" id="savePersonalBtn">💾 Guardar Cambios</button>
+              <button class="btn btn-primary" id="savePersonalBtn">${getIcon('save', 16)} Guardar Cambios</button>
             </div>
           </div>
 
@@ -91,25 +92,25 @@ export function renderProfilePage() {
             
             <div class="goals-grid">
               <div class="goal-card" data-goal="general">
-                <div class="goal-icon">⚖️</div>
+                <div class="goal-icon">${getIcon('scale', 26)}</div>
                 <h3>Bienestar General</h3>
                 <p>Mantener una buena salud y energía</p>
               </div>
 
               <div class="goal-card" data-goal="weight_loss">
-                <div class="goal-icon">📉</div>
+                <div class="goal-icon">${getIcon('trendDown', 26)}</div>
                 <h3>Pérdida de Peso</h3>
                 <p>Reducir peso de forma saludable</p>
               </div>
 
               <div class="goal-card" data-goal="muscle_gain">
-                <div class="goal-icon">💪</div>
+                <div class="goal-icon">${getIcon('muscle', 26)}</div>
                 <h3>Ganancia Muscular</h3>
                 <p>Aumentar masa muscular</p>
               </div>
 
               <div class="goal-card" data-goal="performance">
-                <div class="goal-icon">⚡</div>
+                <div class="goal-icon">${getIcon('flash', 26)}</div>
                 <h3>Rendimiento Deportivo</h3>
                 <p>Optimizar rendimiento atlético</p>
               </div>
@@ -154,15 +155,15 @@ export function renderProfilePage() {
             <div class="language-options">
               <label class="radio-option">
                 <input type="radio" name="language" value="es" class="language-radio">
-                <span>🇪🇸 Español</span>
+                <span>Español</span>
               </label>
               <label class="radio-option">
                 <input type="radio" name="language" value="en" class="language-radio">
-                <span>🇬🇧 English</span>
+                <span>English</span>
               </label>
               <label class="radio-option">
                 <input type="radio" name="language" value="pt" class="language-radio">
-                <span>🇧🇷 Português</span>
+                <span>Português</span>
               </label>
             </div>
           </div>
@@ -177,13 +178,13 @@ export function renderProfilePage() {
 
           <div class="profile-section">
             <h2>Seguridad</h2>
-            <button class="btn btn-secondary" id="changePasswordBtn">🔐 Cambiar Contraseña</button>
-            <button class="btn btn-secondary" id="exportDataBtn">📤 Exportar Mis Datos (GDPR)</button>
+            <button class="btn btn-secondary" id="changePasswordBtn">${getIcon('lock', 16)} Cambiar Contraseña</button>
+            <button class="btn btn-secondary" id="exportDataBtn">${getIcon('download', 16)} Exportar Mis Datos (GDPR)</button>
           </div>
 
           <div class="profile-section danger-zone">
             <h2>Zona de Peligro</h2>
-            <button class="btn btn-danger" id="deleteAccountBtn">🗑️ Eliminar Cuenta</button>
+            <button class="btn btn-danger" id="deleteAccountBtn">${getIcon('trash', 16)} Eliminar Cuenta</button>
           </div>
         </div>
 
@@ -303,9 +304,9 @@ async function loadProfileData() {
 function displayPlanInfo(profile) {
   const planDisplay = document.getElementById('planDisplay');
   const planInfo = {
-    'free': { icon: '🆓', name: 'Plan Gratuito', color: '#8CC63F' },
-    'premium': { icon: '⭐', name: 'Plan Premium', color: '#FFD700' },
-    'vip': { icon: '👑', name: 'Plan VIP', color: '#FF6B6B' }
+    'free': { icon: getIcon('bag', 28), name: 'Plan Gratuito', color: '#8CC63F' },
+    'premium': { icon: getIcon('star', 28), name: 'Plan Premium', color: '#FFD700' },
+    'vip': { icon: getIcon('crown', 28), name: 'Plan VIP', color: '#FF6B6B' }
   };
 
   const plan = planInfo[profile.active_plan || 'free'];
@@ -336,13 +337,13 @@ async function loadFavorites() {
 
     favoritesList.innerHTML = favorites.map(fav => `
       <div class="favorite-item">
-        <div class="favorite-icon">${fav.type === 'articles' ? '📄' : '🏪'}</div>
+        <div class="favorite-icon">${fav.type === 'articles' ? getIcon('book', 20) : getIcon('storefront', 20)}</div>
         <div class="favorite-info">
           <h4>${fav.item_title}</h4>
           <p>${fav.item_description || 'Sin descripción'}</p>
           <small>Agregado: ${new Date(fav.created_at).toLocaleDateString('es-ES')}</small>
         </div>
-        <button class="btn-small btn-danger" onclick="removeFavorite('${fav.id}')">✕</button>
+        <button class="btn-small btn-danger" onclick="removeFavorite('${fav.id}')">${getIcon('close', 14)}</button>
       </div>
     `).join('');
   } catch (error) {
@@ -397,7 +398,7 @@ async function loadNotifications() {
 
     notificationsList.innerHTML = notifications.map(notif => `
       <div class="notification-item ${notif.read ? 'read' : 'unread'}">
-        <div class="notification-icon">${notif.type === 'info' ? 'ℹ️' : notif.type === 'warning' ? '⚠️' : '✅'}</div>
+        <div class="notification-icon">${notif.type === 'info' ? getIcon('info', 18) : notif.type === 'warning' ? getIcon('warning', 18) : getIcon('check', 18)}</div>
         <div class="notification-info">
           <h4>${notif.title}</h4>
           <p>${notif.message}</p>
@@ -457,7 +458,7 @@ function setupEventListeners() {
     };
 
     await ProfileService.updateProfile(updates);
-    alert('✅ Perfil actualizado');
+    alert('Perfil actualizado');
     loadProfileData();
   });
 
@@ -502,19 +503,19 @@ function setupEventListeners() {
     const confirm = document.getElementById('confirmPassword').value;
 
     if (newPass !== confirm) {
-      alert('❌ Las contraseñas no coinciden');
+      alert('Las contraseñas no coinciden');
       return;
     }
 
     const success = await ProfileService.changePassword(current, newPass);
     if (success) {
-      alert('✅ Contraseña cambiada exitosamente');
+      alert('Contraseña cambiada exitosamente');
       document.getElementById('passwordModal').style.display = 'none';
       document.getElementById('currentPassword').value = '';
       document.getElementById('newPassword').value = '';
       document.getElementById('confirmPassword').value = '';
     } else {
-      alert('❌ Error al cambiar contraseña');
+      alert('Error al cambiar contraseña');
     }
   });
 
@@ -529,7 +530,7 @@ function setupEventListeners() {
       a.href = url;
       a.download = `isocore-datos-${new Date().toISOString().split('T')[0]}.json`;
       a.click();
-      alert('✅ Datos exportados correctamente');
+      alert('Datos exportados correctamente');
     }
   });
 
@@ -544,13 +545,13 @@ function setupEventListeners() {
  */
 function getHistoryIcon(action) {
   const icons = {
-    'view': '👁️',
-    'favorite': '❤️',
-    'search': '🔍',
-    'download': '📥',
-    'share': '📤'
+    'view': getIcon('eye', 16),
+    'favorite': getIcon('heart', 16),
+    'search': getIcon('search', 16),
+    'download': getIcon('download', 16),
+    'share': getIcon('send', 16)
   };
-  return icons[action] || '📝';
+  return icons[action] || getIcon('edit', 16);
 }
 
 /**

@@ -75,12 +75,36 @@ const FREE_PLAN_CONFIG = {
 // Slides del carrusel hero — config, nunca hardcodeado en el componente.
 // Imágenes V1 provisionales; sustituir "image" más adelante sin tocar lógica.
 const heroSlides = [
-  { tag: 'Plato saludable', image: null, title: 'Nutrición basada en evidencia', subtitle: 'Planes reales, resultados medibles.', cta: 'Empieza Gratis' },
-  { tag: 'Suplemento', image: null, title: 'Suplementación con criterio', subtitle: 'Solo lo que tu cuerpo necesita, con respaldo científico.', cta: 'Empieza Gratis' },
-  { tag: 'Ebook / Infoproducto', image: null, title: 'Recursos para llevar', subtitle: 'Guías y materiales descargables, siempre a mano.', cta: 'Empieza Gratis' },
-  { tag: 'IA / Tecnología', image: null, title: 'Tu asistente nutricional', subtitle: 'Respuestas claras, cuando las necesitas.', cta: 'Empieza Gratis' },
-  { tag: 'Plan nutricional', image: null, title: 'Un plan hecho para ti', subtitle: 'Ajustado a tus objetivos y tu día a día.', cta: 'Empieza Gratis' }
+  { tag: 'Plato saludable', image: './src/assets/stock/hero-plato-saludable.jpg', title: 'Nutrición basada en evidencia', subtitle: 'Planes reales, resultados medibles.', cta: 'Empieza Gratis' },
+  { tag: 'Suplemento', image: './src/assets/stock/hero-suplemento.jpg', title: 'Suplementación con criterio', subtitle: 'Solo lo que tu cuerpo necesita, con respaldo científico.', cta: 'Empieza Gratis' },
+  { tag: 'Ebook / Infoproducto', image: './src/assets/stock/hero-ebook.jpg', title: 'Recursos para llevar', subtitle: 'Guías y materiales descargables, siempre a mano.', cta: 'Empieza Gratis' },
+  { tag: 'IA / Tecnología', image: './src/assets/stock/hero-ia-tecnologia.jpg', title: 'Tu asistente nutricional', subtitle: 'Respuestas claras, cuando las necesitas.', cta: 'Empieza Gratis' },
+  { tag: 'Plan nutricional', image: './src/assets/stock/hero-plan-nutricional.jpg', title: 'Un plan hecho para ti', subtitle: 'Ajustado a tus objetivos y tu día a día.', cta: 'Empieza Gratis' }
 ];
+
+// Imágenes de apoyo para las tarjetas del feed central cuando el contenido
+// de Supabase no trae imagen propia — config, no embebidas en el markup.
+// "receta" tiene variantes: si la receta activa es de tipo bebida/batido,
+// se usa la imagen específica en su lugar.
+const FEED_FALLBACK_IMAGES = {
+  article: './src/assets/stock/card-articulo.jpg',
+  recipe: './src/assets/stock/card-receta.jpg',
+  recipeJuice: './src/assets/stock/card-receta-zumo.jpg',
+  recipeSmoothie: './src/assets/stock/card-receta-smoothie.jpg',
+  protocol: './src/assets/stock/card-protocolo.jpg',
+  resource: './src/assets/stock/card-recurso.jpg',
+  supplement: './src/assets/stock/card-suplemento.jpg'
+};
+
+function resolveFeedImage(item, type) {
+  if (item?.image) return item.image;
+  if (type === 'recipe') {
+    const haystack = `${item?.category || ''} ${item?.meal_type || ''} ${(item?.tags || []).join(' ')}`.toLowerCase();
+    if (haystack.includes('zumo') || haystack.includes('juice')) return FEED_FALLBACK_IMAGES.recipeJuice;
+    if (haystack.includes('batido') || haystack.includes('smoothie')) return FEED_FALLBACK_IMAGES.recipeSmoothie;
+  }
+  return FEED_FALLBACK_IMAGES[type] || null;
+}
 
 const LANGUAGE_KEY = 'isocore_home_language';
 const supportedLanguages = ['es', 'en', 'ca'];
@@ -715,8 +739,9 @@ function createFeedCard(item, type, typeLabel, state = 'loaded') {
   const locked = !canAccessTier(item.tier || 'free');
   const title = item.title || 'Sin título';
   const summary = truncateText(item.summary || item.description || '', 140);
-  const media = item.image
-    ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(title)}" class="feed-card-image" loading="lazy" />`
+  const resolvedImage = resolveFeedImage(item, type);
+  const media = resolvedImage
+    ? `<img src="${escapeHtml(resolvedImage)}" alt="${escapeHtml(title)}" class="feed-card-image" loading="lazy" />`
     : `<div class="feed-card-image feed-card-image-placeholder">${getIconSVG(type)}</div>`;
 
   const cta = locked

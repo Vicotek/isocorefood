@@ -5,6 +5,7 @@
  */
 
 import * as AdminService from '../services/adminService.js';
+import { getIcon } from '../components/icons.js';
 
 /**
  * Renderizar página de administración
@@ -21,7 +22,7 @@ export function renderAdminPage() {
       <!-- Header -->
       <header class="admin-header">
         <div class="admin-header-content">
-          <h1>🔧 Panel de Administración</h1>
+          <h1>${getIcon('lock', 24)} Panel de Administración</h1>
           <p>Gestión completa de la plataforma IsoCore</p>
         </div>
         <div class="admin-header-info">
@@ -31,14 +32,14 @@ export function renderAdminPage() {
 
       <!-- Tabs de secciones -->
       <div class="admin-tabs">
-        <button class="admin-tab active" data-tab="stats">📊 Estadísticas</button>
-        <button class="admin-tab" data-tab="users">👥 Usuarios</button>
-        <button class="admin-tab" data-tab="articles">📚 Artículos</button>
-        <button class="admin-tab" data-tab="recipes">🍽️ Recetas</button>
-        <button class="admin-tab" data-tab="supplements">💊 Suplementos</button>
-        <button class="admin-tab" data-tab="resources">📖 Recursos</button>
-        <button class="admin-tab" data-tab="ai">🤖 IA</button>
-        <button class="admin-tab" data-tab="plans">📋 Planes</button>
+        <button class="admin-tab active" data-tab="stats">${getIcon('chart', 16)} Estadísticas</button>
+        <button class="admin-tab" data-tab="users">${getIcon('users', 16)} Usuarios</button>
+        <button class="admin-tab" data-tab="articles">${getIcon('book', 16)} Artículos</button>
+        <button class="admin-tab" data-tab="recipes">${getIcon('leaf', 16)} Recetas</button>
+        <button class="admin-tab" data-tab="supplements">${getIcon('droplet', 16)} Suplementos</button>
+        <button class="admin-tab" data-tab="resources">${getIcon('book', 16)} Recursos</button>
+        <button class="admin-tab" data-tab="ai">${getIcon('robot', 16)} IA</button>
+        <button class="admin-tab" data-tab="plans">${getIcon('clipboard', 16)} Planes</button>
       </div>
 
       <!-- Contenido de tabs -->
@@ -47,42 +48,42 @@ export function renderAdminPage() {
         <div id="stats-tab" class="admin-section active">
           <div class="stats-grid">
             <div class="stat-card">
-              <div class="stat-icon">👥</div>
+              <div class="stat-icon">${getIcon('users', 26)}</div>
               <div class="stat-info">
                 <p class="stat-label">Usuarios</p>
                 <p class="stat-value" id="statUsers">-</p>
               </div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon">📚</div>
+              <div class="stat-icon">${getIcon('book', 26)}</div>
               <div class="stat-info">
                 <p class="stat-label">Artículos</p>
                 <p class="stat-value" id="statArticles">-</p>
               </div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon">🍽️</div>
+              <div class="stat-icon">${getIcon('leaf', 26)}</div>
               <div class="stat-info">
                 <p class="stat-label">Recetas</p>
                 <p class="stat-value" id="statRecipes">-</p>
               </div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon">💊</div>
+              <div class="stat-icon">${getIcon('droplet', 26)}</div>
               <div class="stat-info">
                 <p class="stat-label">Suplementos</p>
                 <p class="stat-value" id="statSupplements">-</p>
               </div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon">📖</div>
+              <div class="stat-icon">${getIcon('book', 26)}</div>
               <div class="stat-info">
                 <p class="stat-label">Recursos</p>
                 <p class="stat-value" id="statResources">-</p>
               </div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon">🤖</div>
+              <div class="stat-icon">${getIcon('robot', 26)}</div>
               <div class="stat-info">
                 <p class="stat-label">IA Conversaciones</p>
                 <p class="stat-value" id="statConversations">-</p>
@@ -94,7 +95,7 @@ export function renderAdminPage() {
         <!-- USUARIOS -->
         <div id="users-tab" class="admin-section">
           <div class="admin-section-header">
-            <h2>👥 Gestión de Usuarios</h2>
+            <h2>${getIcon('users', 20)} Gestión de Usuarios</h2>
             <div class="section-controls">
               <input type="text" id="usersSearch" class="admin-search" placeholder="Buscar usuarios...">
               <button class="admin-btn primary" id="addUserBtn">+ Nuevo Usuario</button>
@@ -108,7 +109,7 @@ export function renderAdminPage() {
         <!-- ARTÍCULOS -->
         <div id="articles-tab" class="admin-section">
           <div class="admin-section-header">
-            <h2>📚 Gestión de Artículos</h2>
+            <h2>${getIcon('book', 20)} Gestión de Artículos</h2>
             <div class="section-controls">
               <input type="text" id="articlesSearch" class="admin-search" placeholder="Buscar artículos...">
               <select id="articlesFilter" class="admin-filter">
@@ -127,7 +128,7 @@ export function renderAdminPage() {
         <!-- RECETAS -->
         <div id="recipes-tab" class="admin-section">
           <div class="admin-section-header">
-            <h2>🍽️ Gestión de Recetas</h2>
+            <h2>${getIcon('leaf', 20)} Gestión de Recetas</h2>
             <div class="section-controls">
               <input type="text" id="recipesSearch" class="admin-search" placeholder="Buscar recetas...">
               <select id="recipesFilter" class="admin-filter">
@@ -146,7 +147,7 @@ export function renderAdminPage() {
         <!-- SUPLEMENTOS -->
         <div id="supplements-tab" class="admin-section">
           <div class="admin-section-header">
-            <h2>💊 Gestión de Suplementos</h2>
+            <h2>${getIcon('droplet', 20)} Gestión de Suplementos</h2>
             <div class="section-controls">
               <input type="text" id="supplementsSearch" class="admin-search" placeholder="Buscar suplementos...">
               <select id="supplementsFilter" class="admin-filter">
@@ -165,7 +166,7 @@ export function renderAdminPage() {
         <!-- RECURSOS -->
         <div id="resources-tab" class="admin-section">
           <div class="admin-section-header">
-            <h2>📖 Gestión de Recursos</h2>
+            <h2>${getIcon('book', 20)} Gestión de Recursos</h2>
             <div class="section-controls">
               <input type="text" id="resourcesSearch" class="admin-search" placeholder="Buscar recursos...">
               <select id="resourcesFilter" class="admin-filter">
@@ -184,7 +185,7 @@ export function renderAdminPage() {
         <!-- IA -->
         <div id="ai-tab" class="admin-section">
           <div class="admin-section-header">
-            <h2>🤖 Gestión de IA</h2>
+            <h2>${getIcon('robot', 20)} Gestión de IA</h2>
             <div class="section-controls">
               <input type="text" id="aiSearch" class="admin-search" placeholder="Buscar conversaciones...">
             </div>
@@ -197,7 +198,7 @@ export function renderAdminPage() {
         <!-- PLANES -->
         <div id="plans-tab" class="admin-section">
           <div class="admin-section-header">
-            <h2>📋 Gestión de Planes</h2>
+            <h2>${getIcon('clipboard', 20)} Gestión de Planes</h2>
             <div class="section-controls">
               <button class="admin-btn primary" id="addPlanBtn">+ Nuevo Plan</button>
             </div>
@@ -360,7 +361,7 @@ async function loadArticles(filter = '') {
       <div class="admin-item">
         <div class="item-info">
           <p class="item-title">${article.title}</p>
-          <p class="item-meta">${article.author || 'Anónimo'} • ${article.published ? '✅ Publicado' : '📝 Borrador'}</p>
+          <p class="item-meta">${article.author || 'Anónimo'} • ${article.published ? `${getIcon('check', 12)} Publicado` : `${getIcon('edit', 12)} Borrador`}</p>
         </div>
         <div class="item-actions">
           <button class="admin-btn small" onclick="window.togglePublish('article', ${article.id}, ${!article.published})">
@@ -391,7 +392,7 @@ async function handleArticleSearch(query) {
         <div class="admin-item">
           <div class="item-info">
             <p class="item-title">${article.title}</p>
-            <p class="item-meta">${article.published ? '✅ Publicado' : '📝 Borrador'}</p>
+            <p class="item-meta">${article.published ? `${getIcon('check', 12)} Publicado` : `${getIcon('edit', 12)} Borrador`}</p>
           </div>
           <div class="item-actions">
             <button class="admin-btn small">Editar</button>
@@ -419,7 +420,7 @@ async function loadRecipes(filter = '') {
         <div class="admin-item">
           <div class="item-info">
             <p class="item-title">${recipe.name}</p>
-            <p class="item-meta">${recipe.servings || '-'} porciones • ${recipe.calories || '-'} kcal • ${recipe.published ? '✅ Publicada' : '📝 Borrador'}</p>
+            <p class="item-meta">${recipe.servings || '-'} porciones • ${recipe.calories || '-'} kcal • ${recipe.published ? `${getIcon('check', 12)} Publicada` : `${getIcon('edit', 12)} Borrador`}</p>
           </div>
           <div class="item-actions">
             <button class="admin-btn small" onclick="window.togglePublish('recipe', ${recipe.id}, ${!recipe.published})">
@@ -450,7 +451,7 @@ async function handleRecipeSearch(query) {
         <div class="admin-item">
           <div class="item-info">
             <p class="item-title">${recipe.name}</p>
-            <p class="item-meta">${recipe.published ? '✅ Publicada' : '📝 Borrador'}</p>
+            <p class="item-meta">${recipe.published ? `${getIcon('check', 12)} Publicada` : `${getIcon('edit', 12)} Borrador`}</p>
           </div>
         </div>
       `).join('');
@@ -474,7 +475,7 @@ async function loadSupplements(filter = '') {
         <div class="admin-item">
           <div class="item-info">
             <p class="item-title">${supplement.name}</p>
-            <p class="item-meta">Dosis: ${supplement.dosage || '-'} • ${supplement.published ? '✅ Publicado' : '📝 Borrador'}</p>
+            <p class="item-meta">Dosis: ${supplement.dosage || '-'} • ${supplement.published ? `${getIcon('check', 12)} Publicado` : `${getIcon('edit', 12)} Borrador`}</p>
           </div>
           <div class="item-actions">
             <button class="admin-btn small" onclick="window.togglePublish('supplement', ${supplement.id}, ${!supplement.published})">
@@ -528,7 +529,7 @@ async function loadResources(filter = '') {
         <div class="admin-item">
           <div class="item-info">
             <p class="item-title">${resource.title}</p>
-            <p class="item-meta">${resource.url || '-'} • ${resource.published ? '✅ Publicado' : '📝 Borrador'}</p>
+            <p class="item-meta">${resource.url || '-'} • ${resource.published ? `${getIcon('check', 12)} Publicado` : `${getIcon('edit', 12)} Borrador`}</p>
           </div>
           <div class="item-actions">
             <button class="admin-btn small" onclick="window.togglePublish('resource', ${resource.id}, ${!resource.published})">
@@ -583,7 +584,7 @@ async function loadAIConversations() {
     aiList.innerHTML = conversations.map(conv => `
       <div class="admin-item">
         <div class="item-info">
-          <p class="item-title">❓ ${conv.question}</p>
+          <p class="item-title">${getIcon('question', 14)} ${conv.question}</p>
           <p class="item-meta">${conv.user_email} • ${new Date(conv.created_at).toLocaleDateString()}</p>
         </div>
         <div class="item-actions">
@@ -616,7 +617,7 @@ async function handleAISearch(query) {
       : filtered.map(conv => `
         <div class="admin-item">
           <div class="item-info">
-            <p class="item-title">❓ ${conv.question}</p>
+            <p class="item-title">${getIcon('question', 14)} ${conv.question}</p>
           </div>
         </div>
       `).join('');

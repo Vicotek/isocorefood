@@ -1077,8 +1077,20 @@
 }
 
 .card-icon {
-  font-size: 2rem;
-  line-height: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--brand-mid-faint);
+  color: var(--brand);
+}
+
+.card-image {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
 }
 
 .card-content {

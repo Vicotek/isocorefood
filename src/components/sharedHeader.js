@@ -6,6 +6,7 @@
 
 import { getCurrentLanguage, getLanguageCodes } from '../services/languageService.js';
 import { getCurrentPlan } from '../services/planService.js';
+import { getIcon } from './icons.js';
 
 /**
  * Renderizar header compartido
@@ -21,10 +22,10 @@ export function renderSharedHeader(user, breadcrumbs = []) {
   const plan = getCurrentPlan();
   
   const planLabel = {
-    free: '📦 FREE',
-    premium: '⭐ PREMIUM',
-    vip: '👑 VIP'
-  }[plan] || '📦 FREE';
+    free: `${getIcon('bag', 14)} FREE`,
+    premium: `${getIcon('star', 14)} PREMIUM`,
+    vip: `${getIcon('crown', 14)} VIP`
+  }[plan] || `${getIcon('bag', 14)} FREE`;
 
   container.innerHTML = `
     <header class="shared-header">
@@ -54,19 +55,19 @@ export function renderSharedHeader(user, breadcrumbs = []) {
         <div class="header-plan-cta">
           <span class="plan-badge">${planLabel}</span>
           <button class="plan-upgrade-btn" id="planUpgradeBtn" type="button" title="Actualizar plan">
-            📈 Actualizar plan
+            ${getIcon('chart', 16)} Actualizar plan
           </button>
         </div>
 
         <div class="header-profile-menu">
           <button class="header-profile-btn" id="headerProfileBtn" type="button" aria-label="Perfil" title="${user?.name || 'Perfil'}">
-            👤
+            ${getIcon('user', 18)}
           </button>
           <button class="header-language-btn" id="headerLanguageBtn" type="button" aria-label="Idioma">
             ${languageCodes[language] || 'ES'}
           </button>
           <button class="header-logout-btn" id="headerLogoutBtn" type="button" aria-label="Cerrar sesión" title="Cerrar sesión">
-            🚪
+            ${getIcon('door', 18)}
           </button>
         </div>
       </div>
@@ -164,14 +165,14 @@ export function attachSharedHeaderListeners(config = {}) {
  */
 export function updatePlanBadge(plan) {
   const planLabel = {
-    free: '📦 FREE',
-    premium: '⭐ PREMIUM',
-    vip: '👑 VIP'
-  }[plan] || '📦 FREE';
+    free: `${getIcon('bag', 14)} FREE`,
+    premium: `${getIcon('star', 14)} PREMIUM`,
+    vip: `${getIcon('crown', 14)} VIP`
+  }[plan] || `${getIcon('bag', 14)} FREE`;
 
   const badge = document.querySelector('.plan-badge');
   if (badge) {
-    badge.textContent = planLabel;
+    badge.innerHTML = planLabel;
     badge.className = `plan-badge plan-${plan}`;
   }
 }

@@ -35,7 +35,24 @@ const PATHS = {
   door: '<path d="M5 21V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v17" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 21h18" stroke-linecap="round"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>',
   save: '<path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 4v6h8V4" stroke-linecap="round"/><path d="M8 14h8v6H8z" stroke-linecap="round"/>',
   target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>',
-  circle: '<circle cx="12" cy="12" r="8"/>'
+  circle: '<circle cx="12" cy="12" r="8"/>',
+  plus: '<path d="M12 5v14M5 12h14" stroke-linecap="round"/>',
+  send: '<path d="M4 20l17-8L4 4l3 8-3 8z" stroke-linecap="round" stroke-linejoin="round"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v.5" stroke-linecap="round"/>',
+  warning: '<path d="M12 3l10 18H2L12 3z" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 10v4M12 17v.5" stroke-linecap="round"/>',
+  scale: '<path d="M12 3v18M7 7l-4 8a4 4 0 0 0 8 0l-4-8zM17 7l-4 8a4 4 0 0 0 8 0l-4-8z" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 21h14M7 7h10" stroke-linecap="round"/>',
+  muscle: '<path d="M4 14c0-4 2-8 6-9 1 2-1 3-1 5 3-1 5-3 6-6 3 1 5 4 5 8 0 5-4 9-9 9-4 0-7-3-7-7z" stroke-linecap="round" stroke-linejoin="round"/>',
+  users: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke-linecap="round"/><path d="M16 4.5a3 3 0 0 1 0 5.9" stroke-linecap="round"/><path d="M21 19.5c0-2.6-2-4.8-4.5-5.4" stroke-linecap="round"/>',
+  question: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.7-2.5 2-2.5 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 17v.5" stroke-linecap="round"/>',
+  edit: '<path d="M4 20h4l11-11-4-4L4 16v4z" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 6l4 4" stroke-linecap="round"/>',
+  trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" stroke-linecap="round" stroke-linejoin="round"/>',
+  trendDown: '<path d="M4 7l7 7 4-4 5 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 9v6h-6" stroke-linecap="round" stroke-linejoin="round"/>',
+  flash: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" stroke-linecap="round" stroke-linejoin="round"/>',
+  download: '<path d="M12 3v12M7 10l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 19h16" stroke-linecap="round"/>',
+  eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z" stroke-linecap="round"/>',
+  storefront: '<path d="M4 10v9h16v-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 6l1.5-3h15L21 6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 6a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0" stroke-linecap="round" stroke-linejoin="round"/>'
 };
 
 /**

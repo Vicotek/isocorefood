@@ -127,7 +127,7 @@ function buildCards(recentActivity = [], favorites = []) {
       type: 'continue',
       title: 'Continuar donde lo dejaste',
       subtitle: lastSession.resource_name || 'Última sesión',
-      icon: '📍',
+      iconName: 'pin',
       cta: 'Continuar',
       data: lastSession
     });
@@ -138,9 +138,10 @@ function buildCards(recentActivity = [], favorites = []) {
   if (lastRecipe) {
     cards.push({
       type: 'recipe',
-      title: '👨‍🍳 Última Receta',
+      title: 'Última Receta',
       subtitle: lastRecipe.name || 'Nueva receta guardada',
-      icon: '👨‍🍳',
+      iconName: 'leaf',
+      image: './src/assets/stock/card-receta.jpg',
       cta: 'Ver',
       data: lastRecipe
     });
@@ -151,9 +152,10 @@ function buildCards(recentActivity = [], favorites = []) {
   if (lastResource) {
     cards.push({
       type: 'resource',
-      title: '📚 Último Recurso',
+      title: 'Último Recurso',
       subtitle: lastResource.name || 'Nuevo artículo',
-      icon: '📚',
+      iconName: 'book',
+      image: './src/assets/stock/card-recurso.jpg',
       cta: 'Leer',
       data: lastResource
     });
@@ -164,9 +166,10 @@ function buildCards(recentActivity = [], favorites = []) {
   if (lastSupplement) {
     cards.push({
       type: 'supplement',
-      title: '💊 Último Suplemento',
+      title: 'Último Suplemento',
       subtitle: lastSupplement.name || 'Suplemento guardado',
-      icon: '💊',
+      iconName: 'droplet',
+      image: './src/assets/stock/card-suplemento.jpg',
       cta: 'Analizar',
       data: lastSupplement
     });
@@ -175,9 +178,9 @@ function buildCards(recentActivity = [], favorites = []) {
   // Tarjeta 5: Próxima recomendación
   cards.push({
     type: 'recommendation',
-    title: '✨ Próxima Recomendación',
+    title: 'Próxima Recomendación',
     subtitle: 'Basada en tu actividad',
-    icon: '✨',
+    iconName: 'spark',
     cta: 'Explorar',
     data: null
   });
@@ -294,9 +297,9 @@ function getOrCreateEmptyDashboard(email) {
     progress: 0,
     cards: [{
       type: 'empty',
-      title: '👋 Bienvenido',
+      title: 'Bienvenido',
       subtitle: 'Comienza explorando el Centro Inteligente',
-      icon: '👋',
+      iconName: 'wave',
       cta: 'Empezar',
       data: null
     }],
@@ -373,9 +376,13 @@ export function updateDashboardUI(dashboard) {
  * @returns {string} - HTML de la tarjeta
  */
 function createCardHTML(card) {
+  const media = card.image
+    ? `<img src="${card.image}" alt="" class="card-image" loading="lazy" />`
+    : `<div class="card-icon">${getIcon(card.iconName || 'circle', 22)}</div>`;
+
   return `
     <div class="dashboard-card dashboard-card-${card.type}">
-      <div class="card-icon">${card.icon}</div>
+      ${media}
       <div class="card-content">
         <h4 class="card-title">${card.title}</h4>
         <p class="card-subtitle">${card.subtitle}</p>

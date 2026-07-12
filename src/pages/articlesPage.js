@@ -5,6 +5,7 @@
 
 import * as ArticlesService from '../services/articlesService.js';
 import * as FavoritesService from '../services/favoritesService.js';
+import { getIcon } from '../components/icons.js';
 
 // Estado de la interfaz
 let currentView = 'grid'; // 'grid' o 'list'
@@ -50,7 +51,7 @@ export function renderArticlesPage() {
             placeholder="Buscar artículos..." 
             class="articles-search-input"
           />
-          <button id="articlesClearSearchBtn" class="articles-clear-search" title="Limpiar">✕</button>
+          <button id="articlesClearSearchBtn" class="articles-clear-search" title="Limpiar">${getIcon('close', 14)}</button>
         </div>
 
         <div class="articles-filters">
@@ -125,7 +126,7 @@ export function renderArticlesPage() {
 
         <!-- Sin resultados -->
         <div class="articles-empty-state" id="emptyStateContainer" style="display: none;">
-          <div class="empty-icon">📭</div>
+          <div class="empty-icon">${getIcon('book', 32)}</div>
           <h3>No hay artículos</h3>
           <p>Intenta ajustar tus filtros de búsqueda</p>
         </div>
@@ -503,19 +504,20 @@ function updateArticlesDisplay() {
 function renderArticleCard(article) {
   const isFavorite = FavoritesService.isFavorite('articles', article.id);
   const favoriteClass = isFavorite ? 'active' : '';
-  const favoriteIcon = isFavorite ? '♥' : '♡';
+  const favoriteIcon = getIcon('heart', 16);
+  const image = article.image || './src/assets/stock/card-articulo.jpg';
 
   return `
     <article class="article-card">
       <div class="article-card-image">
-        <img src="${article.image}" alt="${article.title}" loading="lazy" />
+        <img src="${image}" alt="${article.title}" loading="lazy" />
         <div class="article-card-category">${article.category}</div>
       </div>
       <div class="article-card-content">
         <div class="article-card-header">
           <h3 class="article-card-title">${article.title}</h3>
-          <button 
-            class="article-favorite-btn ${favoriteClass}" 
+          <button
+            class="article-favorite-btn ${favoriteClass}"
             onclick="window.articlesPage_toggleFavorite('${article.id}', '${article.title}')"
             title="${isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}"
           >
@@ -524,9 +526,9 @@ function renderArticleCard(article) {
         </div>
         <p class="article-card-excerpt">${article.excerpt}</p>
         <div class="article-card-meta">
-          <span class="reading-time">⏱️ ${article.reading_time} min</span>
+          <span class="reading-time">${getIcon('clock', 14)} ${article.reading_time} min</span>
           <span class="difficulty ${article.difficulty.toLowerCase()}">${article.difficulty}</span>
-          <span class="author">👤 ${article.author}</span>
+          <span class="author">${getIcon('user', 14)} ${article.author}</span>
         </div>
         <button 
           class="article-read-btn"
@@ -564,7 +566,7 @@ function renderArticleDetailView(article) {
   if (!mainContent) return;
 
   const isFavorite = FavoritesService.isFavorite('articles', article.id);
-  const favoriteIcon = isFavorite ? '♥' : '♡';
+  const favoriteIcon = getIcon('heart', 18);
 
   const relatedArticles = ArticlesService.getRelatedArticles(article.id);
 
@@ -582,9 +584,9 @@ function renderArticleDetailView(article) {
           
           <div class="article-detail-meta">
             <div class="meta-group">
-              <span class="meta-item">⏱️ ${article.reading_time} minutos de lectura</span>
-              <span class="meta-item">📊 Nivel: <strong>${article.difficulty}</strong></span>
-              <span class="meta-item">✍️ ${article.author}</span>
+              <span class="meta-item">${getIcon('clock', 14)} ${article.reading_time} minutos de lectura</span>
+              <span class="meta-item">${getIcon('chart', 14)} Nivel: <strong>${article.difficulty}</strong></span>
+              <span class="meta-item">${getIcon('user', 14)} ${article.author}</span>
             </div>
             <button 
               class="article-detail-favorite ${isFavorite ? 'active' : ''}"
