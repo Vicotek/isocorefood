@@ -20,10 +20,10 @@ export async function getUserPlanFromSupabase(email) {
   try {
     console.log(`📊 Obteniendo plan desde Supabase para: ${email}`);
     
-    // Consultar la tabla usuarios
-    // SELECT plan FROM usuarios WHERE email = ?
+    // Vista segura (mismo motivo que getUserFromSupabase): la tabla usuarios
+    // no tiene lectura pública a propósito (contiene password_hash/tokens).
     const response = await fetch(
-      `${API_URL}/usuarios?email=eq.${encodeURIComponent(email)}&select=plan`,
+      `${API_URL}/usuarios_publicas?email=eq.${encodeURIComponent(email)}&select=plan`,
       {
         method: 'GET',
         headers: AUTH_HEADER
@@ -98,8 +98,11 @@ export async function getUserFromSupabase(email) {
   if (!email) return null;
 
   try {
+    // Vista segura (usuarios_publicas): expone solo columnas no sensibles
+    // (nunca password_hash / tokens) — la tabla real usuarios sigue sin
+    // lectura pública.
     const response = await fetch(
-      `${API_URL}/usuarios?email=eq.${encodeURIComponent(email)}`,
+      `${API_URL}/usuarios_publicas?email=eq.${encodeURIComponent(email)}`,
       {
         method: 'GET',
         headers: AUTH_HEADER

@@ -1,4 +1,5 @@
-﻿import { setAuthToken } from '../services/authService.js';
+﻿import { getIcon } from '../components/icons.js';
+import { setAuthToken } from '../services/authService.js';
 import { updateUIByPlan, savePlan, clearPlan, loadUserPlan, getCurrentPlan } from '../services/planService.js';
 import {
   getUserPlanFromSupabase,
@@ -447,7 +448,7 @@ function updateTexts(t) {
 function renderHeaderHTML(t, language, user) {
   const menuItems = user ? MENU_LINKS.auth : MENU_LINKS.guest;
   const authSlot = user
-    ? `<button type="button" class="header-user-btn" id="homeLogoutButton" title="Cerrar sesión">👤 ${escapeHtml((user.name || '').split(' ')[0] || 'Cuenta')} · Salir</button>`
+    ? `<button type="button" class="header-user-btn" id="homeLogoutButton" title="Cerrar sesión">${getIcon('logout', 16)} ${escapeHtml((user.name || '').split(' ')[0] || 'Cuenta')}</button>`
     : `<button type="button" class="header-login-btn" id="headerLoginBtn">${t.loginButton || 'Entrar'}</button>`;
 
   return `
@@ -467,14 +468,14 @@ function renderHeaderHTML(t, language, user) {
       <div class="header-block header-search">
         <div class="search-container">
           <div class="search-input-wrapper">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon">${getIcon('search', 16)}</span>
             <input
               id="searchInput"
               type="text"
               placeholder="Buscar artículos, recetas, suplementos, recursos..."
               autocomplete="off"
             />
-            <button class="search-clear-btn" id="searchClearBtn" type="button" title="Limpiar búsqueda">✕</button>
+            <button class="search-clear-btn" id="searchClearBtn" type="button" title="Limpiar búsqueda">${getIcon('close', 14)}</button>
           </div>
           <div class="search-results-dropdown" id="searchResultsDropdown"></div>
         </div>
@@ -542,48 +543,18 @@ function initHeroCarousel() {
   }, 7000);
 }
 
-function getIconSVG(iconName) {
-  const icon = (iconName || '').toLowerCase();
-  
-  // Lucide: Brain
-  if (icon === 'brain' || icon.includes('centro') || icon.includes('center')) {
-    return `
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M9.5 2a3.5 3.5 0 0 1 5 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M6.5 5a3.5 3.5 0 0 0 0 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M17.5 5a3.5 3.5 0 0 1 0 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M5 9.5a3.5 3.5 0 0 0 0 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M19 9.5a3.5 3.5 0 0 1 0 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M6.5 19a3.5 3.5 0 0 1 0-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M17.5 19a3.5 3.5 0 0 0 0-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M9.5 22a3.5 3.5 0 0 0 5 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
-  }
-  
-  // Lucide: Clipboard-Check
-  if (icon === 'clipboard-check' || icon.includes('plan')) {
-    return `
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M16 4h-2.5A1.5 1.5 0 0 0 12 2.5a1.5 1.5 0 0 0-1.5 1.5H8c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h8c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
-  }
-  
-  // Lucide: Lock
-  if (icon === 'lock' || icon.includes('módul') || icon.includes('locked') || icon.includes('bloque')) {
-    return `
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="12" cy="17" r="1" fill="currentColor"/>
-      </svg>`;
-  }
-  
-  // Fallback
-  return `
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.5" fill="none"/>
-    </svg>`;
+const ICON_ALIASES = {
+  brain: 'brain', centro: 'brain', center: 'brain',
+  'clipboard-check': 'clipboard', plan: 'clipboard',
+  lock: 'lock', módulos: 'lock', locked: 'lock', bloqueado: 'lock',
+  article: 'book', recipe: 'leaf', protocol: 'flask', resource: 'clipboard',
+  recipes: 'leaf', supplements: 'droplet', resources: 'book', ai: 'robot', products: 'bag'
+};
+
+function getIconSVG(iconName, size = 24) {
+  const key = (iconName || '').toLowerCase();
+  const name = ICON_ALIASES[key] || Object.keys(ICON_ALIASES).find((k) => key.includes(k)) && ICON_ALIASES[Object.keys(ICON_ALIASES).find((k) => key.includes(k))];
+  return getIcon(name || 'circle', size);
 }
 
 function createModuleCard(title, description, moduleName = '', locked = true, t) {
@@ -596,10 +567,10 @@ function createModuleCard(title, description, moduleName = '', locked = true, t)
           <h4>${title}</h4>
           <p>${description}</p>
         </div>
-        <button class="favorite-btn ${isFav ? 'active' : ''}" data-favorite-id="${moduleName}" 
-                onclick="window.homePage_toggleFavModule(event, '${moduleName}', '${title}')" 
+        <button class="favorite-btn ${isFav ? 'active' : ''}" data-favorite-id="${moduleName}"
+                onclick="window.homePage_toggleFavModule(event, '${moduleName}', '${title}')"
                 title="Agregar a favoritos" type="button">
-          ${isFav ? '♥' : '♡'}
+          ${getIcon('heart', 16)}
         </button>
       </div>
       <div class="module-footer">
@@ -749,14 +720,14 @@ function createFeedCard(item, type, typeLabel, state = 'loaded') {
     : `<div class="feed-card-image feed-card-image-placeholder">${getIconSVG(type)}</div>`;
 
   const cta = locked
-    ? `<button type="button" class="feed-card-cta feed-card-cta-locked" data-feed-unlock="${item.tier}">🔒 ${item.tier === 'vip' ? 'Hazte VIP' : 'Desbloquear'}</button>`
+    ? `<button type="button" class="feed-card-cta feed-card-cta-locked" data-feed-unlock="${item.tier}">${getIcon('lock', 14)} ${item.tier === 'vip' ? 'Hazte VIP' : 'Desbloquear'}</button>`
     : `<button type="button" class="feed-card-cta" data-feed-view="${type}" data-feed-id="${item.id ?? ''}">Ver más</button>`;
 
   return `
     <article class="feed-card ${locked ? 'feed-card-locked' : ''}" data-feed-section="${type}" data-feed-id="${item.id ?? ''}">
       <div class="feed-card-media">
         ${media}
-        ${locked ? '<span class="feed-card-lock-overlay">🔒</span>' : ''}
+        ${locked ? `<span class="feed-card-lock-overlay">${getIcon('lock', 20)}</span>` : ''}
       </div>
       <div class="feed-card-body">
         <span class="feed-card-badge">${escapeHtml(typeLabel)}</span>
@@ -776,7 +747,7 @@ function createNewsItemHTML(item) {
       <span class="feed-news-badge">${escapeHtml(item.feedLabel)}</span>
       <span class="feed-news-title">${escapeHtml(item.title || 'Sin título')}</span>
       ${date ? `<span class="feed-news-date">${date}</span>` : ''}
-      ${locked ? '<span class="feed-news-lock">🔒</span>' : ''}
+      ${locked ? `<span class="feed-news-lock">${getIcon('lock', 14)}</span>` : ''}
     </div>
   `;
 }
@@ -823,7 +794,7 @@ async function renderCentralFeed() {
 function handleFeedClick(event) {
   const unlockBtn = event.target.closest('[data-feed-unlock]');
   if (unlockBtn) {
-    showLockedNotice('🔒 Contenido premium. Actualiza tu plan para acceder.');
+    showLockedNotice('Contenido premium. Actualiza tu plan para acceder.');
     return;
   }
 
@@ -1005,7 +976,7 @@ async function renderDashboard(dashboard) {
       </div>
       <div class="dashboard-feed-block">
         <h3 class="feed-section-title">Centro Inteligente</h3>
-        <button type="button" class="dashboard-ai-cta" id="dashboardAICta">🤖 Pregunta a tu asistente nutricional</button>
+        <button type="button" class="dashboard-ai-cta" id="dashboardAICta">${getIcon('robot', 18)} Pregunta a tu asistente nutricional</button>
       </div>
       <div class="dashboard-feed-block feed-news-section">
         <h3 class="feed-section-title">Contenido reciente</h3>
@@ -1049,10 +1020,10 @@ function createCardHTML(card) {
  */
 function getPlanBadgeLabel(plan) {
   const labels = {
-    gratis: '🎯 FREE',
-    free: '🎯 FREE',
-    premium: '⭐ PREMIUM',
-    vip: '👑 VIP'
+    gratis: `${getIcon('target', 14)} FREE`,
+    free: `${getIcon('target', 14)} FREE`,
+    premium: `${getIcon('star', 14)} PREMIUM`,
+    vip: `${getIcon('crown', 14)} VIP`
   };
   return labels[plan] || labels.gratis;
 }
@@ -1070,14 +1041,14 @@ export async function toggleFavorite(module, referenceId, name, metadata = {}) {
     const removed = await FavoritesService.removeFavorite(module, referenceId);
     if (removed) {
       updateFavoriteBtnUI(referenceId, false);
-      showLockedNotice('❌ Favorito eliminado');
+      showLockedNotice('Favorito eliminado');
     }
   } else {
     // Agregar favorito
     const added = await FavoritesService.addFavorite(module, referenceId, name, metadata);
     if (added) {
       updateFavoriteBtnUI(referenceId, true);
-      showLockedNotice('❤️ Guardado en favoritos');
+      showLockedNotice('Guardado en favoritos');
     }
   }
 }
@@ -1091,7 +1062,7 @@ function updateFavoriteBtnUI(elementId, isFav) {
   const btn = document.querySelector(`[data-favorite-id="${elementId}"]`);
   if (btn) {
     btn.classList.toggle('active', isFav);
-    btn.textContent = isFav ? '♥' : '♡';
+    btn.innerHTML = getIcon('heart', 16);
   }
 }
 
@@ -1106,7 +1077,7 @@ function renderFavoritesPanel() {
     return `
       <div class="favorites-section">
         <div class="favorites-header">
-          <h3>❤️ Favoritos</h3>
+          <h3>${getIcon('heart', 18)} Favoritos</h3>
         </div>
         <div class="favorites-empty">
           <h3>Sin favoritos aún</h3>
@@ -1124,16 +1095,16 @@ function renderFavoritesPanel() {
   };
 
   const moduleNames = {
-    recipe: '🍽️ Recetas',
-    resource: '📄 Recursos',
-    supplement: '💊 Suplementos',
-    article: '📰 Artículos'
+    recipe: `${getIcon('leaf', 14)} Recetas`,
+    resource: `${getIcon('book', 14)} Recursos`,
+    supplement: `${getIcon('droplet', 14)} Suplementos`,
+    article: `${getIcon('book', 14)} Artículos`
   };
 
   let html = `
     <div class="favorites-section">
       <div class="favorites-header">
-        <h3>❤️ Favoritos</h3>
+        <h3>${getIcon('heart', 18)} Favoritos</h3>
         <span class="favorites-count">${favorites.length}</span>
       </div>
   `;
@@ -1152,7 +1123,7 @@ function renderFavoritesPanel() {
           <div class="favorite-item-card">
             <div class="favorite-item-header">
               <div class="favorite-item-title">${fav.name}</div>
-              <button class="favorite-remove-btn" onclick="window.homePage_removeFavorite('${fav.resource_id}', '${module}')" title="Eliminar">✕</button>
+              <button class="favorite-remove-btn" onclick="window.homePage_removeFavorite('${fav.resource_id}', '${module}')" title="Eliminar">${getIcon('close', 14)}</button>
             </div>
             <span class="favorite-item-type">${module}</span>
             <small style="color: var(--text-secondary);">
@@ -1193,7 +1164,7 @@ export function showFavoritesPanel() {
 window.homePage_removeFavorite = async (referenceId, module) => {
   await FavoritesService.removeFavorite(module, referenceId);
   showFavoritesPanel();
-  showLockedNotice('❌ Favorito eliminado');
+  showLockedNotice('Favorito eliminado');
 };
 
 // ──────────────────────────────────────────────────────────────
@@ -1234,7 +1205,7 @@ async function handleSearchInput(query) {
     console.error('Error en búsqueda:', error);
     dropdown.innerHTML = `
       <div class="search-empty-state">
-        <div class="search-empty-state-icon">❌</div>
+        <div class="search-empty-state-icon">${getIcon('close', 28)}</div>
         <div class="search-empty-state-title">Error en la búsqueda</div>
       </div>
     `;
@@ -1250,7 +1221,7 @@ function renderRecentSearchesDropdown() {
   if (recent.length === 0) {
     return `
       <div class="search-empty-state">
-        <div class="search-empty-state-icon">🔍</div>
+        <div class="search-empty-state-icon">${getIcon('search', 28)}</div>
         <div class="search-empty-state-title">Búsqueda Global</div>
         <p style="font-size: 0.85rem; margin-top: 8px;">Escribe al menos 2 caracteres</p>
       </div>
@@ -1277,7 +1248,7 @@ function renderSearchResultsDropdown(results) {
   if (!results.hasResults) {
     return `
       <div class="search-empty-state">
-        <div class="search-empty-state-icon">😕</div>
+        <div class="search-empty-state-icon">${getIcon('search', 28)}</div>
         <div class="search-empty-state-title">Sin resultados</div>
         <p style="font-size: 0.85rem; margin-top: 8px;">Intenta con otros términos</p>
       </div>
@@ -1287,10 +1258,10 @@ function renderSearchResultsDropdown(results) {
   let html = '';
 
   const categories = [
-    { type: 'recipes', label: '🍽️ Recetas' },
-    { type: 'supplements', label: '💊 Suplementos' },
-    { type: 'resources', label: '📄 Recursos' },
-    { type: 'articles', label: '📰 Artículos' }
+    { type: 'recipes', label: `${getIcon('leaf', 14)} Recetas` },
+    { type: 'supplements', label: `${getIcon('droplet', 14)} Suplementos` },
+    { type: 'resources', label: `${getIcon('book', 14)} Recursos` },
+    { type: 'articles', label: `${getIcon('book', 14)} Artículos` }
   ];
 
   categories.forEach(cat => {
@@ -1377,7 +1348,7 @@ window.homePage_navigateToAdmin = async () => {
   if (!user) {
     console.error('❌ Usuario no autenticado');
     SecurityService.showAccessDeniedModal({
-      title: '🔒 Acceso Denegado',
+      title: 'Acceso Denegado',
       message: 'Debes iniciar sesión para acceder a administración.'
     });
     return;
@@ -1389,7 +1360,7 @@ window.homePage_navigateToAdmin = async () => {
   if (!isAdmin) {
     console.error('❌ Usuario no tiene permisos de admin');
     SecurityService.showAccessDeniedModal({
-      title: '🔒 Acceso Denegado (403)',
+      title: 'Acceso Denegado (403)',
       message: 'No tienes permisos de administrador para acceder a esta sección. Contacta al equipo de soporte.'
     });
     return;
@@ -1891,9 +1862,9 @@ function renderLoginPanelHTML(t) {
         <p id="homeUserWelcome">${t.loginSuccess}</p>
       </div>
       <div class="home-user-buttons">
-        <button id="homeProfileButton" class="primary-button hidden" type="button">👤 Mi Perfil</button>
-        <button id="homeAIButton" class="primary-button hidden" type="button">🤖 Centro IA</button>
-        <button id="homeAdminButton" class="primary-button hidden" type="button">🔧 Admin</button>
+        <button id="homeProfileButton" class="primary-button hidden" type="button">${getIcon('user', 16)} Mi Perfil</button>
+        <button id="homeAIButton" class="primary-button hidden" type="button">${getIcon('robot', 16)} Centro IA</button>
+        <button id="homeAdminButton" class="primary-button hidden" type="button">${getIcon('lock', 16)} Admin</button>
         <button id="homeLogoutButton" class="ghost-button hidden" type="button">${t.logoutButton}</button>
       </div>
     </div>

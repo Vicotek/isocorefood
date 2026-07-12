@@ -8,6 +8,7 @@ import {
   getRecentActivityFromSupabase,
   getFavoritesFromSupabase
 } from './supabaseClient.js';
+import { getIcon } from '../components/icons.js';
 
 const DASHBOARD_CACHE_KEY = 'isocore_dashboard_cache';
 const ACTIVITY_UPDATE_INTERVAL = 30000; // Actualizar cada 30 segundos
@@ -318,7 +319,7 @@ export function updateDashboardUI(dashboard) {
   const planEl = document.getElementById('dashboardPlan');
   if (planEl) {
     const planLabel = getPlanLabel(dashboard.user.plan);
-    planEl.textContent = planLabel;
+    planEl.innerHTML = planLabel;
   }
 
   // Actualizar objetivo
@@ -391,9 +392,9 @@ function createCardHTML(card) {
  */
 function getPlanLabel(plan) {
   const labels = {
-    gratis: '🎯 FREE',
-    premium: '⭐ PREMIUM',
-    vip: '👑 VIP'
+    gratis: `${getIcon('target', 14)} FREE`,
+    premium: `${getIcon('star', 14)} PREMIUM`,
+    vip: `${getIcon('crown', 14)} VIP`
   };
   return labels[plan] || labels.gratis;
 }
