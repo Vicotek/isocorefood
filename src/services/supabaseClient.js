@@ -1295,16 +1295,19 @@ export async function getFeaturedSupplementsFromSupabase(limit = 5) {
 /**
  * Obtener rol del usuario desde Supabase
  * @param {string} email - Email del usuario
- * @returns {Promise<string|null>} - Role: 'admin', 'user' o null
+ * @returns {Promise<string|null>} - Role: 'admin', 'expert' o 'user' (null en BD = paciente normal, sin privilegios)
  */
 export async function getUserRoleFromSupabase(email) {
   if (!email) return null;
 
   try {
     console.log(`🔐 Obteniendo rol del usuario: ${email}`);
-    
+
+    // usuarios_publicas (no usuarios directo): la tabla real tiene la
+    // columna "Role" con mayúscula y RLS sin políticas para el anon key;
+    // la vista ya expone "role" en minúscula y de lectura pública.
     const response = await fetch(
-      `${API_URL}/usuarios?email=eq.${encodeURIComponent(email)}&select=role`,
+      `${API_URL}/usuarios_publicas?email=eq.${encodeURIComponent(email)}&select=role`,
       {
         method: 'GET',
         headers: AUTH_HEADER
@@ -1331,6 +1334,10 @@ export async function getUserRoleFromSupabase(email) {
  * @param {string} email - Email del usuario
  * @param {string} role - Nuevo rol ('admin' o 'user')
  * @returns {Promise<boolean>} - true si se actualizó correctamente
+ * ⚠️ Sin usar todavía desde ningún UI, y probablemente falla hoy: escribe
+ * en la tabla usuarios directamente (RLS activo sin política de UPDATE
+ * para el anon key). Si se construye una pantalla de gestión de roles,
+ * esto debería pasar por un webhook de n8n en vez de PATCH directo.
  */
 export async function updateUserRoleInSupabase(email, role) {
   if (!email || !role) return false;

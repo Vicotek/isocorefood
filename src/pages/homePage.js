@@ -1403,7 +1403,7 @@ window.homePage_navigateToAI = () => {
  */
 window.homePage_navigateToAdmin = async () => {
   const user = getStoredUser();
-  
+
   if (!user) {
     console.error('❌ Usuario no autenticado');
     SecurityService.showAccessDeniedModal({
@@ -1413,20 +1413,21 @@ window.homePage_navigateToAdmin = async () => {
     return;
   }
 
-  // ✅ VALIDAR ROL DEL USUARIO
-  const isAdmin = await SecurityService.isAdmin(user.email);
-  
-  if (!isAdmin) {
-    console.error('❌ Usuario no tiene permisos de admin');
+  // ✅ VALIDAR ROL DEL USUARIO — admin ve el panel completo, expert solo
+  // la pestaña de revisión de diabetes (restringido dentro de adminPage.js).
+  const role = await SecurityService.getUserRole(user.email);
+
+  if (role !== 'admin' && role !== 'expert') {
+    console.error('❌ Usuario no tiene permisos de admin/expert');
     SecurityService.showAccessDeniedModal({
       title: 'Acceso Denegado (403)',
-      message: 'No tienes permisos de administrador para acceder a esta sección. Contacta al equipo de soporte.'
+      message: 'No tienes permisos para acceder a esta sección. Contacta al equipo de soporte.'
     });
     return;
   }
 
-  console.log('🔧 Navegando a Administración');
-  AdminPage.renderAdminPage();
+  console.log(`🔧 Navegando a Administración (role: ${role})`);
+  AdminPage.renderAdminPage(role);
 };
 
 /**
@@ -2078,8 +2079,30 @@ function initMenuDropdown() {
       else if (action === 'profile') window.homePage_navigateToProfile();
       else if (action === 'ai') window.homePage_navigateToAI();
       else if (action === 'plans') document.querySelector('.plan-comparison-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      else if (action === 'admin') window.homePage_navigateToAdmin();
     });
   });
+}
+
+/**
+ * Añade la entrada "Panel de administración"/"Panel de revisión" al menú
+ * del header, solo visible para role='admin' o role='expert'. Se inyecta
+ * de forma asíncrona (tras resolver el rol) en vez de estar en MENU_LINKS,
+ * que es estático y no conoce el rol del usuario.
+ */
+function injectAdminHeaderLink(role) {
+  const dropdown = document.getElementById('menuDropdown');
+  if (!dropdown || (role !== 'admin' && role !== 'expert')) return;
+  if (dropdown.querySelector('[data-menu-action="admin"]')) return;
+
+  const link = document.createElement('button');
+  link.type = 'button';
+  link.className = 'menu-link';
+  link.dataset.menuAction = 'admin';
+  link.textContent = role === 'admin' ? 'Panel de administración' : 'Panel de revisión';
+  dropdown.appendChild(link);
+
+  link.addEventListener('click', () => window.homePage_navigateToAdmin());
 }
 
 export async function renderHomePage() {
@@ -2116,7 +2139,9 @@ export async function renderHomePage() {
     ArticlesService.initializeArticlesService(persistedUser.email);
     ProfileService.initializeProfileService(persistedUser.email);
     AIService.initializeAIService(persistedUser.email);
-    AdminService.initializeAdminService(persistedUser.email, 'admin');
+    const userRole = await SecurityService.getUserRole(persistedUser.email);
+    AdminService.initializeAdminService(persistedUser.email, userRole);
+    injectAdminHeaderLink(userRole);
     RecipesService.initializeRecipesService(persistedUser.email);
     EducationalModulesService.initializeEducationalModulesService();
     NutritionalPlansService.initializeNutritionalPlansService(persistedUser.email);

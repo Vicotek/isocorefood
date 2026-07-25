@@ -301,9 +301,10 @@ export function clearDiabetesCache() {
  *
  * POST /webhook/diabetes/documentos/subir  (multipart/form-data)
  *   campos: token, usuarioId, tipoDocumento, file
- *   n8n sube el archivo al bucket privado de Storage y guarda la ruta en
+ *   n8n sube el archivo al bucket privado "documentos-clinicos" (ya creado
+ *   en Storage, public=false) y guarda la ruta en
  *   diabetes.documentos_paciente.storage_path — el navegador nunca ve ni
- *   necesita el nombre del bucket.
+ *   necesita el nombre del bucket, solo n8n lo usa server-side.
  *   respuesta: { id, storage_path, tipo_documento, subido_en }
  * ═══════════════════════════════════════════════════════════════════════
  */

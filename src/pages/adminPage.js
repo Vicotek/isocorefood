@@ -5,47 +5,40 @@
  */
 
 import * as AdminService from '../services/adminService.js';
+import * as AdminRevisionPage from './adminRevisionPage.js';
 import { getIcon } from '../components/icons.js';
 
 /**
  * Renderizar página de administración
+ * @param {string} role - 'admin' (todo el panel) o 'expert' (solo revisión de diabetes)
  */
-export function renderAdminPage() {
+export function renderAdminPage(role = 'admin') {
   const mainContent = document.querySelector('main');
   if (!mainContent) {
     console.error('❌ <main> no encontrado');
     return;
   }
 
-  mainContent.innerHTML = `
-    <div class="admin-page">
-      <!-- Header -->
-      <header class="admin-header">
-        <div class="admin-header-content">
-          <h1>${getIcon('lock', 24)} Panel de Administración</h1>
-          <p>Gestión completa de la plataforma IsoCore</p>
-        </div>
-        <div class="admin-header-info">
-          <span class="admin-role">${AdminService.isAdmin() ? 'Administrador' : 'Editor'}</span>
-        </div>
-      </header>
+  const isExpert = role === 'expert';
+  const defaultTab = isExpert ? 'diabetes' : 'stats';
 
-      <!-- Tabs de secciones -->
-      <div class="admin-tabs">
-        <button class="admin-tab active" data-tab="stats">${getIcon('chart', 16)} Estadísticas</button>
+  // Para role='expert' estas pestañas/secciones ni se incluyen en el HTML
+  // — no basta con ocultarlas visualmente, no deben montarse en absoluto,
+  // así su lógica de carga de datos (loadUsers, loadArticles, etc.) nunca
+  // tiene un tab-button ni un contenedor al que engancharse.
+  const adminOnlyTabsHTML = isExpert ? '' : `
+        <button class="admin-tab ${defaultTab === 'stats' ? 'active' : ''}" data-tab="stats">${getIcon('chart', 16)} Estadísticas</button>
         <button class="admin-tab" data-tab="users">${getIcon('users', 16)} Usuarios</button>
         <button class="admin-tab" data-tab="articles">${getIcon('book', 16)} Artículos</button>
         <button class="admin-tab" data-tab="recipes">${getIcon('leaf', 16)} Recetas</button>
         <button class="admin-tab" data-tab="supplements">${getIcon('droplet', 16)} Suplementos</button>
         <button class="admin-tab" data-tab="resources">${getIcon('book', 16)} Recursos</button>
         <button class="admin-tab" data-tab="ai">${getIcon('robot', 16)} IA</button>
-        <button class="admin-tab" data-tab="plans">${getIcon('clipboard', 16)} Planes</button>
-      </div>
+        <button class="admin-tab" data-tab="plans">${getIcon('clipboard', 16)} Planes</button>`;
 
-      <!-- Contenido de tabs -->
-      <div class="admin-content">
+  const adminOnlySectionsHTML = isExpert ? '' : `
         <!-- ESTADÍSTICAS -->
-        <div id="stats-tab" class="admin-section active">
+        <div id="stats-tab" class="admin-section ${defaultTab === 'stats' ? 'active' : ''}">
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-icon">${getIcon('users', 26)}</div>
@@ -206,13 +199,50 @@ export function renderAdminPage() {
           <div id="plansList" class="admin-list">
             <p class="loading">Cargando planes...</p>
           </div>
+        </div>`;
+
+  mainContent.innerHTML = `
+    <div class="admin-page">
+      <!-- Header -->
+      <header class="admin-header">
+        <div class="admin-header-content">
+          <h1>${getIcon('lock', 24)} ${isExpert ? 'Panel de Revisión' : 'Panel de Administración'}</h1>
+          <p>${isExpert ? 'Revisión de planes de nutrición para diabéticos' : 'Gestión completa de la plataforma IsoCore'}</p>
+        </div>
+        <div class="admin-header-info">
+          <span class="admin-role">${isExpert ? 'Experta' : (AdminService.isAdmin() ? 'Administrador' : 'Editor')}</span>
+        </div>
+      </header>
+
+      <!-- Tabs de secciones -->
+      <div class="admin-tabs">${adminOnlyTabsHTML}
+        <button class="admin-tab ${defaultTab === 'diabetes' ? 'active' : ''}" data-tab="diabetes">${getIcon('pill', 16)} Diabetes</button>
+      </div>
+
+      <!-- Contenido de tabs -->
+      <div class="admin-content">${adminOnlySectionsHTML}
+
+        <!-- REVISIÓN DIABETES -->
+        <div id="diabetes-tab" class="admin-section ${defaultTab === 'diabetes' ? 'active' : ''}">
+          <div class="admin-section-header">
+            <h2>${getIcon('pill', 20)} Revisión de planes de diabetes</h2>
+          </div>
+          <div id="diabetesRevisionList" class="admin-list">
+            <p class="loading">Cargando casos...</p>
+          </div>
+          <div id="diabetesRevisionDetail" class="is-hidden"></div>
         </div>
       </div>
     </div>
   `;
 
   setupAdminPage();
-  loadDashboardStats();
+
+  if (isExpert) {
+    AdminRevisionPage.loadCasosParaRevision();
+  } else {
+    loadDashboardStats();
+  }
 }
 
 /**
@@ -270,6 +300,7 @@ function switchTab(tabName) {
   else if (tabName === 'resources') loadResources();
   else if (tabName === 'ai') loadAIConversations();
   else if (tabName === 'plans') loadPlans();
+  else if (tabName === 'diabetes') AdminRevisionPage.loadCasosParaRevision();
 }
 
 /**
