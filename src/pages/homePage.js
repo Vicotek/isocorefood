@@ -75,13 +75,43 @@ const FREE_PLAN_CONFIG = {
 
 // Slides del carrusel hero — config, nunca hardcodeado en el componente.
 // Imágenes V1 provisionales; sustituir "image" más adelante sin tocar lógica.
+// Texto por idioma (es/en/ca) — getHeroSlideText() cae a "es" si falta alguno.
 const heroSlides = [
-  { tag: 'Plato saludable', image: './src/assets/stock/hero-plato-saludable.jpg', title: 'Nutrición basada en evidencia', subtitle: 'Planes reales, resultados medibles.', cta: 'Empieza Gratis' },
-  { tag: 'Suplemento', image: './src/assets/stock/hero-suplemento.jpg', title: 'Suplementación con criterio', subtitle: 'Solo lo que tu cuerpo necesita, con respaldo científico.', cta: 'Empieza Gratis' },
-  { tag: 'Ebook / Infoproducto', image: './src/assets/stock/hero-ebook.jpg', title: 'Recursos para llevar', subtitle: 'Guías y materiales descargables, siempre a mano.', cta: 'Empieza Gratis' },
-  { tag: 'Personal y profesional', image: './src/assets/stock/Experta.png', title: 'Tu experta nutricional', subtitle: 'Respuestas claras, cuando las necesitas.', cta: 'Empieza Gratis' },
-  { tag: 'Plan nutricional', image: './src/assets/stock/hero-plan-nutricional.jpg', title: 'Un plan hecho para ti', subtitle: 'Ajustado a tus objetivos y tu día a día.', cta: 'Empieza Gratis' }
+  {
+    image: './src/assets/stock/hero-plato-saludable.jpg',
+    es: { tag: 'Plato saludable', title: 'Nutrición basada en evidencia', subtitle: 'Planes reales, resultados medibles.', cta: 'Empieza Gratis' },
+    en: { tag: 'Healthy plate', title: 'Evidence-based nutrition', subtitle: 'Real plans, measurable results.', cta: 'Start Free' },
+    ca: { tag: 'Plat saludable', title: 'Nutrició basada en evidència', subtitle: 'Plans reals, resultats mesurables.', cta: 'Comença Gratis' }
+  },
+  {
+    image: './src/assets/stock/hero-suplemento.jpg',
+    es: { tag: 'Suplemento', title: 'Suplementación con criterio', subtitle: 'Solo lo que tu cuerpo necesita, con respaldo científico.', cta: 'Empieza Gratis' },
+    en: { tag: 'Supplement', title: 'Supplementation with criteria', subtitle: 'Only what your body needs, backed by science.', cta: 'Start Free' },
+    ca: { tag: 'Suplement', title: 'Suplementació amb criteri', subtitle: 'Només el que el teu cos necessita, amb suport científic.', cta: 'Comença Gratis' }
+  },
+  {
+    image: './src/assets/stock/hero-ebook.jpg',
+    es: { tag: 'Ebook / Infoproducto', title: 'Recursos para llevar', subtitle: 'Guías y materiales descargables, siempre a mano.', cta: 'Empieza Gratis' },
+    en: { tag: 'Ebook / Resource', title: 'Resources to go', subtitle: 'Downloadable guides and materials, always at hand.', cta: 'Start Free' },
+    ca: { tag: 'Ebook / Recurs', title: 'Recursos per emportar', subtitle: 'Guies i materials descarregables, sempre a mà.', cta: 'Comença Gratis' }
+  },
+  {
+    image: './src/assets/stock/Experta.png',
+    es: { tag: 'Personal y profesional', title: 'Tu experta nutricional', subtitle: 'Respuestas claras, cuando las necesitas.', cta: 'Empieza Gratis' },
+    en: { tag: 'Personal and professional', title: 'Your nutrition expert', subtitle: 'Clear answers, when you need them.', cta: 'Start Free' },
+    ca: { tag: 'Personal i professional', title: 'La teva experta en nutrició', subtitle: 'Respostes clares, quan les necessites.', cta: 'Comença Gratis' }
+  },
+  {
+    image: './src/assets/stock/hero-plan-nutricional.jpg',
+    es: { tag: 'Plan nutricional', title: 'Un plan hecho para ti', subtitle: 'Ajustado a tus objetivos y tu día a día.', cta: 'Empieza Gratis' },
+    en: { tag: 'Nutrition plan', title: 'A plan made for you', subtitle: 'Tailored to your goals and your everyday life.', cta: 'Start Free' },
+    ca: { tag: 'Pla nutricional', title: 'Un pla fet per a tu', subtitle: 'Ajustat als teus objectius i al teu dia a dia.', cta: 'Comença Gratis' }
+  }
 ];
+
+function getHeroSlideText(slide, language) {
+  return slide[language] || slide.es;
+}
 
 // Imágenes de apoyo para las tarjetas del feed central cuando el contenido
 // de Supabase no trae imagen propia — config, no embebidas en el markup.
@@ -122,6 +152,10 @@ const languageNames = {
 
 const translations = {
   es: {
+    feedArticleLabel: 'Artículo destacado',
+    feedRecipeLabel: 'Receta destacada',
+    feedProtocolLabel: 'Protocolo destacado',
+    feedResourceLabel: 'Recurso destacado',
     brandTag: 'ISOCORE',
     brandSubtitle: 'NUTRICIÓN',
     headerLogoText: 'ISOCORE',
@@ -215,6 +249,10 @@ const translations = {
     languageDropdownLabel: 'Elige idioma'
   },
   en: {
+    feedArticleLabel: 'Featured article',
+    feedRecipeLabel: 'Featured recipe',
+    feedProtocolLabel: 'Featured protocol',
+    feedResourceLabel: 'Featured resource',
     brandTag: 'ISOCORE',
     brandSubtitle: 'NUTRITION',
     headerLogoText: 'ISOCORE',
@@ -306,6 +344,10 @@ const translations = {
     loginValidation: 'Complete name and email to sign in.',    recoverValidation: 'Please enter your email address.',    languageDropdownLabel: 'Choose language'
   },
   ca: {
+    feedArticleLabel: 'Article destacat',
+    feedRecipeLabel: 'Recepta destacada',
+    feedProtocolLabel: 'Protocol destacat',
+    feedResourceLabel: 'Recurs destacat',
     brandTag: 'ISOCORE',
     brandSubtitle: 'NUTRICIÓ',
     headerLogoText: 'ISOCORE',
@@ -460,6 +502,20 @@ function updateTexts(t) {
     element.placeholder = t[key];
   });
 
+  // Carrusel hero (columna 1) — su texto vive en heroSlides, no en `t`,
+  // así que se refresca aparte por índice de slide en vez de data-i18n.
+  const language = getCurrentLanguage();
+  document.querySelectorAll('#heroCarousel .hero-slide').forEach((slideEl) => {
+    const i = Number(slideEl.dataset.slideIndex);
+    const slide = heroSlides[i];
+    if (!slide) return;
+    const text = getHeroSlideText(slide, language);
+    slideEl.querySelector('.hero-slide-tag').textContent = text.tag;
+    slideEl.querySelector('.hero-slide-title').textContent = text.title;
+    slideEl.querySelector('.hero-slide-subtitle').textContent = text.subtitle;
+    slideEl.querySelector('.hero-slide-cta').textContent = text.cta;
+  });
+
   renderModuleCards(t);
 
   const persistedUser = getStoredUser();
@@ -519,20 +575,23 @@ function renderHeaderHTML(t, language, user) {
  * Carrusel hero de la columna izquierda (Landing) — config-driven vía heroSlides.
  * Fade automático cada 7s. Respeta prefers-reduced-motion.
  */
-function renderHeroCarouselHTML() {
+function renderHeroCarouselHTML(language) {
   return `
     <div class="hero-carousel" id="heroCarousel">
-      ${heroSlides.map((slide, i) => `
-        <div class="hero-slide ${i === 0 ? 'on' : ''}">
+      ${heroSlides.map((slide, i) => {
+        const text = getHeroSlideText(slide, language);
+        return `
+        <div class="hero-slide ${i === 0 ? 'on' : ''}" data-slide-index="${i}">
           ${slide.image ? `<img src="${escapeHtml(slide.image)}" alt="" class="hero-slide-image" />` : ''}
           <div class="hero-slide-overlay">
-            <span class="hero-slide-tag">${escapeHtml(slide.tag)}</span>
-            <h2 class="hero-slide-title">${escapeHtml(slide.title)}</h2>
-            <p class="hero-slide-subtitle">${escapeHtml(slide.subtitle)}</p>
-            <button type="button" class="hero-slide-cta" data-hero-cta="${i}">${escapeHtml(slide.cta)}</button>
+            <span class="hero-slide-tag">${escapeHtml(text.tag)}</span>
+            <h2 class="hero-slide-title">${escapeHtml(text.title)}</h2>
+            <p class="hero-slide-subtitle">${escapeHtml(text.subtitle)}</p>
+            <button type="button" class="hero-slide-cta" data-hero-cta="${i}">${escapeHtml(text.cta)}</button>
           </div>
         </div>
-      `).join('')}
+      `;
+      }).join('')}
       <div class="hero-dots">
         ${heroSlides.map((_, i) => `<span class="${i === 0 ? 'on' : ''}" data-dot="${i}" role="button" tabindex="0" aria-label="Ir a la diapositiva ${i + 1}"></span>`).join('')}
       </div>
@@ -665,10 +724,10 @@ function createDiabetesCardHTML() {
 }
 
 const FEED_SECTIONS = [
-  { type: 'article', label: 'Artículo destacado', fetch: fetchFeaturedArticle },
-  { type: 'recipe', label: 'Receta destacada', fetch: fetchFeaturedRecipe },
-  { type: 'protocol', label: 'Protocolo destacado', fetch: fetchFeaturedProtocol },
-  { type: 'resource', label: 'Recurso destacado', fetch: fetchFeaturedResource }
+  { type: 'article', labelKey: 'feedArticleLabel', fetch: fetchFeaturedArticle },
+  { type: 'recipe', labelKey: 'feedRecipeLabel', fetch: fetchFeaturedRecipe },
+  { type: 'protocol', labelKey: 'feedProtocolLabel', fetch: fetchFeaturedProtocol },
+  { type: 'resource', labelKey: 'feedResourceLabel', fetch: fetchFeaturedResource }
 ];
 
 const TIER_RANK = { free: 0, premium: 1, vip: 2 };
@@ -692,9 +751,9 @@ function truncateText(value, maxLength = 140) {
   return `${text.slice(0, maxLength).trim()}…`;
 }
 
-async function fetchFeaturedArticle() {
+async function fetchFeaturedArticle(language = 'es') {
   try {
-    const articles = await getFeaturedArticlesFromSupabase(1);
+    const articles = await getFeaturedArticlesFromSupabase(1, language);
     const article = articles && articles[0];
     return article ? { ...article, tier: 'free' } : null;
   } catch (error) {
@@ -703,9 +762,9 @@ async function fetchFeaturedArticle() {
   }
 }
 
-async function fetchFeaturedRecipe() {
+async function fetchFeaturedRecipe(language = 'es') {
   try {
-    const recipes = await getRecipesFromSupabase(60);
+    const recipes = await getRecipesFromSupabase(60, 0, language);
     // Selección 100% editorial vía "destacada" en Supabase. Sin fallback:
     // si nadie la marcó, el bloque se omite (nunca "próximamente").
     return recipes.find((recipe) => recipe.featured) || null;
@@ -715,12 +774,12 @@ async function fetchFeaturedRecipe() {
   }
 }
 
-async function fetchFeaturedProtocol() {
+async function fetchFeaturedProtocol(language = 'es') {
   try {
     // "protocolos" no tiene columna editorial de selección ni de nivel de
     // acceso: se usa el más reciente como proxy (acordado, sin tocar esquema)
     // y se trata como contenido premium por defecto.
-    const protocols = await getProtocolsFromSupabase(5);
+    const protocols = await getProtocolsFromSupabase(5, 0, language);
     const protocol = protocols && protocols[0];
     return protocol ? { ...protocol, tier: 'premium' } : null;
   } catch (error) {
@@ -729,11 +788,11 @@ async function fetchFeaturedProtocol() {
   }
 }
 
-async function fetchFeaturedResource() {
+async function fetchFeaturedResource(language = 'es') {
   try {
     // "orden" es el campo editorial ya existente en modulos_educativos:
     // el de menor orden (ya viene ordenado asc) hace de "destacado".
-    const modules = await getEducationalModulesFromSupabase();
+    const modules = await getEducationalModulesFromSupabase('published', language);
     const resource = modules && modules[0];
     return resource ? { ...resource, tier: 'free' } : null;
   } catch (error) {
@@ -848,14 +907,16 @@ function renderNewsList(items) {
  * Carga y renderiza el feed dinámico de la columna central.
  * Modular: cada sección se resuelve y actualiza de forma independiente.
  */
-async function renderCentralFeed() {
+async function renderCentralFeed(language = getCurrentLanguage()) {
   const container = document.getElementById('homeContentFeed');
   if (!container) return;
 
+  const t = translations[language] || translations.es;
+
   await Promise.all(
     FEED_SECTIONS.map(async (section) => {
-      const item = await section.fetch();
-      updateFeedSection(section.type, section.label, item);
+      const item = await section.fetch(language);
+      updateFeedSection(section.type, t[section.labelKey], item);
     })
   );
 
@@ -1810,6 +1871,10 @@ function initHomeInteractions(t) {
     const nextTranslation = getTranslation();
     updateLanguageToggle(nextLanguage);
     updateTexts(nextTranslation);
+    // Columna 2: el feed vive en Supabase, así que no basta con swap de
+    // textContent — hay que volver a pedir los datos en el nuevo idioma
+    // (cae a español por fila mientras no haya traducción cargada).
+    renderCentralFeed(nextLanguage);
   });
 
   // ✅ NUEVOS LISTENERS PARA UX CORRECTIONS v1.0
@@ -1989,7 +2054,7 @@ function renderLandingHTML(t, language) {
     <main class="home-root page-shell">
       <section class="landing-grid">
         <div class="landing-col landing-col-hero">
-          ${renderHeroCarouselHTML()}
+          ${renderHeroCarouselHTML(language)}
         </div>
 
         <div class="landing-col landing-col-feed">
@@ -2192,7 +2257,7 @@ export async function renderHomePage() {
     renderLoginState(null, t);
     const feedContainer = document.querySelector('.landing-col-feed');
     feedContainer?.addEventListener('click', handleFeedClick);
-    renderCentralFeed();
+    renderCentralFeed(language);
     initHeroCarousel();
   }
 }
