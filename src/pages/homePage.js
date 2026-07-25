@@ -79,7 +79,7 @@ const heroSlides = [
   { tag: 'Plato saludable', image: './src/assets/stock/hero-plato-saludable.jpg', title: 'Nutrición basada en evidencia', subtitle: 'Planes reales, resultados medibles.', cta: 'Empieza Gratis' },
   { tag: 'Suplemento', image: './src/assets/stock/hero-suplemento.jpg', title: 'Suplementación con criterio', subtitle: 'Solo lo que tu cuerpo necesita, con respaldo científico.', cta: 'Empieza Gratis' },
   { tag: 'Ebook / Infoproducto', image: './src/assets/stock/hero-ebook.jpg', title: 'Recursos para llevar', subtitle: 'Guías y materiales descargables, siempre a mano.', cta: 'Empieza Gratis' },
-  { tag: 'IA / Tecnología', image: './src/assets/stock/hero-ia-tecnologia.jpg', title: 'Tu asistente nutricional', subtitle: 'Respuestas claras, cuando las necesitas.', cta: 'Empieza Gratis' },
+  { tag: 'Personal y profesional', image: './src/assets/stock/hero-ia-tecnologia.jpg', title: 'Tu experto nutricional', subtitle: 'Respuestas claras, cuando las necesitas.', cta: 'Empieza Gratis' },
   { tag: 'Plan nutricional', image: './src/assets/stock/hero-plan-nutricional.jpg', title: 'Un plan hecho para ti', subtitle: 'Ajustado a tus objetivos y tu día a día.', cta: 'Empieza Gratis' }
 ];
 
