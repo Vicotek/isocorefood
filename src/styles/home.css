@@ -532,6 +532,28 @@
   color: var(--brand);
 }
 
+/* ── Tarjeta destacada (producto insignia — Programa de Diabetes) ── */
+
+.feed-card-highlight {
+  border: 1.5px solid var(--accent);
+  background: linear-gradient(180deg, var(--accent-faint) 0%, var(--card) 55%);
+}
+
+.feed-card-badge-highlight {
+  color: var(--brand);
+  background: var(--accent);
+  padding: 3px 10px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.feed-card-cta-highlight {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--brand);
+  font-weight: 700;
+}
+
 .feed-card-locked .feed-card-title,
 .feed-card-locked .feed-card-summary {
   opacity: 0.7;

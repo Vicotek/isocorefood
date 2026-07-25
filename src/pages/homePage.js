@@ -28,6 +28,7 @@ import * as ArticlesPage from './articlesPage.js';
 import * as ProfilePage from './profilePage.js';
 import * as AIPage from './aiPage.js';
 import * as AdminPage from './adminPage.js';
+import * as DiabetesPage from './diabetesPage.js';
 
 const STORAGE_KEY = 'isocore_home_user';
 const BACKEND_BASE_URL = 'https://n8n.srv1569124.hstgr.cloud/webhook';
@@ -617,6 +618,29 @@ window.homePage_toggleFavModule = async (event, moduleId, moduleName) => {
 // en FEED_SECTIONS + una función fetchFeatured<Tipo>(), sin tocar el resto.
 // ═════════════════════════════════════════════════════════════════════════
 
+/**
+ * Tarjeta destacada del Programa de Nutrición para Diabéticos — el
+ * producto insignia. A diferencia de FEED_SECTIONS, no depende de
+ * is_featured en Supabase: es una promoción estática, siempre visible,
+ * siempre primera. Mismo componente de tarjeta que el resto del feed,
+ * con tratamiento resaltado (badge en --accent en vez del gris habitual).
+ */
+function createDiabetesCardHTML() {
+  return `
+    <article class="feed-card feed-card-highlight" data-feed-section="diabetes">
+      <div class="feed-card-media">
+        <div class="feed-card-image feed-card-image-placeholder">${getIcon('droplet', 26)}</div>
+      </div>
+      <div class="feed-card-body">
+        <span class="feed-card-badge feed-card-badge-highlight">Nutrición para diabéticos</span>
+        <h3 class="feed-card-title">Un plan hecho para tu diabetes</h3>
+        <p class="feed-card-summary">Plan nutricional personalizado, generado con evidencia y revisado por una experta antes de llegar a ti.</p>
+        <button type="button" class="feed-card-cta feed-card-cta-highlight" data-feed-view="diabetes">Ver más</button>
+      </div>
+    </article>
+  `;
+}
+
 const FEED_SECTIONS = [
   { type: 'article', label: 'Artículo destacado', fetch: fetchFeaturedArticle },
   { type: 'recipe', label: 'Receta destacada', fetch: fetchFeaturedRecipe },
@@ -828,6 +852,8 @@ function handleFeedClick(event) {
     const type = viewTarget.dataset.feedView;
     if (type === 'article') {
       window.homePage_navigateToArticles();
+    } else if (type === 'diabetes') {
+      window.homePage_navigateToDiabetes();
     } else {
       showLockedNotice('Sección en desarrollo');
     }
@@ -1345,6 +1371,14 @@ window.homePage_selectSearch = (query) => {
 window.homePage_navigateToArticles = () => {
   console.log('📚 Navegando a Biblioteca de Artículos');
   ArticlesPage.renderArticlesPage();
+};
+
+/**
+ * Navegar al programa de nutrición para diabéticos
+ */
+window.homePage_navigateToDiabetes = () => {
+  console.log('🩺 Navegando a Programa de Diabetes');
+  DiabetesPage.renderDiabetesPage();
 };
 
 /**
@@ -1936,6 +1970,7 @@ function renderLandingHTML(t, language) {
 
         <div class="landing-col landing-col-feed">
           <div class="home-details" id="homeContentFeed">
+            ${createDiabetesCardHTML()}
             ${FEED_SECTIONS.map(section => createFeedCard(null, section.type, section.label, 'loading')).join('')}
           </div>
           <div class="feed-section feed-news-section">
