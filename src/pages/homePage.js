@@ -534,7 +534,7 @@ function renderHeroCarouselHTML() {
         </div>
       `).join('')}
       <div class="hero-dots">
-        ${heroSlides.map((_, i) => `<span class="${i === 0 ? 'on' : ''}"></span>`).join('')}
+        ${heroSlides.map((_, i) => `<span class="${i === 0 ? 'on' : ''}" data-dot="${i}" role="button" tabindex="0" aria-label="Ir a la diapositiva ${i + 1}"></span>`).join('')}
       </div>
     </div>
   `;
@@ -556,16 +556,39 @@ function initHeroCarousel() {
     });
   });
 
+  let index = 0;
+
+  function goToSlide(i) {
+    index = i;
+    slides.forEach((slide, s) => slide.classList.toggle('on', s === index));
+    dots.forEach((dot, d) => dot.classList.toggle('on', d === index));
+  }
+
+  function startAutoRotate() {
+    window.clearInterval(initHeroCarousel.timerId);
+    initHeroCarousel.timerId = window.setInterval(() => {
+      goToSlide((index + 1) % slides.length);
+    }, 7000);
+  }
+
+  dots.forEach((dot, i) => {
+    const jumpToDot = () => {
+      goToSlide(i);
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) startAutoRotate();
+    };
+    dot.addEventListener('click', jumpToDot);
+    dot.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        jumpToDot();
+      }
+    });
+  });
+
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion) return;
 
-  let index = 0;
-  window.clearInterval(initHeroCarousel.timerId);
-  initHeroCarousel.timerId = window.setInterval(() => {
-    index = (index + 1) % slides.length;
-    slides.forEach((slide, i) => slide.classList.toggle('on', i === index));
-    dots.forEach((dot, i) => dot.classList.toggle('on', i === index));
-  }, 7000);
+  startAutoRotate();
 }
 
 const ICON_ALIASES = {
